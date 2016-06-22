@@ -1,0 +1,854 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- NewPage -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>PartialRow (Kudu 0.7.1 API)</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="PartialRow (Kudu 0.7.1 API)";
+    }
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
+<!-- ========= START OF TOP NAVBAR ======= -->
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="class-use/PartialRow.html">Use</a></li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../org/kududb/client/OperationResponse.html" title="class in org.kududb.client"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../org/kududb/client/PleaseThrottleException.html" title="class in org.kududb.client"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?org/kududb/client/PartialRow.html" target="_top">Frames</a></li>
+<li><a href="PartialRow.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
+<!-- ========= END OF TOP NAVBAR ========= -->
+<!-- ======== START OF CLASS DATA ======== -->
+<div class="header">
+<div class="subTitle">org.kududb.client</div>
+<h2 title="Class PartialRow" class="title">Class PartialRow</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li>
+<ul class="inheritance">
+<li>org.kududb.client.PartialRow</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<hr>
+<br>
+<pre>@InterfaceAudience.Public
+@InterfaceStability.Evolving
+public class <span class="strong">PartialRow</span>
+extends <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
+<div class="block">Class used to represent parts of a row along with its schema.<p>
+
+ Values can be replaced as often as needed, but once the enclosing <a href="../../../org/kududb/client/Operation.html" title="class in org.kududb.client"><code>Operation</code></a> is applied
+ then they cannot be changed again. This means that a PartialRow cannot be reused.<p>
+
+ Each PartialRow is backed by an byte array where all the cells (except strings and binary data)
+ are written. The others are kept in a List.<p>
+
+ This class isn't thread-safe.</div>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../../org/kududb/client/PartialRow.html#PartialRow(org.kududb.Schema)">PartialRow</a></strong>(<a href="../../../org/kududb/Schema.html" title="class in org.kududb">Schema</a>&nbsp;schema)</code>
+<div class="block">This is not a stable API, prefer using <a href="../../../org/kududb/Schema.html#newPartialRow()"><code>Schema.newPartialRow()</code></a>
+ to create a new partial row.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
+<!-- ========== METHOD SUMMARY =========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addBinary(int,%20byte[])">addBinary</a></strong>(int&nbsp;columnIndex,
+         byte[]&nbsp;val)</code>
+<div class="block">Add binary data with the specified value.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addBinary(int,%20java.nio.ByteBuffer)">addBinary</a></strong>(int&nbsp;columnIndex,
+         <a href="http://docs.oracle.com/javase/7/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio">ByteBuffer</a>&nbsp;value)</code>
+<div class="block">Add binary data with the specified value, from the current ByteBuffer's position to its limit.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addBinary(java.lang.String,%20byte[])">addBinary</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+         byte[]&nbsp;val)</code>
+<div class="block">Add binary data with the specified value.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addBinary(java.lang.String,%20java.nio.ByteBuffer)">addBinary</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+         <a href="http://docs.oracle.com/javase/7/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio">ByteBuffer</a>&nbsp;value)</code>
+<div class="block">Add binary data with the specified value, from the current ByteBuffer's position to its limit.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addBoolean(int,%20boolean)">addBoolean</a></strong>(int&nbsp;columnIndex,
+          boolean&nbsp;val)</code>
+<div class="block">Add a boolean for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addBoolean(java.lang.String,%20boolean)">addBoolean</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+          boolean&nbsp;val)</code>
+<div class="block">Add a boolean for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addByte(int,%20byte)">addByte</a></strong>(int&nbsp;columnIndex,
+       byte&nbsp;val)</code>
+<div class="block">Add a byte for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addByte(java.lang.String,%20byte)">addByte</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+       byte&nbsp;val)</code>
+<div class="block">Add a byte for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addDouble(int,%20double)">addDouble</a></strong>(int&nbsp;columnIndex,
+         double&nbsp;val)</code>
+<div class="block">Add an double for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addDouble(java.lang.String,%20double)">addDouble</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+         double&nbsp;val)</code>
+<div class="block">Add an double for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addFloat(int,%20float)">addFloat</a></strong>(int&nbsp;columnIndex,
+        float&nbsp;val)</code>
+<div class="block">Add an float for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addFloat(java.lang.String,%20float)">addFloat</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+        float&nbsp;val)</code>
+<div class="block">Add an float for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addInt(int,%20int)">addInt</a></strong>(int&nbsp;columnIndex,
+      int&nbsp;val)</code>
+<div class="block">Add an int for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addInt(java.lang.String,%20int)">addInt</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+      int&nbsp;val)</code>
+<div class="block">Add an int for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addLong(int,%20long)">addLong</a></strong>(int&nbsp;columnIndex,
+       long&nbsp;val)</code>
+<div class="block">Add an long for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addLong(java.lang.String,%20long)">addLong</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+       long&nbsp;val)</code>
+<div class="block">Add an long for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addShort(int,%20short)">addShort</a></strong>(int&nbsp;columnIndex,
+        short&nbsp;val)</code>
+<div class="block">Add a short for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addShort(java.lang.String,%20short)">addShort</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+        short&nbsp;val)</code>
+<div class="block">Add a short for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addString(int,%20java.lang.String)">addString</a></strong>(int&nbsp;columnIndex,
+         <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;val)</code>
+<div class="block">Add a String for the specified column.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addString(java.lang.String,%20java.lang.String)">addString</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+         <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;val)</code>
+<div class="block">Add a String for the specified column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addStringUtf8(int,%20byte[])">addStringUtf8</a></strong>(int&nbsp;columnIndex,
+             byte[]&nbsp;val)</code>
+<div class="block">Add a String for the specified value, encoded as UTF8.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#addStringUtf8(java.lang.String,%20byte[])">addStringUtf8</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+             byte[]&nbsp;val)</code>
+<div class="block">Add a String for the specified value, encoded as UTF8.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#encodePrimaryKey()">encodePrimaryKey</a></strong>()</code>
+<div class="block">Returns the encoded primary key of the row.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#setNull(int)">setNull</a></strong>(int&nbsp;columnIndex)</code>
+<div class="block">Set the specified column to null</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#setNull(java.lang.String)">setNull</a></strong>(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName)</code>
+<div class="block">Set the specified column to null</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
+<td class="colLast"><code><strong><a href="../../../org/kududb/client/PartialRow.html#stringifyRowKey()">stringifyRowKey</a></strong>()</code>
+<div class="block">Transforms the row key into a string representation where each column is in the format:
+ "type col_name=value".</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang">clone</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang">finalize</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</a>, <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html?is-external=true#wait(long,%20int)" title="class or interface in java.lang">wait</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="PartialRow(org.kududb.Schema)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>PartialRow</h4>
+<pre>public&nbsp;PartialRow(<a href="../../../org/kududb/Schema.html" title="class in org.kududb">Schema</a>&nbsp;schema)</pre>
+<div class="block">This is not a stable API, prefer using <a href="../../../org/kududb/Schema.html#newPartialRow()"><code>Schema.newPartialRow()</code></a>
+ to create a new partial row.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>schema</code> - the schema to use for this row</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+<!-- ============ METHOD DETAIL ========== -->
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="addBoolean(int, boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addBoolean</h4>
+<pre>public&nbsp;void&nbsp;addBoolean(int&nbsp;columnIndex,
+              boolean&nbsp;val)</pre>
+<div class="block">Add a boolean for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addBoolean(java.lang.String, boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addBoolean</h4>
+<pre>public&nbsp;void&nbsp;addBoolean(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+              boolean&nbsp;val)</pre>
+<div class="block">Add a boolean for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addByte(int, byte)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addByte</h4>
+<pre>public&nbsp;void&nbsp;addByte(int&nbsp;columnIndex,
+           byte&nbsp;val)</pre>
+<div class="block">Add a byte for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addByte(java.lang.String, byte)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addByte</h4>
+<pre>public&nbsp;void&nbsp;addByte(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+           byte&nbsp;val)</pre>
+<div class="block">Add a byte for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addShort(int, short)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addShort</h4>
+<pre>public&nbsp;void&nbsp;addShort(int&nbsp;columnIndex,
+            short&nbsp;val)</pre>
+<div class="block">Add a short for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addShort(java.lang.String, short)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addShort</h4>
+<pre>public&nbsp;void&nbsp;addShort(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+            short&nbsp;val)</pre>
+<div class="block">Add a short for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addInt(int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addInt</h4>
+<pre>public&nbsp;void&nbsp;addInt(int&nbsp;columnIndex,
+          int&nbsp;val)</pre>
+<div class="block">Add an int for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addInt(java.lang.String, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addInt</h4>
+<pre>public&nbsp;void&nbsp;addInt(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+          int&nbsp;val)</pre>
+<div class="block">Add an int for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addLong(int, long)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addLong</h4>
+<pre>public&nbsp;void&nbsp;addLong(int&nbsp;columnIndex,
+           long&nbsp;val)</pre>
+<div class="block">Add an long for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addLong(java.lang.String, long)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addLong</h4>
+<pre>public&nbsp;void&nbsp;addLong(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+           long&nbsp;val)</pre>
+<div class="block">Add an long for the specified column.
+
+ If this is a TIMESTAMP column, the long value provided should be the number of microseconds
+ between a given time and January 1, 1970 UTC.
+ For example, to encode the current time, use setLong(System.currentTimeMillis() * 1000);</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addFloat(int, float)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addFloat</h4>
+<pre>public&nbsp;void&nbsp;addFloat(int&nbsp;columnIndex,
+            float&nbsp;val)</pre>
+<div class="block">Add an float for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addFloat(java.lang.String, float)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addFloat</h4>
+<pre>public&nbsp;void&nbsp;addFloat(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+            float&nbsp;val)</pre>
+<div class="block">Add an float for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addDouble(int, double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addDouble</h4>
+<pre>public&nbsp;void&nbsp;addDouble(int&nbsp;columnIndex,
+             double&nbsp;val)</pre>
+<div class="block">Add an double for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addDouble(java.lang.String, double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addDouble</h4>
+<pre>public&nbsp;void&nbsp;addDouble(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+             double&nbsp;val)</pre>
+<div class="block">Add an double for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addString(int, java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addString</h4>
+<pre>public&nbsp;void&nbsp;addString(int&nbsp;columnIndex,
+             <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;val)</pre>
+<div class="block">Add a String for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addString(java.lang.String, java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addString</h4>
+<pre>public&nbsp;void&nbsp;addString(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+             <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;val)</pre>
+<div class="block">Add a String for the specified column.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addStringUtf8(int, byte[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addStringUtf8</h4>
+<pre>public&nbsp;void&nbsp;addStringUtf8(int&nbsp;columnIndex,
+                 byte[]&nbsp;val)</pre>
+<div class="block">Add a String for the specified value, encoded as UTF8.
+ Note that the provided value must not be mutated after this.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addStringUtf8(java.lang.String, byte[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addStringUtf8</h4>
+<pre>public&nbsp;void&nbsp;addStringUtf8(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+                 byte[]&nbsp;val)</pre>
+<div class="block">Add a String for the specified value, encoded as UTF8.
+ Note that the provided value must not be mutated after this.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addBinary(int, byte[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addBinary</h4>
+<pre>public&nbsp;void&nbsp;addBinary(int&nbsp;columnIndex,
+             byte[]&nbsp;val)</pre>
+<div class="block">Add binary data with the specified value.
+ Note that the provided value must not be mutated after this.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addBinary(int, java.nio.ByteBuffer)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addBinary</h4>
+<pre>public&nbsp;void&nbsp;addBinary(int&nbsp;columnIndex,
+             <a href="http://docs.oracle.com/javase/7/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio">ByteBuffer</a>&nbsp;value)</pre>
+<div class="block">Add binary data with the specified value, from the current ByteBuffer's position to its limit.
+ This method duplicates the ByteBuffer but doesn't copy the data. This means that the wrapped
+ data must not be mutated after this.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd><dd><code>value</code> - byte buffer to get the value from</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addBinary(java.lang.String, byte[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addBinary</h4>
+<pre>public&nbsp;void&nbsp;addBinary(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+             byte[]&nbsp;val)</pre>
+<div class="block">Add binary data with the specified value.
+ Note that the provided value must not be mutated after this.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>val</code> - value to add</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="addBinary(java.lang.String, java.nio.ByteBuffer)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>addBinary</h4>
+<pre>public&nbsp;void&nbsp;addBinary(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName,
+             <a href="http://docs.oracle.com/javase/7/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio">ByteBuffer</a>&nbsp;value)</pre>
+<div class="block">Add binary data with the specified value, from the current ByteBuffer's position to its limit.
+ This method duplicates the ByteBuffer but doesn't copy the data. This means that the wrapped
+ data must not be mutated after this.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd><dd><code>value</code> - byte buffer to get the value from</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or if the value doesn't match
+ the column's type</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="setNull(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setNull</h4>
+<pre>public&nbsp;void&nbsp;setNull(int&nbsp;columnIndex)</pre>
+<div class="block">Set the specified column to null</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnIndex</code> - the column's index in the schema</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or cannot be set to null</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="setNull(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setNull</h4>
+<pre>public&nbsp;void&nbsp;setNull(<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;columnName)</pre>
+<div class="block">Set the specified column to null</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>columnName</code> - Name of the column</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the column doesn't exist or cannot be set to null</dd>
+<dd><code><a href="http://docs.oracle.com/javase/7/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang">IllegalStateException</a></code> - if the row was already applied</dd></dl>
+</li>
+</ul>
+<a name="encodePrimaryKey()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>encodePrimaryKey</h4>
+<pre>public&nbsp;byte[]&nbsp;encodePrimaryKey()</pre>
+<div class="block">Returns the encoded primary key of the row.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>a byte array containing an encoded primary key</dd></dl>
+</li>
+</ul>
+<a name="stringifyRowKey()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>stringifyRowKey</h4>
+<pre>public&nbsp;<a href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;stringifyRowKey()</pre>
+<div class="block">Transforms the row key into a string representation where each column is in the format:
+ "type col_name=value".</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>a string representation of the operation's row key</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<!-- ========= END OF CLASS DATA ========= -->
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="class-use/PartialRow.html">Use</a></li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../org/kududb/client/OperationResponse.html" title="class in org.kududb.client"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../org/kududb/client/PleaseThrottleException.html" title="class in org.kududb.client"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?org/kududb/client/PartialRow.html" target="_top">Frames</a></li>
+<li><a href="PartialRow.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
+  if(window==top) {
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
+  }
+  //-->
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+<p class="legalCopy"><small>Copyright &#169; 2016. All rights reserved.</small></p>
+</body>
+</html>

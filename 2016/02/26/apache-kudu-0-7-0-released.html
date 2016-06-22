@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu (incubating) completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu (incubating) - Apache Kudu (incubating) 0.7.0 released</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="/css/justified-nav.css" rel="stylesheet" />
+
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <!-- Fork me on GitHub -->
+    <a class="fork-me-on-github" href="https://github.com/apache/incubator-kudu"><img src="//aral.github.io/fork-me-on-github-retina-ribbons/right-cerulean@2x.png" alt="Fork me on GitHub" /></a>
+
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="container-fluid navbar-default">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            
+            <a class="logo" href="/"><img src="/img/logo_small.png" width="80" /></a>
+            
+          </div>
+          <div id="navbar" class="navbar-collapse collapse navbar-right">
+            <ul class="nav navbar-nav">
+              <li >
+                <a href="/">Home</a>
+              </li>
+              <li >
+                <a href="/overview.html">Overview</a>
+              </li>
+              <li >
+                <a href="/docs/">Documentation</a>
+              </li>
+              <li >
+                <a href="/releases/">Download</a>
+              </li>
+              <li class="active">
+                <a href="/blog/">Blog</a>
+              </li>
+              <li >
+                <a href="/community.html">Community</a>
+              </li>
+              <li >
+                <a href="/faq.html">FAQ</a>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu (incubating) Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Apache Kudu (incubating) 0.7.0 released</h1>
+    <p class="meta">Posted 26 Feb 2016 by Todd Lipcon</p>
+  </header>
+  <div class="entry-content">
+    <p>The Apache Kudu (incubating) team is happy to announce its first release as
+part of the ASF Incubator, version 0.7.0!</p>
+
+<p>This latest version has a number of improvements since 0.6.0:</p>
+
+<!--more-->
+
+<ul>
+  <li>Kudu now has limited support for Apache Spark, through a simple <code>kuduRDD</code> API</li>
+  <li>Several improvements to the Java client including better error handling support and fixes for a potential client hang.</li>
+  <li>Better platform support, including support for building on RHEL 7, CentOS 7, and SLES 12.</li>
+  <li>The Kudu Python client has been completely revamped and is now considered a supported feature.</li>
+  <li>Numerous bug fixes and small improvements for better stability, performance, and usability.</li>
+</ul>
+
+<p>Thanks to Jean-Daniel Cryans for managing this release, as well as to all those who contributed or provided feedback and bug reports.</p>
+
+<ul>
+  <li>Read the detailed <a href="http://getkudu.io/releases/0.7.0/docs/release_notes.html">Kudu 0.7.0 release notes</a></li>
+  <li>Download the <a href="http://getkudu.io/releases/0.7.0/">Kudu 0.7.0 source release</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2016/06/21/weekly-update.html">Apache Kudu (incubating) Weekly Update June 21, 2016</a> </li>
+    
+      <li> <a href="/2016/06/17/raft-consensus-single-node.html">Using Raft Consensus on a Single Node</a> </li>
+    
+      <li> <a href="/2016/06/13/weekly-update.html">Apache Kudu (incubating) Weekly Update June 13, 2016</a> </li>
+    
+      <li> <a href="/2016/06/10/apache-kudu-0-9-0-released.html">Apache Kudu (incubating) 0.9.0 released</a> </li>
+    
+      <li> <a href="/2016/06/06/weekly-update.html">Apache Kudu (incubating) Weekly Update June 6, 2016</a> </li>
+    
+      <li> <a href="/2016/06/02/no-default-partitioning.html">Default Partitioning Changes Coming in Kudu 0.9</a> </li>
+    
+      <li> <a href="/2016/06/01/weekly-update.html">Apache Kudu (incubating) Weekly Update June 1, 2016</a> </li>
+    
+      <li> <a href="/2016/05/23/weekly-update.html">Apache Kudu (incubating) Weekly Update May 23, 2016</a> </li>
+    
+      <li> <a href="/2016/05/16/weekly-update.html">Apache Kudu (incubating) Weekly Update May 16, 2016</a> </li>
+    
+      <li> <a href="/2016/05/09/weekly-update.html">Apache Kudu (incubating) Weekly Update May 9, 2016</a> </li>
+    
+      <li> <a href="/2016/05/03/weekly-update.html">Apache Kudu (incubating) Weekly Update May 3, 2016</a> </li>
+    
+      <li> <a href="/2016/04/26/ycsb.html">Benchmarking and Improving Kudu Insert Performance with YCSB</a> </li>
+    
+      <li> <a href="/2016/04/25/weekly-update.html">Apache Kudu (incubating) Weekly Update April 25, 2016</a> </li>
+    
+      <li> <a href="/2016/04/19/kudu-0-8-0-predicate-improvements.html">Predicate Improvements in Kudu 0.8</a> </li>
+    
+      <li> <a href="/2016/04/18/weekly-update.html">Apache Kudu (incubating) Weekly Update April 18, 2016</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <p class="pull-left">
+        <a href="http://incubator.apache.org"><img src="/img/apache-incubator.png" width="225" height="53" align="right"/></a>
+        </p>
+        <p class="small">
+        Apache Kudu (incubating) is an effort undergoing incubation at the Apache Software
+        Foundation (ASF), sponsored by the Apache Incubator PMC. Incubation is
+        required of all newly accepted projects until a further review
+        indicates that the infrastructure, communications, and decision making
+        process have stabilized in a manner consistent with other successful
+        ASF projects. While incubation status is not necessarily a reflection
+        of the completeness or stability of the code, it does indicate that the
+        project has yet to be fully endorsed by the ASF.
+
+        Copyright &copy; 2016 The Apache Software Foundation. 
+        </p>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

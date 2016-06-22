@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu (incubating) completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu (incubating) - Predicate Improvements in Kudu 0.8</title>
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="/css/justified-nav.css" rel="stylesheet" />
+
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <!-- Fork me on GitHub -->
+    <a class="fork-me-on-github" href="https://github.com/apache/incubator-kudu"><img src="//aral.github.io/fork-me-on-github-retina-ribbons/right-cerulean@2x.png" alt="Fork me on GitHub" /></a>
+
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="container-fluid navbar-default">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            
+            <a class="logo" href="/"><img src="/img/logo_small.png" width="80" /></a>
+            
+          </div>
+          <div id="navbar" class="navbar-collapse collapse navbar-right">
+            <ul class="nav navbar-nav">
+              <li >
+                <a href="/">Home</a>
+              </li>
+              <li >
+                <a href="/overview.html">Overview</a>
+              </li>
+              <li >
+                <a href="/docs/">Documentation</a>
+              </li>
+              <li >
+                <a href="/releases/">Download</a>
+              </li>
+              <li class="active">
+                <a href="/blog/">Blog</a>
+              </li>
+              <li >
+                <a href="/community.html">Community</a>
+              </li>
+              <li >
+                <a href="/faq.html">FAQ</a>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu (incubating) Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Predicate Improvements in Kudu 0.8</h1>
+    <p class="meta">Posted 19 Apr 2016 by Dan Burkert</p>
+  </header>
+  <div class="entry-content">
+    <p>The recently released Kudu version 0.8 ships with a host of new improvements to
+scan predicates. Performance and usability have been improved, especially for
+tables taking advantage of <a href="http://getkudu.io/docs/schema_design.html#data-distribution">advanced partitioning
+options</a>.</p>
+
+<!--more-->
+
+<h2 id="scan-optimizations-in-the-server-and-c-client">Scan Optimizations in the Server and C++ Client</h2>
+
+<p>The server and C++ client have gotten more sophisticated in how they handle and
+optimize scan constraints. Constraints specified in the predicates and lower
+and upper bound primary keys are better unified, resulting in more predicates
+being pushed into primary key bounds, which can turn full table scans with
+predicates into much more efficient bounded scans.</p>
+
+<p>Additionally, the server and C++ client now recognize more opportunities to
+prune entire tablets during scans. For example, for the following schema and
+query Kudu will now be able to skip scanning 15 out of the 16 tablets in the
+table:</p>
+
+<p>```SQL
+– create a table with 16 tablets
+CREATE TABLE users (id INT64, name STRING, address STRING)
+DISTRIBUTE BY HASH (id) INTO 16 BUCKETS;</p>
+
+<p>– scan over a single tablet
+SELECT id, name, address FROM users
+WHERE id = 876932;
+```</p>
+
+<p>For a deeper look at the newly implemented scan and partition pruning
+optimizations, see the associated <a href="https://github.com/apache/incubator-kudu/blob/master/docs/design-docs/scan-optimization-partition-pruning.md">design
+document</a>.
+These optimizations will eventually be incorporated into the Java client as
+well, but until that time they are still used on the server side for scans
+initiated by Java clients. If you would like to help with this effort, let us
+know on the <a href="https://issues.apache.org/jira/browse/KUDU-1065">JIRA issue</a>.</p>
+
+<h2 id="redesigned-predicate-api-in-the-java-client">Redesigned Predicate API in the Java Client</h2>
+
+<p>The Java client has a new way to express scan predicates: the
+<a href="http://getkudu.io/apidocs/org/kududb/client/KuduPredicate.html"><code>KuduPredicate</code></a>.
+The API matches the corresponding C++ API more closely, and adds support for
+specifying exclusive, as well as inclusive, range predicates. The existing
+<a href="http://getkudu.io/apidocs/org/kududb/client/ColumnRangePredicate.html"><code>ColumnRangePredicate</code></a>
+API has been deprecated, and will be removed soon. Example of transitioning from
+the old to new API:</p>
+
+<p>```java
+ColumnSchema myIntColumnSchema = …;
+KuduScanner.KuduScannerBuilder scannerBuilder = …;</p>
+
+<p>// Old predicate API
+ColumnRangePredicate predicate = new ColumnRangePredicate(myIntColumnSchema);
+predicate.setLowerBound(20);
+scannerBuilder.addColumnRangePredicate(predicate);</p>
+
+<p>// New predicate API
+scannerBuilder.newPredicate(
+    KuduPredicate.newComparisonPredicate(myIntColumnSchema, ComparisonOp.GREATER_EQUAL, 20));
+```</p>
+
+<h2 id="under-the-covers-changes">Under the Covers Changes</h2>
+
+<p>The scan optimizations in the server and C++ client, and the new <code>KuduPredicate</code>
+API in the Java client are made possible by an overhaul of how predicates are
+handled internally. A new protobuf message type,
+<a href="https://github.com/apache/incubator-kudu/blob/master/src/kudu/common/common.proto#L273"><code>ColumnPredicatePB</code></a>
+has been introduced, and will allow more column predicate types to be introduced
+in the future. If you are interested in contributing to Kudu but don’t know
+where to start, consider adding a new predicate type; for example the <code>IS NULL</code>,
+<code>IS NOT NULL</code>, <code>IN</code>, and <code>LIKE</code> predicates types are currently not implemented.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2016/06/21/weekly-update.html">Apache Kudu (incubating) Weekly Update June 21, 2016</a> </li>
+    
+      <li> <a href="/2016/06/17/raft-consensus-single-node.html">Using Raft Consensus on a Single Node</a> </li>
+    
+      <li> <a href="/2016/06/13/weekly-update.html">Apache Kudu (incubating) Weekly Update June 13, 2016</a> </li>
+    
+      <li> <a href="/2016/06/10/apache-kudu-0-9-0-released.html">Apache Kudu (incubating) 0.9.0 released</a> </li>
+    
+      <li> <a href="/2016/06/06/weekly-update.html">Apache Kudu (incubating) Weekly Update June 6, 2016</a> </li>
+    
+      <li> <a href="/2016/06/02/no-default-partitioning.html">Default Partitioning Changes Coming in Kudu 0.9</a> </li>
+    
+      <li> <a href="/2016/06/01/weekly-update.html">Apache Kudu (incubating) Weekly Update June 1, 2016</a> </li>
+    
+      <li> <a href="/2016/05/23/weekly-update.html">Apache Kudu (incubating) Weekly Update May 23, 2016</a> </li>
+    
+      <li> <a href="/2016/05/16/weekly-update.html">Apache Kudu (incubating) Weekly Update May 16, 2016</a> </li>
+    
+      <li> <a href="/2016/05/09/weekly-update.html">Apache Kudu (incubating) Weekly Update May 9, 2016</a> </li>
+    
+      <li> <a href="/2016/05/03/weekly-update.html">Apache Kudu (incubating) Weekly Update May 3, 2016</a> </li>
+    
+      <li> <a href="/2016/04/26/ycsb.html">Benchmarking and Improving Kudu Insert Performance with YCSB</a> </li>
+    
+      <li> <a href="/2016/04/25/weekly-update.html">Apache Kudu (incubating) Weekly Update April 25, 2016</a> </li>
+    
+      <li> <a href="/2016/04/19/kudu-0-8-0-predicate-improvements.html">Predicate Improvements in Kudu 0.8</a> </li>
+    
+      <li> <a href="/2016/04/18/weekly-update.html">Apache Kudu (incubating) Weekly Update April 18, 2016</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <p class="pull-left">
+        <a href="http://incubator.apache.org"><img src="/img/apache-incubator.png" width="225" height="53" align="right"/></a>
+        </p>
+        <p class="small">
+        Apache Kudu (incubating) is an effort undergoing incubation at the Apache Software
+        Foundation (ASF), sponsored by the Apache Incubator PMC. Incubation is
+        required of all newly accepted projects until a further review
+        indicates that the infrastructure, communications, and decision making
+        process have stabilized in a manner consistent with other successful
+        ASF projects. While incubation status is not necessarily a reflection
+        of the completeness or stability of the code, it does indicate that the
+        project has yet to be fully endorsed by the ASF.
+
+        Copyright &copy; 2016 The Apache Software Foundation. 
+        </p>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+
