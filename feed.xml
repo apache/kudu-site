@@ -1,5 +1,108 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-06-22T20:12:13-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-06-24T08:38:41-07:00</updated><id>/</id><entry><title>Master fault tolerance in Kudu 1.0</title><link href="/2016/06/24/multi-master-1-0-0.html" rel="alternate" type="text/html" title="Master fault tolerance in Kudu 1.0" /><published>2016-06-24T00:00:00-07:00</published><updated>2016-06-24T00:00:00-07:00</updated><id>/2016/06/24/multi-master-1-0-0</id><content type="html" xml:base="/2016/06/24/multi-master-1-0-0.html">&lt;p&gt;This blog post describes how the 1.0 release of Apache Kudu (incubating) will
+support fault tolerance for the Kudu master, finally eliminating Kudu’s last
+single point of failure.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;As those of you who follow this blog know by now, replication is a signature
+feature in Kudu. Replication is used to provide fault tolerance for all loaded
+data. By implementing the Raft consensus protocol, Kudu guarantees that a tablet
+replicated &lt;strong&gt;2N+1&lt;/strong&gt; times can tolerate up to &lt;strong&gt;N&lt;/strong&gt; failures.&lt;/p&gt;
+
+&lt;p&gt;What you may not know is that Kudu replicates its metadata, too. That is, the
+Kudu master stores all table and tablet metadata in a single “master” tablet.
+As a regular Kudu tablet itself, this master tablet may be replicated with
+Raft. As such, the Kudu master is a special kind of tablet server whose primary
+job is to host a single replica of the master tablet.&lt;/p&gt;
+
+&lt;p&gt;When we launched Kudu’s first beta, support for replicated masters had been
+implemented but was too fragile to be anything but experimental. One of our
+goals for Kudu’s 1.0 release is to improve replicated master support so that it
+can be safely enabled in production clusters.&lt;/p&gt;
+
+&lt;h1 id=&quot;how-master-replication-works&quot;&gt;How master replication works&lt;/h1&gt;
+
+&lt;p&gt;To use replicated masters, a Kudu operator must deploy some number of Kudu
+masters, providing the hostname and port number of each master in the group via
+the &lt;code&gt;--master_address&lt;/code&gt; command line option. For example, each master in a
+three-node deployment should be started with
+&lt;code&gt;--master_address=&amp;lt;host1:port1&amp;gt;,&amp;lt;host2:port2&amp;gt;&amp;lt;host3:port3&amp;gt;&lt;/code&gt;. In Raft parlance,
+this group of masters is known as a &lt;em&gt;Raft configuration&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;At startup, a Raft configuration of masters will hold a leader election and
+elect one master as the leader. The leader master is responsible for servicing
+both tablet server heartbeats as well as client requests. The remaining masters
+are followers: they participate in Raft consensus and replicate writes sent by
+the leader, but are otherwise idle. Any client requests they receive are
+rejected. Likewise, all tablet server heartbeats they receive are ignored. If
+the leader master ever dies or steps down, the remaining replicas hold an
+election to determine the new leader.&lt;/p&gt;
+
+&lt;p&gt;All persistent master metadata is stored in the single replicated “master”
+tablet. Every row in this tablet represents either a table or a tablet. Table
+records include unique table identifiers, the table’s schema, and other bits of
+information. Tablet records include a unique identifier, the tablet’s Raft
+configuration, and other information.&lt;/p&gt;
+
+&lt;p&gt;What master metadata is replicated?&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Table and tablet existence, via &lt;strong&gt;CreateTable()&lt;/strong&gt; and &lt;strong&gt;DeleteTable()&lt;/strong&gt;.
+Every new tablet record also includes an initial Raft configuration.&lt;/li&gt;
+  &lt;li&gt;Schema changes, via &lt;strong&gt;AlterTable()&lt;/strong&gt; and tablet server heartbeats.&lt;/li&gt;
+  &lt;li&gt;Tablet server Raft configuration changes, via tablet server heartbeats.
+These include both the list of Raft peers (may have changed due to
+under-replication) as well as the current leader (may have changed due to
+an election).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Scanning the master tablet to service every heartbeat or client request would be
+slow, so the leader master caches all master metadata in memory. The caches are
+only updated after a metadata change is successfully replicated; in this way
+they are always consistent with the on-disk tablet. When a new leader master is
+elected, it scans the entire master tablet and uses the metadata to rebuild its
+in-memory caches.&lt;/p&gt;
+
+&lt;h1 id=&quot;communication-with-replicated-masters&quot;&gt;Communication with replicated masters&lt;/h1&gt;
+
+&lt;p&gt;All tablet servers start up with location information for the entire master Raft
+configuration and will periodically heartbeat to every master. Similarly,
+clients are also configured with the locations of all masters. Unlike tablet
+servers, they always communicate with the leader master as follower masters will
+reject client requests. To do this, clients must determine which master is the
+leader before sending the first request as well as whenever any request fails
+with a &lt;code&gt;NOT_THE_LEADER&lt;/code&gt; error.&lt;/p&gt;
+
+&lt;h1 id=&quot;remaining-work-for-kudu-10&quot;&gt;Remaining work for Kudu 1.0&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-422&quot;&gt;KUDU-422&lt;/a&gt; tracks the remaining
+master replication work. The guts of this feature have been implemented as far
+back as early 2015; the remaining work has been focused on fixing bugs that
+manifest only under specific conditions. For example, we’ve observed failures in
+DDL operations (e.g. &lt;strong&gt;CreateTable()&lt;/strong&gt;) that only materialize upon the
+completion of a master leader election. These failures highlight some of the
+gaps in our testing regimen: we need a robust stress test that repeatedly
+performs such operations while holding master leader elections.&lt;/p&gt;
+
+&lt;p&gt;That said, there is one remaining work item of larger scope: there’s no
+mechanism with which to perform a Raft configuration change for replicated
+masters. Such a mechanism would have multiple uses:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Migrating from a single-node master deployment to a fully replicated
+three-node (or five-node) deployment.&lt;/li&gt;
+  &lt;li&gt;Replacing a failed master with a new one.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;This is being tracked by
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1474&quot;&gt;KUDU-1474&lt;/a&gt;, and there’s been
+&lt;a href=&quot;http://gerrit.cloudera.org:8080/3393&quot;&gt;some discussion&lt;/a&gt; around a design, but
+nothing has been implemented yet. Stay tuned!&lt;/p&gt;</content><author><name>Adar Dembo</name></author><summary>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
+support fault tolerance for the Kudu master, finally eliminating Kudu&amp;#8217;s last
+single point of failure.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
+
+&lt;!--more--&gt;
 
 &lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
 
@@ -29,41 +132,12 @@ environment.&lt;/p&gt;
 uses Raft consensus on a single node, and some changes we’re making as Kudu is getting more mature.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;!--more--&gt;
-
 &lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
 &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.
-
-Development discussions and code in progress
-
-
-  
-    Dan Burkert posted a series of patches to add support in the Java client
-for non-covering range partitions. At the same time he improved how that client locates tables by
-leveraging the tablets cache.
-  
-  
-    In the context of making multi-master reliable in 1.0, Adar Dembo posted a design document
-on how to handle permanent master failures. Currently the master&amp;#8217;s code is missing some features
-like remote bootstrap which makes it possible for a new replica to download a snapshot of the data
-from the leader replica.
-  
-  
-    Tsuyoshi Ozawa refreshed a patch posted in February that
-makes it easier to get started contributing to Kudu by providing a Dockerfile with the right
-environment.
-  
-
-
-On the blog
-
-
-  Mike Percy wrote about how Kudu
-uses Raft consensus on a single node, and some changes we&amp;#8217;re making as Kudu is getting more mature.</summary></entry><entry><title>Using Raft Consensus on a Single Node</title><link href="/2016/06/17/raft-consensus-single-node.html" rel="alternate" type="text/html" title="Using Raft Consensus on a Single Node" /><published>2016-06-17T00:00:00-07:00</published><updated>2016-06-17T00:00:00-07:00</updated><id>/2016/06/17/raft-consensus-single-node</id><content type="html" xml:base="/2016/06/17/raft-consensus-single-node.html">&lt;p&gt;As Kudu marches toward its 1.0 release, which will include support for
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Using Raft Consensus on a Single Node</title><link href="/2016/06/17/raft-consensus-single-node.html" rel="alternate" type="text/html" title="Using Raft Consensus on a Single Node" /><published>2016-06-17T00:00:00-07:00</published><updated>2016-06-17T00:00:00-07:00</updated><id>/2016/06/17/raft-consensus-single-node</id><content type="html" xml:base="/2016/06/17/raft-consensus-single-node.html">&lt;p&gt;As Kudu marches toward its 1.0 release, which will include support for
 multi-master operation, we are working on removing old code that is no longer
 needed. One such piece of code is called LocalConsensus. Once LocalConsensus is
 removed, we will be using Raft consensus even on Kudu tables that have a
@@ -302,26 +376,22 @@ advanced configurations.&lt;/p&gt;
 calling &lt;code&gt;KuduTableCreator:add_hash_partitions&lt;/code&gt; with the columns to hash and the
 number of buckets to use:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;cpp
-unique_ptr&amp;lt;KuduTableCreator&amp;gt; table_creator(my_client-&amp;gt;NewTableCreator());
-Status create_status = table_creator-&amp;gt;table_name(&quot;my-table&quot;)
-                                     .schema(my_schema)
-                                     .add_hash_partitions({ &quot;key_column_a&quot;, &quot;key_column_b&quot; }, 16)
-                                     .Create();
-if (!create_status.ok() { /* handle error */ }
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_ptr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KuduTableCreator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_creator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NewTableCreator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;create_status&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_creator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;table_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;my-table&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                                     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;schema&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_schema&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                                     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add_hash_partitions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                                     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create_status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* handle error */&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;h1 id=&quot;java-client&quot;&gt;Java Client&lt;/h1&gt;
 
 &lt;p&gt;And similarly, in Java:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;java
-List&amp;lt;String&amp;gt; hashColumns = new ArrayList&amp;lt;&amp;gt;();
-hashColumns.add(&quot;key_column_a&quot;);
-hashColumn.add(&quot;key_column_b&quot;);
-CreateTableOptions options = new CreateTableOptions().addHashPartitions(hashColumns, 16);
-myClient.createTable(&quot;my-table&quot;, my_schema, options);
-&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hashColumns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;hashColumns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_a&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;hashColumn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_b&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;CreateTableOptions&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CreateTableOptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addHashPartitions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hashColumns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;myClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;my-table&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_schema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;In the examples above, if the hash partition configuration is omitted the create
 table operation will fail with the error &lt;code&gt;Table partitioning must be specified
@@ -334,16 +404,14 @@ returned as a &lt;code&gt;Status::InvalidArgument&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;When creating Kudu tables with Impala, the formerly optional &lt;code&gt;DISTRIBUTE BY&lt;/code&gt;
 clause is now required:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;SQL
-CREATE TABLE my_table (key_column_a STRING, key_column_b STRING, other_column STRING)
-DISTRIBUTE BY HASH (key_column_a, key_column_b) INTO 16 BUCKETS
-TBLPROPERTIES(
-    'storage_handler' = 'com.cloudera.kudu.hive.KuduStorageHandler',
-    'kudu.table_name' = 'my_table',
-    'kudu.master_addresses' = 'kudu-master.example.com:7051',
-    'kudu.key_columns' = 'key_column_a,key_column_b'
-);
-&lt;/code&gt;&lt;/p&gt;</content><author><name>Dan Burkert</name></author><summary>The upcoming Apache Kudu (incubating) 0.9 release is changing the default
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key_column_a&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key_column_b&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;other_column&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;DISTRIBUTE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HASH&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key_column_a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key_column_b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BUCKETS&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&amp;#39;storage_handler&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;com.cloudera.kudu.hive.KuduStorageHandler&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu.table_name&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;my_table&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu.master_addresses&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu-master.example.com:7051&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu.key_columns&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;key_column_a,key_column_b&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><author><name>Dan Burkert</name></author><summary>The upcoming Apache Kudu (incubating) 0.9 release is changing the default
 partitioning configuration for new tables. This post will introduce the change,
 explain the motivations, and show examples of how code can be updated to work
 with the new release.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 1, 2016</title><link href="/2016/06/01/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 1, 2016" /><published>2016-06-01T00:00:00-07:00</published><updated>2016-06-01T00:00:00-07:00</updated><id>/2016/06/01/weekly-update</id><content type="html" xml:base="/2016/06/01/weekly-update.html">&lt;p&gt;Welcome to the eleventh edition of the Kudu Weekly Update. This weekly blog post
@@ -550,56 +618,4 @@ showed a 3x improvement in startup time.&lt;/p&gt;
 &lt;a href=&quot;http://www.meetup.com/Big-Data-Montreal/events/230879277/?eventId=230879277&quot;&gt;Big Data Montreal&lt;/a&gt;
 meetup.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the ninth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update May 9, 2016</title><link href="/2016/05/09/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update May 9, 2016" /><published>2016-05-09T00:00:00-07:00</published><updated>2016-05-09T00:00:00-07:00</updated><id>/2016/05/09/weekly-update</id><content type="html" xml:base="/2016/05/09/weekly-update.html">&lt;p&gt;Welcome to the eighth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;If you find this post useful, please let us know by emailing the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweeting at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Sameer Abhyankar posted a &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2986/&quot;&gt;patch&lt;/a&gt;
-for &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1363&quot;&gt;KUDU-1363&lt;/a&gt;
-that adds the ability to specify
-&lt;a href=&quot;http://www.w3schools.com/sql/sql_in.asp&quot;&gt;IN&lt;/a&gt;-like predicates on column values.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Chris George and Andy Grove have both been adding new features in Kudu’s
-Spark module such as methods to &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2981/&quot;&gt;create/delete tables&lt;/a&gt;
-and &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2992/&quot;&gt;insert/update rows in the DataSource&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1437&quot;&gt;fixed a bug&lt;/a&gt; in RLE
-encoding that was reported by Przemyslaw Maciolek. Thank you Przemyslaw for
-reporting it and providing an easy way to reproduce it!&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Adar Dembo is currently working on addressing the
-&lt;a href=&quot;https://github.com/cloudera/kudu/blob/master/docs/design-docs/multi-master-1.0.md&quot;&gt;issues with multi-master&lt;/a&gt;
-and early last week he got &lt;a href=&quot;http://gerrit.cloudera.org:8080/2879&quot;&gt;a&lt;/a&gt;
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/2928&quot;&gt;few&lt;/a&gt; &lt;a href=&quot;http://gerrit.cloudera.org:8080/2891&quot;&gt;patches&lt;/a&gt;
-in that address some race conditions.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Zhen Zhang got &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2858/&quot;&gt;a first contribution&lt;/a&gt;
-in with a patch that adds statistics in the Java client. In 0.9.0 it will be
-possible to query the client to get things like the number of bytes written or
-how many write operations were sent.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;upcoming-talks-and-meetups&quot;&gt;Upcoming talks and meetups&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Dan Burkert and Mike Percy will present Kudu at the
-&lt;a href=&quot;http://www.meetup.com/Vancouver-Spark/events/229692936/&quot;&gt;Vancouver Spark Meetup&lt;/a&gt; in Vancouver, BC,
-on May 10.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the eighth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
