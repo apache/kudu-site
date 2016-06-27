@@ -1,4 +1,106 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-06-24T08:38:41-07:00</updated><id>/</id><entry><title>Master fault tolerance in Kudu 1.0</title><link href="/2016/06/24/multi-master-1-0-0.html" rel="alternate" type="text/html" title="Master fault tolerance in Kudu 1.0" /><published>2016-06-24T00:00:00-07:00</published><updated>2016-06-24T00:00:00-07:00</updated><id>/2016/06/24/multi-master-1-0-0</id><content type="html" xml:base="/2016/06/24/multi-master-1-0-0.html">&lt;p&gt;This blog post describes how the 1.0 release of Apache Kudu (incubating) will
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-06-27T16:07:37-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update June 27, 2016</title><link href="/2016/06/27/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 27, 2016" /><published>2016-06-27T00:00:00-07:00</published><updated>2016-06-27T00:00:00-07:00</updated><id>/2016/06/27/weekly-update</id><content type="html" xml:base="/2016/06/27/weekly-update.html">&lt;p&gt;Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Todd Lipcon diagnosed and fixed a &lt;a href=&quot;https://gerrit.cloudera.org/3445&quot;&gt;tricky bug&lt;/a&gt;
+which could cause Kudu servers to crash under load. It turned out that the bug
+was in a synchronization profiling code path related to the tcmalloc allocator.
+This allocator is used in release builds, but can’t be used in instrumented builds
+such as
+&lt;a href=&quot;http://clang.llvm.org/docs/AddressSanitizer.html&quot;&gt;AddressSanitizer&lt;/a&gt; or
+&lt;a href=&quot;http://clang.llvm.org/docs/ThreadSanitizer.html&quot;&gt;ThreadSanitizer&lt;/a&gt;. This made it particularly difficult
+to catch. The bug fix will be released in the upcoming 0.9.1 release.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Todd also finished and committed a fix for &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1469&quot;&gt;KUDU-1469&lt;/a&gt;,
+a bug in which Kudu’s implementation of Raft consensus could get “stuck” not making
+progress replicating operations for a tablet. See the
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3228/7/src/kudu/integration-tests/raft_consensus-itest.cc&quot;&gt;new integration test case&lt;/a&gt;
+for more details on this bug.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mike Percy finished implementing and committed a feature which allows
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3135/&quot;&gt;reserving disk space for non-Kudu processes&lt;/a&gt;.
+This feature causes Kudu to stop allocating new data blocks on a
+disk if it is within a user-specified threshold of being full, preventing
+possible crashes and allowing for safer collocation of Kudu with other processes
+on a cluster.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Will Berkeley finished implementing &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1398&quot;&gt;KUDU-1398&lt;/a&gt;,
+a new optimization which reduces the amount of disk space used by
+indexing structures in Kudu’s internal storage format. This should
+improve storage efficiency for workloads with large keys, and can
+also improve write performance by increasing the number of index
+entries which can fit in a given amount of cache memory.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;David Alves has completed posting a patch series that implements
+exactly-once RPC semantics. The design, as mentioned in previous
+blog posts, is described in a &lt;a href=&quot;https://gerrit.cloudera.org/#/c/2642/&quot;&gt;design document&lt;/a&gt;
+and the patches can be found in a 10-patch series starting with
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3190/&quot;&gt;gerrit #3190&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dan Burkert is continuing working on adding support for
+&lt;a href=&quot;https://github.com/apache/incubator-kudu/blob/master/docs/design-docs/non-covering-range-partitions.md&quot;&gt;tables with range partitions that don’t cover the entire key
+space&lt;/a&gt;.
+This past week, he focused on adding &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3388/&quot;&gt;support in the the Java client&lt;/a&gt;
+which also necessitated some serious &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3477/&quot;&gt;refactoring&lt;/a&gt;. These patches
+are now under review.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Congratulations to Andrew Wong, a new contributor who committed his
+first patches this week. Andrew &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3424/&quot;&gt;improved the build docs for OSX&lt;/a&gt;
+and also fixed a &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3486/&quot;&gt;crash if the user forgot to specify the master address
+in some command line tools&lt;/a&gt;.
+Thanks, Andrew!&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;The Apache Kudu web site has finished migrating to Apache Software Foundation infrastructure.
+The site can now be found at &lt;a href=&quot;http://kudu.incubator.apache.org/&quot;&gt;kudu.incubator.apache.org&lt;/a&gt;.
+Existing links will automatically redirect.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;A Kudu 0.9.1 release candidate was posted and passed a
+&lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CCADY20s6%3D%2BnKNgvx%3DG_pKupQGiH%2B9ToS53LqExBwWM6vLp-ns9A%40mail.gmail.com%3E&quot;&gt;release vote&lt;/a&gt;
+by the Kudu Podling PMC (PPMC).
+The release candidate will now be voted upon by the Apache Incubator PMC. If all goes well, we
+can expect a release late this week. The release fixes a few critical bugs discovered in 0.9.0.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Chris Mattmann, one of Kudu’s mentors from the Apache Incubator,
+started a &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CAD4A858D-403D-4E74-A4F4-DE2F08FB761E%40jpl.nasa.gov%3E&quot;&gt;discussion&lt;/a&gt;
+about the project’s graduation to a top-level project (TLP).
+Initial responses seem to be positive, so the next step will
+be to work on a draft resolution and various stages of
+voting.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;on-the-kudu-blog&quot;&gt;On the Kudu blog&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Adar Dembo published a post detailing his recent work on
+&lt;a href=&quot;http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html&quot;&gt;master fault tolerance in Kudu 1.0&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
+tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Master fault tolerance in Kudu 1.0</title><link href="/2016/06/24/multi-master-1-0-0.html" rel="alternate" type="text/html" title="Master fault tolerance in Kudu 1.0" /><published>2016-06-24T00:00:00-07:00</published><updated>2016-06-24T00:00:00-07:00</updated><id>/2016/06/24/multi-master-1-0-0</id><content type="html" xml:base="/2016/06/24/multi-master-1-0-0.html">&lt;p&gt;This blog post describes how the 1.0 release of Apache Kudu (incubating) will
 support fault tolerance for the Kudu master, finally eliminating Kudu’s last
 single point of failure.&lt;/p&gt;
 
@@ -531,91 +633,4 @@ such as AVX and AVX2.&lt;/p&gt;
   &lt;li&gt;Ryan Bosshart will be presenting Kudu at the &lt;a href=&quot;http://www.meetup.com/DFW-Cloudera-User-Group/events/230547045/&quot;&gt;Dallas/Fort Worth
 Cloudera User Group&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the tenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update May 16, 2016</title><link href="/2016/05/16/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update May 16, 2016" /><published>2016-05-16T00:00:00-07:00</published><updated>2016-05-16T00:00:00-07:00</updated><id>/2016/05/16/weekly-update</id><content type="html" xml:base="/2016/05/16/weekly-update.html">&lt;p&gt;Welcome to the ninth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;If you find this post useful, please let us know by emailing the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweeting at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Development and code reviews continued on Sameer Abhyankar’s patch which
-adds support for pushing down &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2986/&quot;&gt;‘IN’ predicates&lt;/a&gt;
-to the Kudu tablet servers.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon and Binglin Chang have been continuing to work on improving throughput
-for a high throughput random-read use case. Initial profiling indicated that the
-RPC system was a bottleneck, and patches have started to land which improve
-the throughput:&lt;/p&gt;
-
-    &lt;p&gt;The largest bottleneck was in the queue which transfers RPC calls from the
-libev “reactor” threads which perform network IO to the “worker” threads
-which service the actual requests. Binglin borrowed some ideas from Facebook’s
-&lt;a href=&quot;https://github.com/facebook/folly&quot;&gt;folly&lt;/a&gt; library, and implemented an
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2938/&quot;&gt;improved queue&lt;/a&gt;
-which reduces context switches and lock contention while also
-improving CPU cache locality of the worker threads.&lt;/p&gt;
-
-    &lt;p&gt;Todd identified that the hash function used to map connections to reactor
-threads was poor, resulting in uneven load distribution across cores.
-A &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2939/&quot;&gt;simple patch to change the hashcode implementation&lt;/a&gt;
-improved the distribution substantially.&lt;/p&gt;
-
-    &lt;p&gt;With just these patches, an RPC stress benchmark was improved from about 202K RPCs/second
-to 768K RPCs/second on a 24-core machine. Further improvements are in flight
-and under review this week.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Zhen Zhang is continuing to focus on adding more visibility into
-performance and resource usage by adding the ability to propagate various
-per-operation metrics from the server side back to the client. His latest patch
-under review &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/3013/&quot;&gt;exposes scanner cache hit rate metrics&lt;/a&gt;
-to the client.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon and Sarah Jelinek continue to make progress on the
-implementation of a persistent-memory backed block cache.
-This week a &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2957/&quot;&gt;substantial refactor to the block cache interface&lt;/a&gt;
-was committed in preparation for the &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2593/&quot;&gt;NVM cache itself&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Congratulations to Will Berkeley, a new contributor who has been
-contributing small fixes and improvements such as
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/3022/&quot;&gt;exposing table partitioning information in the master web UI&lt;/a&gt;.
-Thanks, Will!&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;David Alves has been continuing to make progress towards his implementation of
-the &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2642/&quot;&gt;Replay Cache&lt;/a&gt;.
-This week, he refactored and cleaned up much of the client code involving
-error handling and retrying write operations, in preparation to inserting
-unique identifiers for these and other operations.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Chris George has continued to work on the Spark DataSource implementation.
-In particular, work is progressing on support for &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/2992/&quot;&gt;inserting and updating
-rows via Spark&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon and Mike Percy both committed improvements which will help speed up
-startup. Measurements on a cluster where each node stores a few TB of data
-showed a 3x improvement in startup time.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;upcoming-talks-and-meetups&quot;&gt;Upcoming talks and meetups&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Mladen Kovacevi will be presenting Kudu at the
-&lt;a href=&quot;http://www.meetup.com/Big-Data-Montreal/events/230879277/?eventId=230879277&quot;&gt;Big Data Montreal&lt;/a&gt;
-meetup.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the ninth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
