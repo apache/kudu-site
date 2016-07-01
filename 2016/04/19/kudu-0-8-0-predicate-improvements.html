@@ -92,7 +92,7 @@
   <div class="entry-content">
     <p>The recently released Kudu version 0.8 ships with a host of new improvements to
 scan predicates. Performance and usability have been improved, especially for
-tables taking advantage of <a href="http://getkudu.io/docs/schema_design.html#data-distribution">advanced partitioning
+tables taking advantage of <a href="http://kudu.apache.org/docs/schema_design.html#data-distribution">advanced partitioning
 options</a>.</p>
 
 <!--more-->
@@ -129,10 +129,10 @@ know on the <a href="https://issues.apache.org/jira/browse/KUDU-1065">JIRA issue
 <h2 id="redesigned-predicate-api-in-the-java-client">Redesigned Predicate API in the Java Client</h2>
 
 <p>The Java client has a new way to express scan predicates: the
-<a href="http://getkudu.io/apidocs/org/kududb/client/KuduPredicate.html"><code>KuduPredicate</code></a>.
+<a href="http://kudu.apache.org/apidocs/org/kududb/client/KuduPredicate.html"><code>KuduPredicate</code></a>.
 The API matches the corresponding C++ API more closely, and adds support for
 specifying exclusive, as well as inclusive, range predicates. The existing
-<a href="http://getkudu.io/apidocs/org/kududb/client/ColumnRangePredicate.html"><code>ColumnRangePredicate</code></a>
+<a href="http://kudu.apache.org/apidocs/org/kududb/client/ColumnRangePredicate.html"><code>ColumnRangePredicate</code></a>
 API has been deprecated, and will be removed soon. Example of transitioning from
 the old to new API:</p>
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-06-27T16:07:37-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update June 27, 2016</title><link href="/2016/06/27/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 27, 2016" /><published>2016-06-27T00:00:00-07:00</published><updated>2016-06-27T00:00:00-07:00</updated><id>/2016/06/27/weekly-update</id><content type="html" xml:base="/2016/06/27/weekly-update.html">&lt;p&gt;Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-01T10:10:00-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update June 27, 2016</title><link href="/2016/06/27/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 27, 2016" /><published>2016-06-27T00:00:00-07:00</published><updated>2016-06-27T00:00:00-07:00</updated><id>/2016/06/27/weekly-update</id><content type="html" xml:base="/2016/06/27/weekly-update.html">&lt;p&gt;Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -230,7 +230,7 @@ environment.&lt;/p&gt;
 &lt;h2 id=&quot;on-the-blog&quot;&gt;On the blog&lt;/h2&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Mike Percy &lt;a href=&quot;http://getkudu.io/2016/06/17/raft-consensus-single-node.html&quot;&gt;wrote&lt;/a&gt; about how Kudu
+  &lt;li&gt;Mike Percy &lt;a href=&quot;http://kudu.apache.org/2016/06/17/raft-consensus-single-node.html&quot;&gt;wrote&lt;/a&gt; about how Kudu
 uses Raft consensus on a single node, and some changes we’re making as Kudu is getting more mature.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -345,7 +345,7 @@ a future post.&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;
     &lt;p&gt;The IPMC vote for 0.9.0 RC1 passed and Kudu 0.9.0 is now
-&lt;a href=&quot;http://getkudu.io/2016/06/10/apache-kudu-0-9-0-released.html&quot;&gt;officially released&lt;/a&gt;. Per the
+&lt;a href=&quot;http://kudu.apache.org/2016/06/10/apache-kudu-0-9-0-released.html&quot;&gt;officially released&lt;/a&gt;. Per the
 lazily agreed-upon &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-dev/201602.mbox/%3CCAGpTDNcMBWwX8p+yGKzHfL2xcmKTScU-rhLcQFSns1UVSbrXhw@mail.gmail.com%3E&quot;&gt;plan&lt;/a&gt;,
 the next release will be 1.0.0 in about two months.&lt;/p&gt;
   &lt;/li&gt;
@@ -383,8 +383,8 @@ restart time as well as write performance under high load. Finally, Kudu now enf
 the specification of a partitioning scheme for new tables.&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Read the detailed &lt;a href=&quot;http://getkudu.io/releases/0.9.0/docs/release_notes.html&quot;&gt;Kudu 0.9.0 release notes&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;http://getkudu.io/releases/0.9.0/&quot;&gt;Kudu 0.9.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Read the detailed &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/docs/release_notes.html&quot;&gt;Kudu 0.9.0 release notes&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Download the &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/&quot;&gt;Kudu 0.9.0 source release&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>The Apache Kudu (incubating) team is happy to announce the release of Kudu
 0.9.0!
 
@@ -468,7 +468,7 @@ default partitioning before the 0.9 release, will continue to work.&lt;/p&gt;
 &lt;p&gt;In most cases updating existing code to explicitly set a partitioning
 configuration should be simple. The examples below add hash partitioning, but
 you can also specify range partitioning or a combination of range and hash
-partitioning. See the &lt;a href=&quot;http://getkudu.io/docs/schema_design.html#data-distribution&quot;&gt;schema design
+partitioning. See the &lt;a href=&quot;http://kudu.apache.org/docs/schema_design.html#data-distribution&quot;&gt;schema design
 guide&lt;/a&gt; for more
 advanced configurations.&lt;/p&gt;
 
@@ -550,7 +550,7 @@ improve performance for zipfian update workloads.&lt;/p&gt;
   &lt;li&gt;
     &lt;p&gt;Todd also &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/3186/&quot;&gt;changed&lt;/a&gt; some flush-related defaults to
 encourage parallel IO and larger flushes. This is based on his previous work that he documented
-in this &lt;a href=&quot;http://getkudu.io/2016/04/26/ycsb.html&quot;&gt;blog post&lt;/a&gt;.&lt;/p&gt;
+in this &lt;a href=&quot;http://kudu.apache.org/2016/04/26/ycsb.html&quot;&gt;blog post&lt;/a&gt;.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;Will Berkeley made a few improvements last week, but &lt;a href=&quot;http://gerrit.cloudera.org:8080/3199&quot;&gt;one&lt;/a&gt;
