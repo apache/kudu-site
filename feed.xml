@@ -1,4 +1,72 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-01T12:54:20-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) 0.9.1 released</title><link href="/2016/07/01/apache-kudu-0-9-1-released.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) 0.9.1 released" /><published>2016-07-01T00:00:00-07:00</published><updated>2016-07-01T00:00:00-07:00</updated><id>/2016/07/01/apache-kudu-0-9-1-released</id><content type="html" xml:base="/2016/07/01/apache-kudu-0-9-1-released.html">&lt;p&gt;The Apache Kudu (incubating) team is happy to announce the release of Kudu
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-12T11:39:02-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update July 11, 2016</title><link href="/2016/07/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 11, 2016" /><published>2016-07-11T00:00:00-07:00</published><updated>2016-07-11T00:00:00-07:00</updated><id>/2016/07/11/weekly-update</id><content type="html" xml:base="/2016/07/11/weekly-update.html">&lt;p&gt;Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Todd Lipcon &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3517/&quot;&gt;changed the default&lt;/a&gt;
+bloom filter false positive (FP) ratio from 1% to 0.01%. The original value
+wasn’t scientifically chosen, but testing with billions of rows on a 5
+node cluster showed a 2x insert throughput improvement at the cost of
+some more disk space.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;J-D Cryans has been fixing some recently introduced bugs in the Java client.
+For example, see &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3541/&quot;&gt;this patch&lt;/a&gt; and
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3586/&quot;&gt;that one&lt;/a&gt;. Testability is a major
+concern right now in the Java client since triggering those issues requires
+a lot of time and data.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dan Burkert has been making progress on the non-convering range partitioned
+tables front. The Java client &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3388/&quot;&gt;now supports&lt;/a&gt;
+such tables and Dan is currently implementing new functionality to add and remove
+tablets via simple APIs.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;David Alves is also making a lot of progress on the replay cache, this new component
+on the server-side which makes it possible for tablets to identify client write
+operations and enable exactly-once semantics. The main patch is up for review
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3449/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Adar Dembo is working on addressing multi-master issues, as he explained in this
+&lt;a href=&quot;http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html&quot;&gt;blog post&lt;/a&gt;. He just put
+up for review patches that enable tablet servers to heartbeat to all masters. Part
+one is &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3609/&quot;&gt;available here&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Misty prepared a document with J-D that contains instructions on how to release a
+new Kudu version. It is &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3614/&quot;&gt;up for review here&lt;/a&gt;
+if you are curious or want to learn more about this process.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;The &lt;a href=&quot;https://s.apache.org/l6Tw&quot;&gt;vote&lt;/a&gt; to graduate Kudu from the ASF’s Incubator passed!
+The next step is for the ASF Board to vote on the resolution at their next meeting.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;There’s &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCAGpTDNesxH43C-Yt5fNwpEpAxfb2P62Xpdi8AqT8jfvjeqnu0w%40mail.gmail.com%3E&quot;&gt;a discussion&lt;/a&gt;
+on the dev mailing list about having an intermediate release, called 0.10.0, before 1.0.0.
+The current issue is that the version in the code is current “1.0.0-SNAPSHOT” which doesn’t
+leave room for another other release, but the bigger issue is that code is still churning a
+lot which doesn’t make for a stable 1.0 release.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
+tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) 0.9.1 released</title><link href="/2016/07/01/apache-kudu-0-9-1-released.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) 0.9.1 released" /><published>2016-07-01T00:00:00-07:00</published><updated>2016-07-01T00:00:00-07:00</updated><id>/2016/07/01/apache-kudu-0-9-1-released</id><content type="html" xml:base="/2016/07/01/apache-kudu-0-9-1-released.html">&lt;p&gt;The Apache Kudu (incubating) team is happy to announce the release of Kudu
 0.9.1!&lt;/p&gt;
 
 &lt;p&gt;This release fixes a few issues found in the previous 0.9.0 release. All users
@@ -217,7 +285,7 @@ three-node (or five-node) deployment.&lt;/li&gt;
 &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1474&quot;&gt;KUDU-1474&lt;/a&gt;, and there’s been
 &lt;a href=&quot;http://gerrit.cloudera.org:8080/3393&quot;&gt;some discussion&lt;/a&gt; around a design, but
 nothing has been implemented yet. Stay tuned!&lt;/p&gt;</content><author><name>Adar Dembo</name></author><summary>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu&amp;#8217;s last
+support fault tolerance for the Kudu master, finally eliminating Kudu’s last
 single point of failure.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
@@ -406,7 +474,7 @@ the specification of a partitioning scheme for new tables.&lt;/p&gt;
 0.9.0!
 
 This latest version adds basic UPSERT functionality and an improved Apache Spark Data Source
-that doesn&amp;#8217;t rely on the MapReduce I/O formats. It also improves Tablet Server
+that doesn’t rely on the MapReduce I/O formats. It also improves Tablet Server
 restart time as well as write performance under high load. Finally, Kudu now enforces
 the specification of a partitioning scheme for new tables.
 
@@ -533,46 +601,4 @@ clause is now required:&lt;/p&gt;
 &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><author><name>Dan Burkert</name></author><summary>The upcoming Apache Kudu (incubating) 0.9 release is changing the default
 partitioning configuration for new tables. This post will introduce the change,
 explain the motivations, and show examples of how code can be updated to work
-with the new release.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 1, 2016</title><link href="/2016/06/01/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 1, 2016" /><published>2016-06-01T00:00:00-07:00</published><updated>2016-06-01T00:00:00-07:00</updated><id>/2016/06/01/weekly-update</id><content type="html" xml:base="/2016/06/01/weekly-update.html">&lt;p&gt;Welcome to the eleventh edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;If you find this post useful, please let us know by emailing the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweeting at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Jean-Daniel Cryans, the release manager for 0.9.0, &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201605.mbox/%3CCAGpTDNe_gV5TTsJQSjx_Q-hSGjK9TesWkyP-k9rnhd0mBtYAYg%40mail.gmail.com%3E&quot;&gt;indicated&lt;/a&gt;
-that the release is almost ready and the first release candidate will be put up for vote this
-week.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert pushed &lt;a href=&quot;http://gerrit.cloudera.org:8080/3131&quot;&gt;a change&lt;/a&gt; that disallows default
-partitioning when creating a new table. This is due to many reports from users experiencing bad
-performance because their table was created with only one tablet. Kudu will now force users to
-partition their tables.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon ran YCSB stress tests on a cluster and discovered that compactions were taking hours
-instead of seconds. He pushed &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/3221/&quot;&gt;a change&lt;/a&gt; that solves
-the issue as part of our &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-749&quot;&gt;general effort&lt;/a&gt; to
-improve performance for zipfian update workloads.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd also &lt;a href=&quot;http://gerrit.cloudera.org:8080/#/c/3186/&quot;&gt;changed&lt;/a&gt; some flush-related defaults to
-encourage parallel IO and larger flushes. This is based on his previous work that he documented
-in this &lt;a href=&quot;http://kudu.apache.org/2016/04/26/ycsb.html&quot;&gt;blog post&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Will Berkeley made a few improvements last week, but &lt;a href=&quot;http://gerrit.cloudera.org:8080/3199&quot;&gt;one&lt;/a&gt;
-we’d like to call out is that he removed the Java’s kudu-mapreduce module dependency on Hadoop’s
-hadoop-common test jar. This solved build issues while also removing a nasty dependency.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the eleventh edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
+with the new release.</summary></entry></feed>

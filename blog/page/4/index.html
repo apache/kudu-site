@@ -89,6 +89,26 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2016/04/26/ycsb.html">Benchmarking and Improving Kudu Insert Performance with YCSB</a></h1>
+    <p class="meta">Posted 26 Apr 2016 by Todd Lipcon</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>Recently, I wanted to stress-test and benchmark some changes to the Kudu RPC server, and decided to use YCSB as a way to generate reasonable load. While running YCSB, I noticed interesting results, and what started as an unrelated testing exercise eventually yielded some new insights into Kudu’s behavior. These insights will motivate changes to default Kudu settings and code in upcoming versions. This post details the benchmark setup, analysis, and conclusions.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/04/26/ycsb.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2016/04/25/weekly-update.html">Apache Kudu (incubating) Weekly Update April 25, 2016</a></h1>
     <p class="meta">Posted 25 Apr 2016 by Todd Lipcon</p>
   </header>
@@ -182,36 +202,6 @@ visualization.</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/04/12/apache-kudu-0-8-0-released.html">Apache Kudu (incubating) 0.8.0 released</a></h1>
-    <p class="meta">Posted 12 Apr 2016 by Jean-Daniel Cryans</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.8.0!</p>
-
-<p>This latest version adds a sink for Apache Flume, partition pruning in the C++
-client and related improvements on the server-side, better error-handling in Java
-client, plus many other improvements and bug fixes.</p>
-
-<ul>
-  <li>Read the detailed <a href="http://kudu.apache.org/releases/0.8.0/docs/release_notes.html">Kudu 0.8.0 release notes</a></li>
-  <li>Download the <a href="http://kudu.apache.org/releases/0.8.0/">Kudu 0.8.0 source release</a></li>
-</ul>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/04/12/apache-kudu-0-8-0-released.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -231,6 +221,8 @@ client, plus many other improvements and bug fixes.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2016/07/11/weekly-update.html">Apache Kudu (incubating) Weekly Update July 11, 2016</a> </li>
     
       <li> <a href="/2016/07/01/apache-kudu-0-9-1-released.html">Apache Kudu (incubating) 0.9.1 released</a> </li>
     
@@ -259,8 +251,6 @@ client, plus many other improvements and bug fixes.</p>
       <li> <a href="/2016/05/09/weekly-update.html">Apache Kudu (incubating) Weekly Update May 9, 2016</a> </li>
     
       <li> <a href="/2016/05/03/weekly-update.html">Apache Kudu (incubating) Weekly Update May 3, 2016</a> </li>
-    
-      <li> <a href="/2016/04/26/ycsb.html">Benchmarking and Improving Kudu Insert Performance with YCSB</a> </li>
     
     </ul>
   </div>
