@@ -9,7 +9,9 @@
     <meta name="author" content="Cloudera" />
     <title>Apache Kudu (incubating) - Blog</title>
     <!-- Bootstrap core CSS -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
     <link href="/css/justified-nav.css" rel="stylesheet" />
@@ -85,6 +87,29 @@
 <div class="row-fluid">
   <div class="col-lg-9">
     
+
+<!-- Articles -->
+<article>
+  <header>
+    <h1 class="entry-title"><a href="/2016/06/02/no-default-partitioning.html">Default Partitioning Changes Coming in Kudu 0.9</a></h1>
+    <p class="meta">Posted 02 Jun 2016 by Dan Burkert</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>The upcoming Apache Kudu (incubating) 0.9 release is changing the default
+partitioning configuration for new tables. This post will introduce the change,
+explain the motivations, and show examples of how code can be updated to work
+with the new release.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/06/02/no-default-partitioning.html">Read full post...</a>
+  </div>
+</article>
+
+
 
 <!-- Articles -->
 <article>
@@ -170,27 +195,6 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/05/03/weekly-update.html">Apache Kudu (incubating) Weekly Update May 3, 2016</a></h1>
-    <p class="meta">Posted 03 May 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the seventh edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/05/03/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -210,6 +214,8 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2016/07/18/weekly-update.html">Apache Kudu (incubating) Weekly Update July 18, 2016</a> </li>
     
       <li> <a href="/2016/07/11/weekly-update.html">Apache Kudu (incubating) Weekly Update July 11, 2016</a> </li>
     
@@ -239,8 +245,6 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
     
       <li> <a href="/2016/05/09/weekly-update.html">Apache Kudu (incubating) Weekly Update May 9, 2016</a> </li>
     
-      <li> <a href="/2016/05/03/weekly-update.html">Apache Kudu (incubating) Weekly Update May 3, 2016</a> </li>
-    
     </ul>
   </div>
 </div>
@@ -264,7 +268,9 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
       </footer>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -273,7 +279,6 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
 
       ga('create', 'UA-68448017-1', 'auto');
       ga('send', 'pageview');
-
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
     <script>

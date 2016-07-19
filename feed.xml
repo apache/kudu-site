@@ -1,4 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-12T11:39:02-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update July 11, 2016</title><link href="/2016/07/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 11, 2016" /><published>2016-07-11T00:00:00-07:00</published><updated>2016-07-11T00:00:00-07:00</updated><id>/2016/07/11/weekly-update</id><content type="html" xml:base="/2016/07/11/weekly-update.html">&lt;p&gt;Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-18T17:09:04-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update July 18, 2016</title><link href="/2016/07/18/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 18, 2016" /><published>2016-07-18T00:00:00-07:00</published><updated>2016-07-18T00:00:00-07:00</updated><id>/2016/07/18/weekly-update</id><content type="html" xml:base="/2016/07/18/weekly-update.html">&lt;p&gt;Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dan Burkert has continued making progress on support for non-covering range partitioned
+tables. This past week, he posted a code review for
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3648/&quot;&gt;adding and dropping range partitions to the master&lt;/a&gt;
+and another for &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3581/&quot;&gt;handling non-covering ranges in the C++ client&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Adar Dembo continued working on addressing multi-master issues, as he explained in this
+&lt;a href=&quot;http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html&quot;&gt;blog post&lt;/a&gt;. This past week
+he worked on &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3550/&quot;&gt;tackling various race conditions&lt;/a&gt;
+that were possible when master operations were submitted concurrent with a master leader election.&lt;/p&gt;
+
+    &lt;p&gt;Adar also posted patches for most of the remaining known server-side issues, including
+posting a comprehensive &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3611/&quot;&gt;stress test&lt;/a&gt; which issues
+client DDL operations concurrent with triggering master crashes and associated failovers.&lt;/p&gt;
+
+    &lt;p&gt;As always, Adar’s commit messages are instructive and fun reads for those interested in
+following along.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;As mentioned last week, David Alves has been making a lot of progress on the implementation
+of the replay cache. Many patches landed in master this week, including:&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;** &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3192/&quot;&gt;RPC system integration&lt;/a&gt;
+** &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3449/&quot;&gt;Integration with replicated writes&lt;/a&gt;
+** &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3519/&quot;&gt;Correctness/stress tests&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Currently, this new feature is disabled by default, as the support for evicting elements
+  from the cache is not yet complete. This last missing feature is now
+  &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3628/&quot;&gt;up for review&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Alexey Serbin has been working on adding Doxygen-based documentation for the public
+C++ API. This was originally &lt;a href=&quot;https://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CCANbMB4wtMz=JKwgKMNPvkjWX3t9NxCeGt04NmL=SyESyzUMWJg@mail.gmail.com%3E&quot;&gt;proposed on the mailing list&lt;/a&gt;
+ a couple of weeks ago, and last week, Alexey posted the
+ &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3619/&quot;&gt;initial draft of the implementation&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCAGpTDNesxH43C-Yt5fNwpEpAxfb2P62Xpdi8AqT8jfvjeqnu0w%40mail.gmail.com%3E&quot;&gt;discussion&lt;/a&gt;
+on the dev mailing list about having an intermediate release, called 0.10.0, before 1.0.0,
+has wound down. The consensus seems to be that the development team is in favor of this
+release. Accordingly, the version number in the master branch has been changed back to
+0.10.0-SNAPSHOT.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
+tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update July 11, 2016</title><link href="/2016/07/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 11, 2016" /><published>2016-07-11T00:00:00-07:00</published><updated>2016-07-11T00:00:00-07:00</updated><id>/2016/07/11/weekly-update</id><content type="html" xml:base="/2016/07/11/weekly-update.html">&lt;p&gt;Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -285,7 +348,7 @@ three-node (or five-node) deployment.&lt;/li&gt;
 &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1474&quot;&gt;KUDU-1474&lt;/a&gt;, and there’s been
 &lt;a href=&quot;http://gerrit.cloudera.org:8080/3393&quot;&gt;some discussion&lt;/a&gt; around a design, but
 nothing has been implemented yet. Stay tuned!&lt;/p&gt;</content><author><name>Adar Dembo</name></author><summary>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu’s last
+support fault tolerance for the Kudu master, finally eliminating Kudu&amp;#8217;s last
 single point of failure.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
@@ -474,7 +537,7 @@ the specification of a partitioning scheme for new tables.&lt;/p&gt;
 0.9.0!
 
 This latest version adds basic UPSERT functionality and an improved Apache Spark Data Source
-that doesn’t rely on the MapReduce I/O formats. It also improves Tablet Server
+that doesn&amp;#8217;t rely on the MapReduce I/O formats. It also improves Tablet Server
 restart time as well as write performance under high load. Finally, Kudu now enforces
 the specification of a partitioning scheme for new tables.
 
@@ -517,88 +580,4 @@ in the C++ client for non-covering range partitioned tables, and David Alves has
 patches in for the &lt;a href=&quot;https://gerrit.cloudera.org/#/c/2642/&quot;&gt;Replay Cache&lt;/a&gt;.&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the twelfth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Default Partitioning Changes Coming in Kudu 0.9</title><link href="/2016/06/02/no-default-partitioning.html" rel="alternate" type="text/html" title="Default Partitioning Changes Coming in Kudu 0.9" /><published>2016-06-02T00:00:00-07:00</published><updated>2016-06-02T00:00:00-07:00</updated><id>/2016/06/02/no-default-partitioning</id><content type="html" xml:base="/2016/06/02/no-default-partitioning.html">&lt;p&gt;The upcoming Apache Kudu (incubating) 0.9 release is changing the default
-partitioning configuration for new tables. This post will introduce the change,
-explain the motivations, and show examples of how code can be updated to work
-with the new release.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;The most common source of frustration with new Kudu users is the default
-partitioning behavior when creating new tables. If partitioning is not
-specified, the Kudu client prior to 0.9 creates tables with a &lt;em&gt;single tablet&lt;/em&gt;.
-Single tablet tables are a Kudu anti-pattern, since they are unable to get the
-scalability benefit of distributing data across the cluster, and instead keep
-all data on a single machine.&lt;/p&gt;
-
-&lt;p&gt;Unfortunately, automatically choosing a better default partitioning
-configuration for new tables is not simple. In most cases, hash partitioning on
-the primary key is a better default, but this approach can have its own
-drawbacks. In particular, it is not clear how many buckets should be used for
-the new table.&lt;/p&gt;
-
-&lt;p&gt;Since there is no bullet-proof default and changing the partitioning
-configuration after table creation is impossible, &lt;a href=&quot;https://lists.apache.org/thread.html/ca8972620839109334493424a1022fc08c77c315d9d623f5caaa815f@1463699013@%3Cuser.kudu.apache.org%3E&quot;&gt;we
-decided&lt;/a&gt;
-to remove the default altogether. Removing the default is a backwards
-incompatible change, so it must be done before the 1.0 release. If we later find
-a better way to create a default partitioning configuration, it should be
-possible to adopt it in a backwards compatible way. The result of removing the
-default is that new tables created with the 0.9 client must specify a
-partitioning configuration, or table creation will fail. You can still create a
-table with a single tablet, but it must be configured explicitly. These changes
-only affect new table creation; existing tables, including tables created with
-default partitioning before the 0.9 release, will continue to work.&lt;/p&gt;
-
-&lt;p&gt;In most cases updating existing code to explicitly set a partitioning
-configuration should be simple. The examples below add hash partitioning, but
-you can also specify range partitioning or a combination of range and hash
-partitioning. See the &lt;a href=&quot;http://kudu.apache.org/docs/schema_design.html#data-distribution&quot;&gt;schema design
-guide&lt;/a&gt; for more
-advanced configurations.&lt;/p&gt;
-
-&lt;h1 id=&quot;c-client&quot;&gt;C++ Client&lt;/h1&gt;
-
-&lt;p&gt;With the C++ client, creating a new table with hash partitions is as simple as
-calling &lt;code&gt;KuduTableCreator:add_hash_partitions&lt;/code&gt; with the columns to hash and the
-number of buckets to use:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;n&quot;&gt;unique_ptr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KuduTableCreator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_creator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NewTableCreator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;create_status&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_creator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;table_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;my-table&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                                     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;schema&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;my_schema&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                                     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add_hash_partitions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_a&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-                                     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Create&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;create_status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* handle error */&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h1 id=&quot;java-client&quot;&gt;Java Client&lt;/h1&gt;
-
-&lt;p&gt;And similarly, in Java:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hashColumns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ArrayList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;();&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;hashColumns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_a&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;hashColumn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key_column_b&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;CreateTableOptions&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CreateTableOptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addHashPartitions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hashColumns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;myClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;my-table&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_schema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;options&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;In the examples above, if the hash partition configuration is omitted the create
-table operation will fail with the error &lt;code&gt;Table partitioning must be specified
-using setRangePartitionColumns or addHashPartitions&lt;/code&gt;. In the Java client this
-manifests as a thrown &lt;code&gt;IllegalArgumentException&lt;/code&gt;, while in the C++ client it is
-returned as a &lt;code&gt;Status::InvalidArgument&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h1 id=&quot;impala&quot;&gt;Impala&lt;/h1&gt;
-
-&lt;p&gt;When creating Kudu tables with Impala, the formerly optional &lt;code&gt;DISTRIBUTE BY&lt;/code&gt;
-clause is now required:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key_column_a&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key_column_b&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;other_column&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;DISTRIBUTE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HASH&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key_column_a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key_column_b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;16&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BUCKETS&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;TBLPROPERTIES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&amp;#39;storage_handler&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;com.cloudera.kudu.hive.KuduStorageHandler&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu.table_name&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;my_table&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu.master_addresses&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu-master.example.com:7051&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&amp;#39;kudu.key_columns&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;key_column_a,key_column_b&amp;#39;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content><author><name>Dan Burkert</name></author><summary>The upcoming Apache Kudu (incubating) 0.9 release is changing the default
-partitioning configuration for new tables. This post will introduce the change,
-explain the motivations, and show examples of how code can be updated to work
-with the new release.</summary></entry></feed>
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
