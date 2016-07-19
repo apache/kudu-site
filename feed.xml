@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-18T17:20:05-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update July 18, 2016</title><link href="/2016/07/18/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 18, 2016" /><published>2016-07-18T00:00:00-07:00</published><updated>2016-07-18T00:00:00-07:00</updated><id>/2016/07/18/weekly-update</id><content type="html" xml:base="/2016/07/18/weekly-update.html">&lt;p&gt;Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-19T13:19:58-07:00</updated><id>/</id><entry><title>Apache Kudu (incubating) Weekly Update July 18, 2016</title><link href="/2016/07/18/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 18, 2016" /><published>2016-07-18T00:00:00-07:00</published><updated>2016-07-18T00:00:00-07:00</updated><id>/2016/07/18/weekly-update</id><content type="html" xml:base="/2016/07/18/weekly-update.html">&lt;p&gt;Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -345,7 +345,7 @@ three-node (or five-node) deployment.&lt;/li&gt;
 &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1474&quot;&gt;KUDU-1474&lt;/a&gt;, and there’s been
 &lt;a href=&quot;http://gerrit.cloudera.org:8080/3393&quot;&gt;some discussion&lt;/a&gt; around a design, but
 nothing has been implemented yet. Stay tuned!&lt;/p&gt;</content><author><name>Adar Dembo</name></author><summary>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu&amp;#8217;s last
+support fault tolerance for the Kudu master, finally eliminating Kudu’s last
 single point of failure.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
@@ -534,7 +534,7 @@ the specification of a partitioning scheme for new tables.&lt;/p&gt;
 0.9.0!
 
 This latest version adds basic UPSERT functionality and an improved Apache Spark Data Source
-that doesn&amp;#8217;t rely on the MapReduce I/O formats. It also improves Tablet Server
+that doesn’t rely on the MapReduce I/O formats. It also improves Tablet Server
 restart time as well as write performance under high load. Finally, Kudu now enforces
 the specification of a partitioning scheme for new tables.
 
