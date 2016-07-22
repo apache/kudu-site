@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update June 6, 2016</title>
+    <title>Apache Kudu - Committers and PMC Members</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -19,10 +19,6 @@
     <link rel="shortcut icon" href="/img/logo-favicon.ico" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
 
-    
-    <link rel="alternate" type="application/atom+xml"
-      title="RSS Feed for Apache Kudu blog"
-      href="/feed.xml" />
     
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -64,12 +60,12 @@
                 <li >
                   <a href="/releases/">Download</a>
                 </li>
-                <li class="active">
+                <li >
                   <a href="/blog/">Blog</a>
                 </li>
                 <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
                      that doesn't also appear elsewhere on the site. -->
-                <li class="dropdown">
+                <li class="dropdown active">
                   <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li class="dropdown-header">GET IN TOUCH</li>
@@ -98,98 +94,92 @@
           </div><!-- /.container-fluid -->
         </nav>
 
-<div class="row header">
-  <div class="col-lg-12">
-    <h2><a href="/blog">Apache Kudu Blog</a></h2>
-  </div>
-</div>
 
 <div class="row-fluid">
-  <div class="col-lg-9">
-    <article>
-  <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update June 6, 2016</h1>
-    <p class="meta">Posted 06 Jun 2016 by Jean-Daniel Cryans</p>
-  </header>
-  <div class="entry-content">
-    <p>Welcome to the twelfth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+  <div class="col-lg-12 committers">
 
-<!--more-->
+<h1 id="apache-kudu-committers-and-pmc-members">Apache Kudu Committers and PMC Members</h1>
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
+<p>Following is a list of current Kudu committers and members of the Kudu PMC.</p>
 
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>adar</td>
+      <td>Adar Dembo</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>bchang</td>
+      <td>Binglin Chang</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>danburkert</td>
+      <td>Dan Burkert</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>dralves</td>
+      <td>David Alves</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>jarcec</td>
+      <td>Jarek Jarcec Cecho</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>jdcryans</td>
+      <td>Jean-Daniel Cryans</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>jfarrell</td>
+      <td>Jake Farrell</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>julien</td>
+      <td>Julien Le Dem</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>mattmann</td>
+      <td>Chris Mattmann</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>misty</td>
+      <td>Misty Stanley-Jones</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>mpercy</td>
+      <td>Mike Percy</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>stack</td>
+      <td>Michael Stack</td>
+      <td>PMC</td>
+    </tr>
+    <tr>
+      <td>todd</td>
+      <td>Todd Lipcon</td>
+      <td>VP, PMC</td>
+    </tr>
+  </tbody>
+</table>
 
-<ul>
-  <li>
-    <p>Jean-Daniel Cryans, put up <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CCAGpTDNduoQM0ktuZc1eW1XeXCcXhvPGftJ%3DLRB8Er5c2dZptvw%40mail.gmail.com%3E">0.9.0 RC1</a>
-for vote on the dev mailing list and it passed. The Incubator PMC (IPMC) will also need
-to vote on it before it can officially be released.</p>
-  </li>
-  <li>
-    <p>Mike Percy is working on removing LocalConsensus which is currently used for
-single node Kudu deployments. We will instead use the Raft consensus implementation
-with a replication factor of 1. This is to simplify development since we need to maintain two
-consensus implementations. It will also provide a way to migrate from single node to multi-node
-deployments. See the discussion in this <a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201605.mbox/%3CCADXBggeE6RUYchv5fa=J2geHGE8Mw4SOeoi=LjXjdfmYYSqyhQ@mail.gmail.com%3E">dev thread</a>.</p>
-  </li>
-  <li>
-    <p>Zhen Zhang got a patch in for <a href="https://issues.apache.org/jira/browse/KUDU-1444">KUDU-1444</a>
-that adds resources usage monitoring to scanners in the C++ client. In the future this could
-be leveraged by systems like Impala to augment the query profiles.</p>
-  </li>
-  <li>
-    <p>Longer term efforts for 1.0 are making good progress. Dan Burkert <a href="https://gerrit.cloudera.org/#/c/3255/">added support</a>
-in the C++ client for non-covering range partitioned tables, and David Alves has a few
-patches in for the <a href="https://gerrit.cloudera.org/#/c/2642/">Replay Cache</a>.</p>
-  </li>
-</ul>
 
-  </div>
-</article>
-
-
-  </div>
-  <div class="col-lg-3 recent-posts">
-    <h3>Recent posts</h3>
-    <ul>
-    
-      <li> <a href="/2016/07/18/weekly-update.html">Apache Kudu (incubating) Weekly Update July 18, 2016</a> </li>
-    
-      <li> <a href="/2016/07/11/weekly-update.html">Apache Kudu (incubating) Weekly Update July 11, 2016</a> </li>
-    
-      <li> <a href="/2016/07/01/apache-kudu-0-9-1-released.html">Apache Kudu (incubating) 0.9.1 released</a> </li>
-    
-      <li> <a href="/2016/06/27/weekly-update.html">Apache Kudu (incubating) Weekly Update June 27, 2016</a> </li>
-    
-      <li> <a href="/2016/06/24/multi-master-1-0-0.html">Master fault tolerance in Kudu 1.0</a> </li>
-    
-      <li> <a href="/2016/06/21/weekly-update.html">Apache Kudu (incubating) Weekly Update June 21, 2016</a> </li>
-    
-      <li> <a href="/2016/06/17/raft-consensus-single-node.html">Using Raft Consensus on a Single Node</a> </li>
-    
-      <li> <a href="/2016/06/13/weekly-update.html">Apache Kudu (incubating) Weekly Update June 13, 2016</a> </li>
-    
-      <li> <a href="/2016/06/10/apache-kudu-0-9-0-released.html">Apache Kudu (incubating) 0.9.0 released</a> </li>
-    
-      <li> <a href="/2016/06/06/weekly-update.html">Apache Kudu (incubating) Weekly Update June 6, 2016</a> </li>
-    
-      <li> <a href="/2016/06/02/no-default-partitioning.html">Default Partitioning Changes Coming in Kudu 0.9</a> </li>
-    
-      <li> <a href="/2016/06/01/weekly-update.html">Apache Kudu (incubating) Weekly Update June 1, 2016</a> </li>
-    
-      <li> <a href="/2016/05/23/weekly-update.html">Apache Kudu (incubating) Weekly Update May 23, 2016</a> </li>
-    
-      <li> <a href="/2016/05/16/weekly-update.html">Apache Kudu (incubating) Weekly Update May 16, 2016</a> </li>
-    
-      <li> <a href="/2016/05/09/weekly-update.html">Apache Kudu (incubating) Weekly Update May 9, 2016</a> </li>
-    
-    </ul>
   </div>
 </div>
 
