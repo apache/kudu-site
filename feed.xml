@@ -1,4 +1,72 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-25T12:24:27-07:00</updated><id>/</id><entry><title>The Apache Software Foundation Announces Apache® Kudu™ as a Top-Level Project</title><link href="/2016/07/25/asf-graduation.html" rel="alternate" type="text/html" title="The Apache Software Foundation Announces Apache&amp;reg; Kudu&amp;trade; as a Top-Level Project" /><published>2016-07-25T00:00:00-07:00</published><updated>2016-07-25T00:00:00-07:00</updated><id>/2016/07/25/asf-graduation</id><content type="html" xml:base="/2016/07/25/asf-graduation.html">&lt;p&gt;The following post was originally published on &lt;a href=&quot;https://blogs.apache.org/foundation/entry/apache_software_foundation_announces_apache&quot;&gt;The Apache Software Foundation Blog&lt;/a&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-26T08:59:51-07:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update July 26, 2016</title><link href="/2016/07/26/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update July 26, 2016" /><published>2016-07-26T00:00:00-07:00</published><updated>2016-07-26T00:00:00-07:00</updated><id>/2016/07/26/weekly-update</id><content type="html" xml:base="/2016/07/26/weekly-update.html">&lt;p&gt;Welcome to the eighteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Kudu has graduated from the Apache Incubator and is now a Top-Level Project! All the details
+are in this &lt;a href=&quot;http://kudu.apache.org/2016/07/25/asf-graduation.html&quot;&gt;blog post&lt;/a&gt;.
+Mike Percy and Todd Lipcon made a few updates to the website to reflect the project’s
+new name and status.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dan Burkert contributed a few patches that repackage the Java client under &lt;code&gt;org.apache.kudu&lt;/code&gt;
+in place of &lt;code&gt;org.kududb&lt;/code&gt;. This was done in a &lt;strong&gt;backward-incompatible&lt;/strong&gt; way, meaning that import
+statements will have to be modified in existing Java code to compile against a newer Kudu JAR
+version (from 0.10.0 onward). This stems from &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-dev/201605.mbox/%3CCAGpTDNcJohQBgjzXafXJQdqmBB4sL495p5V_BJRXk_nAGWbzhA@mail.gmail.com%3E&quot;&gt;a discussion&lt;/a&gt;
+initiated in May. It won’t have an impact on C++ or Python users, and it isn’t affecting wire
+compatibility.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Still on the Java-side, J-D Cryans pushed &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3055/&quot;&gt;a patch&lt;/a&gt;
+that completely changes how Exceptions are managed. Before this change, users had to introspect
+generic Exception objects, making it a guessing game and discouraging good error handling.
+Now, the synchronous client’s methods throw &lt;code&gt;KuduException&lt;/code&gt; which packages a &lt;code&gt;Status&lt;/code&gt; object
+that can be interrogated. This is very similar to how the C++ API works.&lt;/p&gt;
+
+    &lt;p&gt;Existing code that uses the new Kudu JAR should still compile since this change replaces generic
+&lt;code&gt;Exception&lt;/code&gt; with a more specific &lt;code&gt;KuduException&lt;/code&gt;. Error handling done by string-matching the
+exception messages should now use the provided &lt;code&gt;Status&lt;/code&gt; object.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Alexey Serbin’s &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3619/&quot;&gt;patch&lt;/a&gt; that adds Doxygen-based
+documentation was pushed and the new API documentation for C++ developers will be available
+with the next release.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Todd has made many improvements to the &lt;code&gt;ksck&lt;/code&gt; tool over the last week. Building upon Will
+Berkeley’s &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3632/&quot;&gt;WIP patch for KUDU-1516&lt;/a&gt;, &lt;code&gt;ksck&lt;/code&gt; can
+now detect more problematic situations like if a tablet doesn’t have a majority of replicas on
+live tablet servers, or if those replicas aren’t in a good state.
+&lt;code&gt;ksck&lt;/code&gt; is also &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3705/&quot;&gt;now faster&lt;/a&gt; when run against a large
+cluster with a lot of tablets, among other improvements.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;As mentioned last week, Dan has been working on &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3648/&quot;&gt;adding add/remove range partition support&lt;/a&gt;
+in the C++ client and in the master. The patch has been through many rounds of review and
+testing and it’s getting close to completion. Meanwhile, J-D started looking at adding support
+for this functionality in the &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3731/&quot;&gt;Java client&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Adar Dembo is also hard at work on the master. The &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3609/&quot;&gt;series&lt;/a&gt;
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3610/&quot;&gt;of&lt;/a&gt; &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3611/&quot;&gt;patches&lt;/a&gt; to
+have the tablet servers heartbeat to all the masters that he published earlier this month is
+getting near the finish line.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
+tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the eighteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>The Apache Software Foundation Announces Apache® Kudu™ as a Top-Level Project</title><link href="/2016/07/25/asf-graduation.html" rel="alternate" type="text/html" title="The Apache Software Foundation Announces Apache&amp;reg; Kudu&amp;trade; as a Top-Level Project" /><published>2016-07-25T00:00:00-07:00</published><updated>2016-07-25T00:00:00-07:00</updated><id>/2016/07/25/asf-graduation</id><content type="html" xml:base="/2016/07/25/asf-graduation.html">&lt;p&gt;The following post was originally published on &lt;a href=&quot;https://blogs.apache.org/foundation/entry/apache_software_foundation_announces_apache&quot;&gt;The Apache Software Foundation Blog&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;&lt;strong&gt;Open Source columnar storage engine enables fast analytics across the Internet of Things, time series, cybersecurity, and other Big Data applications in the Apache Hadoop ecosystem&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
 
@@ -384,7 +452,7 @@ three-node (or five-node) deployment.&lt;/li&gt;
 &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1474&quot;&gt;KUDU-1474&lt;/a&gt;, and there’s been
 &lt;a href=&quot;http://gerrit.cloudera.org:8080/3393&quot;&gt;some discussion&lt;/a&gt; around a design, but
 nothing has been implemented yet. Stay tuned!&lt;/p&gt;</content><author><name>Adar Dembo</name></author><summary>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu’s last
+support fault tolerance for the Kudu master, finally eliminating Kudu&amp;#8217;s last
 single point of failure.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
 
@@ -558,25 +626,4 @@ removal happening in this &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3350/
   &lt;li&gt;Todd Lipcon presented Kudu at Berlin Buzzwords earlier this month. The recording is available
 &lt;a href=&quot;https://berlinbuzzwords.de/session/apache-kudu-incubating-fast-analytics-fast-data&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the thirteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) 0.9.0 released</title><link href="/2016/06/10/apache-kudu-0-9-0-released.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) 0.9.0 released" /><published>2016-06-10T00:00:00-07:00</published><updated>2016-06-10T00:00:00-07:00</updated><id>/2016/06/10/apache-kudu-0-9-0-released</id><content type="html" xml:base="/2016/06/10/apache-kudu-0-9-0-released.html">&lt;p&gt;The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.9.0!&lt;/p&gt;
-
-&lt;p&gt;This latest version adds basic UPSERT functionality and an improved Apache Spark Data Source
-that doesn’t rely on the MapReduce I/O formats. It also improves Tablet Server
-restart time as well as write performance under high load. Finally, Kudu now enforces
-the specification of a partitioning scheme for new tables.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Read the detailed &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/docs/release_notes.html&quot;&gt;Kudu 0.9.0 release notes&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/&quot;&gt;Kudu 0.9.0 source release&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.9.0!
-
-This latest version adds basic UPSERT functionality and an improved Apache Spark Data Source
-that doesn’t rely on the MapReduce I/O formats. It also improves Tablet Server
-restart time as well as write performance under high load. Finally, Kudu now enforces
-the specification of a partitioning scheme for new tables.
-
-
-  Read the detailed Kudu 0.9.0 release notes
-  Download the Kudu 0.9.0 source release</summary></entry></feed>
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>

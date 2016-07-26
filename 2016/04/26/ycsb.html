@@ -171,22 +171,16 @@
 
 <p>Also note that the 99th percentile latency seems to alternate between close to zero and a value near 500ms. This bimodal distribution led me to grep in the Java source for the magic number 500. Sure enough, I found:</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="line-numbers"><a href="#n1" name="n1">1</a></span><span style="color:#088;font-weight:bold">public</span> <span style="color:#088;font-weight:bold">static</span> <span style="color:#088;font-weight:bold">final</span> <span style="color:#339;font-weight:bold">int</span> SLEEP_TIME = <span style="color:#00D">500</span>;
-</pre></div>
-</div>
-</div>
+<pre><code class="language-java">public static final int SLEEP_TIME = 500;
+</code></pre>
 
 <p>Used in this backoff calculation method (slightly paraphrased here):</p>
 
-<div class="highlighter-coderay"><div class="CodeRay">
-  <div class="code"><pre><span class="line-numbers"><a href="#n1" name="n1">1</a></span>  <span style="color:#339;font-weight:bold">long</span> getSleepTimeForRpc(KuduRpc&lt;?&gt; rpc) {
-<span class="line-numbers"><a href="#n2" name="n2">2</a></span>    <span style="color:#777">// TODO backoffs? Sleep in increments of 500 ms, plus some random time up to 50</span>
-<span class="line-numbers"><a href="#n3" name="n3">3</a></span>    <span style="color:#080;font-weight:bold">return</span> (attemptCount * SLEEP_TIME) + sleepRandomizer.nextInt(<span style="color:#00D">50</span>);
-<span class="line-numbers"><a href="#n4" name="n4">4</a></span>  }
-</pre></div>
-</div>
-</div>
+<pre><code class="language-java">  long getSleepTimeForRpc(KuduRpc&lt;?&gt; rpc) {
+    // TODO backoffs? Sleep in increments of 500 ms, plus some random time up to 50
+    return (attemptCount * SLEEP_TIME) + sleepRandomizer.nextInt(50);
+  }
+</code></pre>
 
 <p>One reason that a client will back off and retry is a <code>SERVER_TOO_BUSY</code> response from the server. This response is used in a number of overload situations. In a write-mostly workload, the most likely situation is that the server is low on memory and thus asking clients to back off while it flushes. Sure enough, when we graph the heap usage over time, as well as the rate of writes rejected due to low-memory, we see that this is the case:</p>
 
@@ -415,6 +409,8 @@ for each column:
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2016/07/26/weekly-update.html">Apache Kudu Weekly Update July 26, 2016</a> </li>
+    
       <li> <a href="/2016/07/25/asf-graduation.html">The Apache Software Foundation Announces Apache&reg; Kudu&trade; as a Top-Level Project</a> </li>
     
       <li> <a href="/2016/07/18/weekly-update.html">Apache Kudu (incubating) Weekly Update July 18, 2016</a> </li>
@@ -442,8 +438,6 @@ for each column:
       <li> <a href="/2016/06/01/weekly-update.html">Apache Kudu (incubating) Weekly Update June 1, 2016</a> </li>
     
       <li> <a href="/2016/05/23/weekly-update.html">Apache Kudu (incubating) Weekly Update May 23, 2016</a> </li>
-    
-      <li> <a href="/2016/05/16/weekly-update.html">Apache Kudu (incubating) Weekly Update May 16, 2016</a> </li>
     
     </ul>
   </div>
