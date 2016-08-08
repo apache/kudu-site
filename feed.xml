@@ -1,4 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-07-26T08:59:51-07:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update July 26, 2016</title><link href="/2016/07/26/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update July 26, 2016" /><published>2016-07-26T00:00:00-07:00</published><updated>2016-07-26T00:00:00-07:00</updated><id>/2016/07/26/weekly-update</id><content type="html" xml:base="/2016/07/26/weekly-update.html">&lt;p&gt;Welcome to the eighteenth edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-08-08T15:39:31-07:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update August 8th, 2016</title><link href="/2016/08/08/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update August 8th, 2016" /><published>2016-08-08T00:00:00-07:00</published><updated>2016-08-08T00:00:00-07:00</updated><id>/2016/08/08/weekly-update</id><content type="html" xml:base="/2016/08/08/weekly-update.html">&lt;p&gt;Welcome to the nineteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;After a couple months of work, Dan Burkert finished
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3648/&quot;&gt;adding add/remove range partition support&lt;/a&gt;
+in the C++ client and in the master.&lt;/p&gt;
+
+    &lt;p&gt;Dan also posted a patch for review which &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3854/&quot;&gt;adds support for this
+feature&lt;/a&gt; to the Java client. Dan is
+expecting that this will be finished in time for the upcoming Kudu 0.10.0
+release.&lt;/p&gt;
+
+    &lt;p&gt;Misty Stanley-Jones started working on &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3796/&quot;&gt;documentation for this
+feature&lt;/a&gt;. Readers of this
+blog are encouraged to check out the docs and provide feedback!&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Adar Dembo also completed fixing most of the issues related to high availability
+using multiple Kudu master processes. The upcoming Kudu 0.10.0 release will support
+running multiple masters and transparently handling a transient failure of any
+master process.&lt;/p&gt;
+
+    &lt;p&gt;Although multi-master should now be stable, some work remains in this area. Namely,
+Adar is working on a &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3393/&quot;&gt;design for handling permanent failure of a machine hosting
+a master&lt;/a&gt;. In this case, the administrator
+will need to use some new tools to create a new master replica by copying data from
+an existing one.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Todd Lipcon started a
+&lt;a href=&quot;https://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCADY20s5WdR7KmB%3DEAHJwvzELhe9PXfnnGMLV%2B4t%3D%3Defw%3Dix8uw%40mail.gmail.com%3E&quot;&gt;discussion&lt;/a&gt;
+on the dev mailing list about renaming the Kudu feature which creates new
+replicas of tablets after they become under-replicated.  Since its initial
+introduction, this feature was called “remote bootstrap”, but Todd pointed out
+that this naming caused some confusion with the other “bootstrap” term used to
+describe the process by which a tablet loads itself at startup.&lt;/p&gt;
+
+    &lt;p&gt;The discussion concluded with an agreement to rename the process to “Tablet Copy”.
+Todd provided patches to perform this rename, which were committed at the end of the
+week last week.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Congratulations to Attila Bukor for his first commit to Kudu! Attila
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3820/&quot;&gt;fixed an error in the quick-start documentation&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;news-and-articles-from-around-the-web&quot;&gt;News and articles from around the web&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The New Stack published an &lt;a href=&quot;http://thenewstack.io/apache-kudu-fast-columnar-data-store-hadoop/&quot;&gt;introductory article about Kudu&lt;/a&gt;.
+The article was based on a recent interview with Todd Lipcon
+and covers topics such as the origin of the name “Kudu”, where Kudu fits into the
+Apache Hadoop ecosystem, and goals for the upcoming 1.0 release.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
+tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the nineteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update July 26, 2016</title><link href="/2016/07/26/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update July 26, 2016" /><published>2016-07-26T00:00:00-07:00</published><updated>2016-07-26T00:00:00-07:00</updated><id>/2016/07/26/weekly-update</id><content type="html" xml:base="/2016/07/26/weekly-update.html">&lt;p&gt;Welcome to the eighteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -581,49 +648,4 @@ dissertation, which you can find linked from the above web site.&lt;/p&gt;</cont
 multi-master operation, we are working on removing old code that is no longer
 needed. One such piece of code is called LocalConsensus. Once LocalConsensus is
 removed, we will be using Raft consensus even on Kudu tables that have a
-replication factor of 1.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 13, 2016</title><link href="/2016/06/13/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 13, 2016" /><published>2016-06-13T00:00:00-07:00</published><updated>2016-06-13T00:00:00-07:00</updated><id>/2016/06/13/weekly-update</id><content type="html" xml:base="/2016/06/13/weekly-update.html">&lt;p&gt;Welcome to the thirteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;If you find this post useful, please let us know by emailing the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweeting at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;The IPMC vote for 0.9.0 RC1 passed and Kudu 0.9.0 is now
-&lt;a href=&quot;http://kudu.apache.org/2016/06/10/apache-kudu-0-9-0-released.html&quot;&gt;officially released&lt;/a&gt;. Per the
-lazily agreed-upon &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-dev/201602.mbox/%3CCAGpTDNcMBWwX8p+yGKzHfL2xcmKTScU-rhLcQFSns1UVSbrXhw@mail.gmail.com%3E&quot;&gt;plan&lt;/a&gt;,
-the next release will be 1.0.0 in about two months.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Adar Dembo has been cleaning up and improving the Master process’s code. Last week he
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/2887/&quot;&gt;finished&lt;/a&gt; removing the per-tablet replica locations cache.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Alexey Serbin contributed his first patch last week by &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3360/&quot;&gt;fixing&lt;/a&gt;
-most of the unit tests that were failing on OSX.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Sameer Abhyankar is nearly finished adding support for “in-list” predicates,
-follow &lt;a href=&quot;https://gerrit.cloudera.org/#/c/2986/&quot;&gt;this link&lt;/a&gt; to the gerrit
-review. This will enable specifying predicates in the style of “column IN (list, of, values)”.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Mike Percy posted a few patches that remove LocalConsensus for single-node tablets, with the actual
-removal happening in this &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3350/&quot;&gt;patch&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;slides-and-recordings&quot;&gt;Slides and recordings&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Todd Lipcon presented Kudu at Berlin Buzzwords earlier this month. The recording is available
-&lt;a href=&quot;https://berlinbuzzwords.de/session/apache-kudu-incubating-fast-analytics-fast-data&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the thirteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
+replication factor of 1.</summary></entry></feed>

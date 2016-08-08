@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Blog</title>
+    <title>Apache Kudu - Apache Kudu Weekly Update August 8th, 2016</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -106,147 +106,82 @@
 
 <div class="row-fluid">
   <div class="col-lg-9">
-    
-
-<!-- Articles -->
-<article>
+    <article>
   <header>
-    <h1 class="entry-title"><a href="/2016/04/25/weekly-update.html">Apache Kudu (incubating) Weekly Update April 25, 2016</a></h1>
-    <p class="meta">Posted 25 Apr 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu Weekly Update August 8th, 2016</h1>
+    <p class="meta">Posted 08 Aug 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    
-    <p>Welcome to the sixth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Welcome to the nineteenth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</p>
 
+<!--more-->
 
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/04/25/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/04/19/kudu-0-8-0-predicate-improvements.html">Predicate Improvements in Kudu 0.8</a></h1>
-    <p class="meta">Posted 19 Apr 2016 by Dan Burkert</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The recently released Kudu version 0.8 ships with a host of new improvements to
-scan predicates. Performance and usability have been improved, especially for
-tables taking advantage of <a href="http://kudu.apache.org/docs/schema_design.html#data-distribution">advanced partitioning
-options</a>.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/04/19/kudu-0-8-0-predicate-improvements.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/04/18/weekly-update.html">Apache Kudu (incubating) Weekly Update April 18, 2016</a></h1>
-    <p class="meta">Posted 18 Apr 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the fifth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/04/18/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/04/14/ingesting-json-apache-kudu-streamsets-data-collector.html">Ingesting JSON Data Into Apache Kudu with StreamSets Data Collector</a></h1>
-    <p class="meta">Posted 14 Apr 2016 by Pat Patterson</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>At the <a href="http://2016.hadoopsummit.org/dublin/">Hadoop Summit in Dublin</a> 
-this week, <a href="https://twitter.com/TedMalaska">Ted Malaska</a>, Principal 
-Solutions Architect at Cloudera, and I presented <em>Ingest and Stream 
-Processing - What Will You Choose?</em>, looking at the big data streaming 
-landscape with a focus on ingest. The session closed with a demo of 
-StreamSets Data Collector, the open source graphical IDE for building 
-ingest pipelines.</p>
-
-<p>In the demo, I built a pipeline to read JSON data from Apache Kafka, 
-augmented the data in JavaScript, and wrote the resulting records to 
-both Apache Kudu (incubating) for analysis and Apache Kafka for 
-visualization.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/04/14/ingesting-json-apache-kudu-streamsets-data-collector.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/04/12/apache-kudu-0-8-0-released.html">Apache Kudu (incubating) 0.8.0 released</a></h1>
-    <p class="meta">Posted 12 Apr 2016 by Jean-Daniel Cryans</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.8.0!</p>
-
-<p>This latest version adds a sink for Apache Flume, partition pruning in the C++
-client and related improvements on the server-side, better error-handling in Java
-client, plus many other improvements and bug fixes.</p>
+<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
 
 <ul>
-  <li>Read the detailed <a href="http://kudu.apache.org/releases/0.8.0/docs/release_notes.html">Kudu 0.8.0 release notes</a></li>
-  <li>Download the <a href="http://kudu.apache.org/releases/0.8.0/">Kudu 0.8.0 source release</a></li>
+  <li>
+    <p>After a couple months of work, Dan Burkert finished
+<a href="https://gerrit.cloudera.org/#/c/3648/">adding add/remove range partition support</a>
+in the C++ client and in the master.</p>
+
+    <p>Dan also posted a patch for review which <a href="https://gerrit.cloudera.org/#/c/3854/">adds support for this
+feature</a> to the Java client. Dan is
+expecting that this will be finished in time for the upcoming Kudu 0.10.0
+release.</p>
+
+    <p>Misty Stanley-Jones started working on <a href="https://gerrit.cloudera.org/#/c/3796/">documentation for this
+feature</a>. Readers of this
+blog are encouraged to check out the docs and provide feedback!</p>
+  </li>
+  <li>
+    <p>Adar Dembo also completed fixing most of the issues related to high availability
+using multiple Kudu master processes. The upcoming Kudu 0.10.0 release will support
+running multiple masters and transparently handling a transient failure of any
+master process.</p>
+
+    <p>Although multi-master should now be stable, some work remains in this area. Namely,
+Adar is working on a <a href="https://gerrit.cloudera.org/#/c/3393/">design for handling permanent failure of a machine hosting
+a master</a>. In this case, the administrator
+will need to use some new tools to create a new master replica by copying data from
+an existing one.</p>
+  </li>
+  <li>
+    <p>Todd Lipcon started a
+<a href="https://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCADY20s5WdR7KmB%3DEAHJwvzELhe9PXfnnGMLV%2B4t%3D%3Defw%3Dix8uw%40mail.gmail.com%3E">discussion</a>
+on the dev mailing list about renaming the Kudu feature which creates new
+replicas of tablets after they become under-replicated.  Since its initial
+introduction, this feature was called “remote bootstrap”, but Todd pointed out
+that this naming caused some confusion with the other “bootstrap” term used to
+describe the process by which a tablet loads itself at startup.</p>
+
+    <p>The discussion concluded with an agreement to rename the process to “Tablet Copy”.
+Todd provided patches to perform this rename, which were committed at the end of the
+week last week.</p>
+  </li>
+  <li>
+    <p>Congratulations to Attila Bukor for his first commit to Kudu! Attila
+<a href="https://gerrit.cloudera.org/#/c/3820/">fixed an error in the quick-start documentation</a>.</p>
+  </li>
 </ul>
 
+<h2 id="news-and-articles-from-around-the-web">News and articles from around the web</h2>
 
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/04/12/apache-kudu-0-8-0-released.html">Read full post...</a>
+<ul>
+  <li>The New Stack published an <a href="http://thenewstack.io/apache-kudu-fast-columnar-data-store-hadoop/">introductory article about Kudu</a>.
+The article was based on a recent interview with Todd Lipcon
+and covers topics such as the origin of the name “Kudu”, where Kudu fits into the
+Apache Hadoop ecosystem, and goals for the upcoming 1.0 release.</li>
+</ul>
+
+<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
+<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
+tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.</p>
+
   </div>
 </article>
-
-
-
-<!-- Pagination links -->
-
-<nav>
-  <hr/>
-  <ul class="pager">
-  
-    <li class="previous"><a href="/blog/page/4"><span aria-hidden="true">&larr;</span> Newer posts</a></li>
-  
-  
-    <li class="next"><a href="/blog/page/6">Older posts <span aria-hidden="true">&rarr;</span></a></li>
-  
-  </ul>
-</nav>
 
 
   </div>
