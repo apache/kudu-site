@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Blog</title>
+    <title>Apache Kudu - Apache Kudu Weekly Update August 16th, 2016</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -106,135 +106,132 @@
 
 <div class="row-fluid">
   <div class="col-lg-9">
-    
-
-<!-- Articles -->
-<article>
+    <article>
   <header>
-    <h1 class="entry-title"><a href="/2016/07/11/weekly-update.html">Apache Kudu (incubating) Weekly Update July 11, 2016</a></h1>
-    <p class="meta">Posted 11 Jul 2016 by Jean-Daniel Cryans</p>
+    <h1 class="entry-title">Apache Kudu Weekly Update August 16th, 2016</h1>
+    <p class="meta">Posted 16 Aug 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    
-    <p>Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Welcome to the twentieth edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</p>
 
+<!--more-->
 
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/07/11/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/07/01/apache-kudu-0-9-1-released.html">Apache Kudu (incubating) 0.9.1 released</a></h1>
-    <p class="meta">Posted 01 Jul 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.9.1!</p>
-
-<p>This release fixes a few issues found in the previous 0.9.0 release. All users
-of 0.9.0 are encouraged to update to the new version at their earliest convenience.</p>
+<h2 id="project-news">Project news</h2>
 
 <ul>
-  <li>Read the detailed <a href="http://kudu.apache.org/releases/0.9.1/docs/release_notes.html">Kudu 0.9.1 release notes</a></li>
-  <li>Download the <a href="http://kudu.apache.org/releases/0.9.1/">Kudu 0.9.1 source release</a></li>
+  <li>
+    <p>The first release candidate for the 0.10.0 is <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201608.mbox/%3CCADY20s7U5jVpozFg3L%3DDz2%2B4AenGineJvH96A_HAM12biDjPJA%40mail.gmail.com%3E">now available</a></p>
+
+    <p>Community developers and users are encouraged to download the source
+tarball and vote on the release.</p>
+
+    <p>For information on what’s new, check out the
+<a href="https://github.com/apache/kudu/blob/master/docs/release_notes.adoc#rn_0.10.0">release notes</a>.
+<em>Note:</em> some links from these in-progress release notes will not be live until the
+release itself is published.</p>
+  </li>
 </ul>
 
+<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
 
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/07/01/apache-kudu-0-9-1-released.html">Read full post...</a>
+<ul>
+  <li>
+    <p>Will Berkeley spent some time working on the Spark integration this week
+to add support for UPSERT as well as other operations.
+Dan Burkert pitched in a bit with some <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201608.mbox/%3CCALo2W-XBoSz9cbhXi81ipubrAYgqyDiEeHz-ys8sPAshfcik6w%40mail.gmail.com%3E">suggestions</a>
+which were then integrated in a <a href="https://gerrit.cloudera.org/#/c/3871/">patch</a>
+provided by Will.</p>
+
+    <p>After some reviews by Dan, Chris George, and Ram Mettu, the patch was committed
+in time for the upcoming 0.10.0 release.</p>
+  </li>
+  <li>
+    <p>Dan Burkert also completed work for the new <a href="https://gerrit.cloudera.org/#/c/3854/">manual partitioning APIs</a>
+in the Java client. After finishing up the basic implementation, Dan also made some
+cleanups to the related APIs in both the <a href="https://gerrit.cloudera.org/#/c/3958/">Java</a>
+and <a href="https://gerrit.cloudera.org/#/c/3882/">C++</a> clients.</p>
+
+    <p>Dan and Misty Stanley-Jones also collaborated to finish the
+<a href="https://gerrit.cloudera.org/#/c/3796/">documentation</a>
+for this new feature.</p>
+  </li>
+  <li>
+    <p>Adar Dembo worked on some tooling to allow users to migrate their Kudu clusters
+from a single-master configuration to a multi-master one. Along the way, he
+started building some common infrastructure for command-line tooling.</p>
+
+    <p>Since Kudu’s initial release, it has included separate binaries for different
+administrative or operational tools (e.g. <code>kudu-ts-cli</code>, <code>kudu-ksck</code>, <code>kudu-fs_dump</code>,
+<code>log-dump</code>, etc). Despite having similar usage, these tools don’t share much code,
+and the separate statically linked binaries make the Kudu packages take more disk
+space than strictly necessary.</p>
+
+    <p>Adar’s work has introduced a new top-level <code>kudu</code> binary which exposes a set of subcommands,
+much like the <code>git</code> and <code>docker</code> binaries with which readers may be familiar.
+For example, a new tool he has built for dumping peer identifiers from a tablet’s
+consensus metadata is triggered using <code>kudu tablet cmeta print_replica_uuids</code>.</p>
+
+    <p>This new tool will be available in the upcoming 0.10.0 release; however, migration
+of the existing tools to the new infrastructure has not yet been completed. We
+expect that by Kudu 1.0, the old tools will be removed in favor of more subcommands
+of the <code>kudu</code> tool.</p>
+  </li>
+  <li>
+    <p>Todd Lipcon picked up the work started by David Alves in July to provide
+<a href="https://gerrit.cloudera.org/#/c/2642/">“exactly-once” semantics</a> for write operations.
+Todd carried the patch series through review and also completed integration of the
+feature into the Kudu server processes.</p>
+
+    <p>After testing the feature for several days on a large cluster under load,
+the team decided to enable this new feature by default in Kudu 0.10.0.</p>
+  </li>
+  <li>
+    <p>Mike Percy resumed working on garbage collection of <a href="https://gerrit.cloudera.org/#/c/2853/">past versions of
+updated and deleted rows</a>. His <a href="https://gerrit.cloudera.org/#/c/3076/">main
+patch for the feature</a> went through
+several rounds of review and testing, but unfortunately missed the cut-off
+for 0.10.0.</p>
+  </li>
+  <li>
+    <p>Alexey Serbin’s work to add doxygen-based documentation for the C++ Client API
+was <a href="https://gerrit.cloudera.org/#/c/3840/">committed</a> this week. These
+docs will be published as part of the 0.10.0 release.</p>
+  </li>
+  <li>
+    <p>Alexey also continued work on implementing the <code>AUTO_FLUSH_BACKGROUND</code> write
+mode for the C++ client. This feature makes it easier to implement high-throughput
+ingest using the C++ API by automatically handling the batching and flushing of writes
+based on a configurable buffer size.</p>
+
+    <p>Alexey’s <a href="https://gerrit.cloudera.org/#/c/3952/">patch</a> has received several
+rounds of review and looks likely to be committed soon. Detailed performance testing
+will follow.</p>
+  </li>
+  <li>
+    <p>Congratulations to Ram Mettu for committing his first patch to Kudu this week!
+Ram fixed a <a href="https://issues.apache.org/jira/browse/KUDU-1522">bug in handling Alter Table with TIMESTAMP columns</a>.</p>
+  </li>
+</ul>
+
+<h2 id="upcoming-talks">Upcoming talks</h2>
+
+<ul>
+  <li>Mike Percy will be speaking about Kudu this Wednesday at the
+<a href="http://www.meetup.com/Denver-Cloudera-User-Group/events/232782782/">Denver Cloudera User Group</a>
+and on Thursday at the
+<a href="http://www.meetup.com/Boulder-Denver-Big-Data/events/232056701/">Boulder/Denver Big Data Meetup</a>.
+If you’re based in the Boulder/Denver area, be sure not to miss these talks!</li>
+</ul>
+
+<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
+<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
+tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.</p>
+
   </div>
 </article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/06/27/weekly-update.html">Apache Kudu (incubating) Weekly Update June 27, 2016</a></h1>
-    <p class="meta">Posted 27 Jun 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/06/27/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/06/24/multi-master-1-0-0.html">Master fault tolerance in Kudu 1.0</a></h1>
-    <p class="meta">Posted 24 Jun 2016 by Adar Dembo</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu&#8217;s last
-single point of failure.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/06/24/multi-master-1-0-0.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/06/21/weekly-update.html">Apache Kudu (incubating) Weekly Update June 21, 2016</a></h1>
-    <p class="meta">Posted 21 Jun 2016 by Jean-Daniel Cryans</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/06/21/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Pagination links -->
-
-<nav>
-  <hr/>
-  <ul class="pager">
-  
-    <li class="previous"><a href="/blog/"><span aria-hidden="true">&larr;</span> Newer posts</a></li>
-  
-  
-    <li class="next"><a href="/blog/page/3">Older posts <span aria-hidden="true">&rarr;</span></a></li>
-  
-  </ul>
-</nav>
 
 
   </div>
