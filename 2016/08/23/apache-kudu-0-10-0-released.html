@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu 0.10.0 released</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png"
+                srcset="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png 1x, //d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Download</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://getkudu-slack.herokuapp.com/">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Apache Kudu 0.10.0 released</h1>
+    <p class="meta">Posted 23 Aug 2016 by Todd Lipcon</p>
+  </header>
+  <div class="entry-content">
+    <p>The Apache Kudu team is happy to announce the release of Kudu 0.10.0!</p>
+
+<p>This latest version adds several new features, including:
+<!--more--></p>
+
+<ul>
+  <li>
+    <p>Users may now manually manage the partitioning of a range-partitioned table
+by adding or dropping range partitions after a table has been created. This
+can be particularly helpful for time-series workloads. Dan Burkert posted
+an <a href="/2016/08/23/new-range-partitioning-features.html">in-depth blog</a> today
+detailing the new feature.</p>
+  </li>
+  <li>
+    <p>Multi-master (HA) Kudu clusters are now significantly more stable.</p>
+  </li>
+  <li>
+    <p>Administrators may now reserve a certain amount of disk space on each of its
+configured data directories.</p>
+  </li>
+  <li>
+    <p>Kudu’s integration with Spark has been substantially improved and is much
+more flexible.</p>
+  </li>
+</ul>
+
+<p>This release also includes many bug fixes and other improvements, detailed in
+the release notes below.</p>
+
+<ul>
+  <li>Read the detailed <a href="http://kudu.apache.org/releases/0.10.0/docs/release_notes.html">Kudu 0.10.0 release notes</a></li>
+  <li>Download the <a href="http://kudu.apache.org/releases/0.9.0/">Kudu 0.10.0 source release</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2016/08/23/new-range-partitioning-features.html">New Range Partitioning Features in Kudu 0.10</a> </li>
+    
+      <li> <a href="/2016/08/23/apache-kudu-0-10-0-released.html">Apache Kudu 0.10.0 released</a> </li>
+    
+      <li> <a href="/2016/08/16/weekly-update.html">Apache Kudu Weekly Update August 16th, 2016</a> </li>
+    
+      <li> <a href="/2016/08/08/weekly-update.html">Apache Kudu Weekly Update August 8th, 2016</a> </li>
+    
+      <li> <a href="/2016/07/26/weekly-update.html">Apache Kudu Weekly Update July 26, 2016</a> </li>
+    
+      <li> <a href="/2016/07/25/asf-graduation.html">The Apache Software Foundation Announces Apache&reg; Kudu&trade; as a Top-Level Project</a> </li>
+    
+      <li> <a href="/2016/07/18/weekly-update.html">Apache Kudu (incubating) Weekly Update July 18, 2016</a> </li>
+    
+      <li> <a href="/2016/07/11/weekly-update.html">Apache Kudu (incubating) Weekly Update July 11, 2016</a> </li>
+    
+      <li> <a href="/2016/07/01/apache-kudu-0-9-1-released.html">Apache Kudu (incubating) 0.9.1 released</a> </li>
+    
+      <li> <a href="/2016/06/27/weekly-update.html">Apache Kudu (incubating) Weekly Update June 27, 2016</a> </li>
+    
+      <li> <a href="/2016/06/24/multi-master-1-0-0.html">Master fault tolerance in Kudu 1.0</a> </li>
+    
+      <li> <a href="/2016/06/21/weekly-update.html">Apache Kudu (incubating) Weekly Update June 21, 2016</a> </li>
+    
+      <li> <a href="/2016/06/17/raft-consensus-single-node.html">Using Raft Consensus on a Single Node</a> </li>
+    
+      <li> <a href="/2016/06/13/weekly-update.html">Apache Kudu (incubating) Weekly Update June 13, 2016</a> </li>
+    
+      <li> <a href="/2016/06/10/apache-kudu-0-9-0-released.html">Apache Kudu (incubating) 0.9.0 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <p class="small">
+        Copyright &copy; 2016 The Apache Software Foundation. 
+        </p>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

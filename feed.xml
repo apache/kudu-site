@@ -1,4 +1,133 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-08-16T17:26:09-07:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update August 16th, 2016</title><link href="/2016/08/16/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update August 16th, 2016" /><published>2016-08-16T00:00:00-07:00</published><updated>2016-08-16T00:00:00-07:00</updated><id>/2016/08/16/weekly-update</id><content type="html" xml:base="/2016/08/16/weekly-update.html">&lt;p&gt;Welcome to the twentieth edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-08-22T23:28:18-07:00</updated><id>/</id><entry><title>New Range Partitioning Features in Kudu 0.10</title><link href="/2016/08/23/new-range-partitioning-features.html" rel="alternate" type="text/html" title="New Range Partitioning Features in Kudu 0.10" /><published>2016-08-23T00:00:00-07:00</published><updated>2016-08-23T00:00:00-07:00</updated><id>/2016/08/23/new-range-partitioning-features</id><content type="html" xml:base="/2016/08/23/new-range-partitioning-features.html">&lt;p&gt;Kudu 0.10 is shipping with a few important new features for range partitioning.
+These features are designed to make Kudu easier to scale for certain workloads,
+like time series. This post will introduce these features, and discuss how to use
+them to effectively design tables for scalability and performance.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Since Kudu’s initial release, tables have had the constraint that once created,
+the set of partitions is static. This forces users to plan ahead and create
+enough partitions for the expected size of the table, because once the table is
+created no further partitions can be added. When using hash partitioning,
+creating more partitions is as straightforward as specifying more buckets. For
+range partitioning, however, knowing where to put the extra partitions ahead of
+time can be difficult or impossible.&lt;/p&gt;
+
+&lt;p&gt;The common solution to this problem in other distributed databases is to allow
+range partitions to split into smaller child range partitions. Unfortunately,
+range splitting typically has a large performance impact on running tables,
+since child partitions need to eventually be recompacted and rebalanced to a
+remote server. Range splitting is particularly thorny with Kudu, because rows
+are stored in tablets in primary key sorted order, which does not necessarily
+match the range partitioning order. If the range partition key is different than
+the primary key, then splitting requires inspecting and shuffling each
+individual row, instead of splitting the tablet in half.&lt;/p&gt;
+
+&lt;h2 id=&quot;adding-and-dropping-range-partitions&quot;&gt;Adding and Dropping Range Partitions&lt;/h2&gt;
+
+&lt;p&gt;As an alternative to range partition splitting, Kudu now allows range partitions
+to be added and dropped on the fly, without locking the table or otherwise
+affecting concurrent operations on other partitions. This solution is not
+strictly as powerful as full range partition splitting, but it strikes a good
+balance between flexibility, performance, and operational overhead.
+Additionally, this feature does not preclude range splitting in the future if
+there is a push to implement it. To support adding and dropping range
+partitions, Kudu had to remove an even more fundamental restriction when using
+range partitions.&lt;/p&gt;
+
+&lt;p&gt;Previously, range partitions could only be created by specifying split points.
+Split points divide an implicit partition covering the entire range into
+contiguous and disjoint partitions. When using split points, the first and last
+partitions are always unbounded below and above, respectively. A consequence of
+the final partition being unbounded is that datasets which are range-partitioned
+on a column that increases in value over time will eventually have far more rows
+in the last partition than in any other. Unbalanced partitions are commonly
+referred to as hotspots, and until Kudu 0.10 they have been difficult to avoid
+when storing time series data in Kudu.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/2016-08-23-new-range-partitioning-features/range-partitioning-on-time.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The figure above shows the tablets created by two different attempts to
+partition a table by range on a timestamp column. The first, above in blue, uses
+split points. The second, below in green, uses bounded range partitions
+specified during table creation. With bounded range partitions, there is no
+longer a guarantee that every possible row has a corresponding range partition.
+As a result, Kudu will now reject writes which fall in a ‘non-covered’ range.&lt;/p&gt;
+
+&lt;p&gt;Now that tables are no longer required to have range partitions covering all
+possible rows, Kudu can support adding range partitions to cover the otherwise
+unoccupied space. Dropping a range partition will result in unoccupied space
+where the range partition was previously. In the example above, we may want to
+add a range partition covering 2017 at the end of the year, so that we can
+continue collecting data in the future. By lazily adding range partitions we
+avoid hotspotting, avoid the need to specify range partitions up front for time
+periods far in the future, and avoid the downsides of splitting. Additionally,
+historical data which is no longer useful can be efficiently deleted by dropping
+the entire range partition.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-about-hash-partitioning&quot;&gt;What About Hash Partitioning?&lt;/h2&gt;
+
+&lt;p&gt;Since Kudu’s hash partitioning feature originally shipped in version 0.6, it has
+been possible to create tables which combine hash partitioning with range
+partitioning. The new range partitioning features continue to work seamlessly
+when combined with hash partitioning. Just as before, the number of tablets
+which comprise a table will be the product of the number of range partitions and
+the number of hash partition buckets. Adding or dropping a range partition will
+result in the creation or deletion of one tablet per hash bucket.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/2016-08-23-new-range-partitioning-features/range-and-hash-partitioning.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The diagram above shows a time series table range-partitioned on the timestamp
+and hash-partitioned with two buckets. The hash partitioning could be on the
+timestamp column, or it could be on any other column or columns in the primary
+key. In this example only two years of historical data is needed, so at the end
+of 2016 a new range partition is added for 2017 and the historical 2014 range
+partition is dropped. This causes two new tablets to be created for 2017, and
+the two existing tablets for 2014 to be deleted.&lt;/p&gt;
+
+&lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
+
+&lt;p&gt;Beginning with the Kudu 0.10 release, users can add and drop range partitions
+through the Java and C++ client APIs. Range partitions on existing tables can be
+dropped and replacements added, but it requires the servers and all clients to
+be updated to 0.10.&lt;/p&gt;</content><author><name>Dan Burkert</name></author><summary>Kudu 0.10 is shipping with a few important new features for range partitioning.
+These features are designed to make Kudu easier to scale for certain workloads,
+like time series. This post will introduce these features, and discuss how to use
+them to effectively design tables for scalability and performance.</summary></entry><entry><title>Apache Kudu 0.10.0 released</title><link href="/2016/08/23/apache-kudu-0-10-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 0.10.0 released" /><published>2016-08-23T00:00:00-07:00</published><updated>2016-08-23T00:00:00-07:00</updated><id>/2016/08/23/apache-kudu-0-10-0-released</id><content type="html" xml:base="/2016/08/23/apache-kudu-0-10-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 0.10.0!&lt;/p&gt;
+
+&lt;p&gt;This latest version adds several new features, including:
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Users may now manually manage the partitioning of a range-partitioned table
+by adding or dropping range partitions after a table has been created. This
+can be particularly helpful for time-series workloads. Dan Burkert posted
+an &lt;a href=&quot;/2016/08/23/new-range-partitioning-features.html&quot;&gt;in-depth blog&lt;/a&gt; today
+detailing the new feature.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Multi-master (HA) Kudu clusters are now significantly more stable.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Administrators may now reserve a certain amount of disk space on each of its
+configured data directories.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu’s integration with Spark has been substantially improved and is much
+more flexible.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This release also includes many bug fixes and other improvements, detailed in
+the release notes below.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Read the detailed &lt;a href=&quot;http://kudu.apache.org/releases/0.10.0/docs/release_notes.html&quot;&gt;Kudu 0.10.0 release notes&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Download the &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/&quot;&gt;Kudu 0.10.0 source release&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 0.10.0!
+
+This latest version adds several new features, including:</summary></entry><entry><title>Apache Kudu Weekly Update August 16th, 2016</title><link href="/2016/08/16/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update August 16th, 2016" /><published>2016-08-16T00:00:00-07:00</published><updated>2016-08-16T00:00:00-07:00</updated><id>/2016/08/16/weekly-update</id><content type="html" xml:base="/2016/08/16/weekly-update.html">&lt;p&gt;Welcome to the twentieth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -536,143 +665,4 @@ voting.&lt;/p&gt;
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Master fault tolerance in Kudu 1.0</title><link href="/2016/06/24/multi-master-1-0-0.html" rel="alternate" type="text/html" title="Master fault tolerance in Kudu 1.0" /><published>2016-06-24T00:00:00-07:00</published><updated>2016-06-24T00:00:00-07:00</updated><id>/2016/06/24/multi-master-1-0-0</id><content type="html" xml:base="/2016/06/24/multi-master-1-0-0.html">&lt;p&gt;This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu’s last
-single point of failure.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;As those of you who follow this blog know by now, replication is a signature
-feature in Kudu. Replication is used to provide fault tolerance for all loaded
-data. By implementing the Raft consensus protocol, Kudu guarantees that a tablet
-replicated &lt;strong&gt;2N+1&lt;/strong&gt; times can tolerate up to &lt;strong&gt;N&lt;/strong&gt; failures.&lt;/p&gt;
-
-&lt;p&gt;What you may not know is that Kudu replicates its metadata, too. That is, the
-Kudu master stores all table and tablet metadata in a single “master” tablet.
-As a regular Kudu tablet itself, this master tablet may be replicated with
-Raft. As such, the Kudu master is a special kind of tablet server whose primary
-job is to host a single replica of the master tablet.&lt;/p&gt;
-
-&lt;p&gt;When we launched Kudu’s first beta, support for replicated masters had been
-implemented but was too fragile to be anything but experimental. One of our
-goals for Kudu’s 1.0 release is to improve replicated master support so that it
-can be safely enabled in production clusters.&lt;/p&gt;
-
-&lt;h1 id=&quot;how-master-replication-works&quot;&gt;How master replication works&lt;/h1&gt;
-
-&lt;p&gt;To use replicated masters, a Kudu operator must deploy some number of Kudu
-masters, providing the hostname and port number of each master in the group via
-the &lt;code&gt;--master_address&lt;/code&gt; command line option. For example, each master in a
-three-node deployment should be started with
-&lt;code&gt;--master_address=&amp;lt;host1:port1&amp;gt;,&amp;lt;host2:port2&amp;gt;&amp;lt;host3:port3&amp;gt;&lt;/code&gt;. In Raft parlance,
-this group of masters is known as a &lt;em&gt;Raft configuration&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;At startup, a Raft configuration of masters will hold a leader election and
-elect one master as the leader. The leader master is responsible for servicing
-both tablet server heartbeats as well as client requests. The remaining masters
-are followers: they participate in Raft consensus and replicate writes sent by
-the leader, but are otherwise idle. Any client requests they receive are
-rejected. Likewise, all tablet server heartbeats they receive are ignored. If
-the leader master ever dies or steps down, the remaining replicas hold an
-election to determine the new leader.&lt;/p&gt;
-
-&lt;p&gt;All persistent master metadata is stored in the single replicated “master”
-tablet. Every row in this tablet represents either a table or a tablet. Table
-records include unique table identifiers, the table’s schema, and other bits of
-information. Tablet records include a unique identifier, the tablet’s Raft
-configuration, and other information.&lt;/p&gt;
-
-&lt;p&gt;What master metadata is replicated?&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Table and tablet existence, via &lt;strong&gt;CreateTable()&lt;/strong&gt; and &lt;strong&gt;DeleteTable()&lt;/strong&gt;.
-Every new tablet record also includes an initial Raft configuration.&lt;/li&gt;
-  &lt;li&gt;Schema changes, via &lt;strong&gt;AlterTable()&lt;/strong&gt; and tablet server heartbeats.&lt;/li&gt;
-  &lt;li&gt;Tablet server Raft configuration changes, via tablet server heartbeats.
-These include both the list of Raft peers (may have changed due to
-under-replication) as well as the current leader (may have changed due to
-an election).&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Scanning the master tablet to service every heartbeat or client request would be
-slow, so the leader master caches all master metadata in memory. The caches are
-only updated after a metadata change is successfully replicated; in this way
-they are always consistent with the on-disk tablet. When a new leader master is
-elected, it scans the entire master tablet and uses the metadata to rebuild its
-in-memory caches.&lt;/p&gt;
-
-&lt;h1 id=&quot;communication-with-replicated-masters&quot;&gt;Communication with replicated masters&lt;/h1&gt;
-
-&lt;p&gt;All tablet servers start up with location information for the entire master Raft
-configuration and will periodically heartbeat to every master. Similarly,
-clients are also configured with the locations of all masters. Unlike tablet
-servers, they always communicate with the leader master as follower masters will
-reject client requests. To do this, clients must determine which master is the
-leader before sending the first request as well as whenever any request fails
-with a &lt;code&gt;NOT_THE_LEADER&lt;/code&gt; error.&lt;/p&gt;
-
-&lt;h1 id=&quot;remaining-work-for-kudu-10&quot;&gt;Remaining work for Kudu 1.0&lt;/h1&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-422&quot;&gt;KUDU-422&lt;/a&gt; tracks the remaining
-master replication work. The guts of this feature have been implemented as far
-back as early 2015; the remaining work has been focused on fixing bugs that
-manifest only under specific conditions. For example, we’ve observed failures in
-DDL operations (e.g. &lt;strong&gt;CreateTable()&lt;/strong&gt;) that only materialize upon the
-completion of a master leader election. These failures highlight some of the
-gaps in our testing regimen: we need a robust stress test that repeatedly
-performs such operations while holding master leader elections.&lt;/p&gt;
-
-&lt;p&gt;That said, there is one remaining work item of larger scope: there’s no
-mechanism with which to perform a Raft configuration change for replicated
-masters. Such a mechanism would have multiple uses:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Migrating from a single-node master deployment to a fully replicated
-three-node (or five-node) deployment.&lt;/li&gt;
-  &lt;li&gt;Replacing a failed master with a new one.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;This is being tracked by
-&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1474&quot;&gt;KUDU-1474&lt;/a&gt;, and there’s been
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/3393&quot;&gt;some discussion&lt;/a&gt; around a design, but
-nothing has been implemented yet. Stay tuned!&lt;/p&gt;</content><author><name>Adar Dembo</name></author><summary>This blog post describes how the 1.0 release of Apache Kudu (incubating) will
-support fault tolerance for the Kudu master, finally eliminating Kudu&amp;#8217;s last
-single point of failure.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update June 21, 2016</title><link href="/2016/06/21/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update June 21, 2016" /><published>2016-06-21T00:00:00-07:00</published><updated>2016-06-21T00:00:00-07:00</updated><id>/2016/06/21/weekly-update</id><content type="html" xml:base="/2016/06/21/weekly-update.html">&lt;p&gt;Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert posted a series of patches to &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3388/&quot;&gt;add support in the Java client&lt;/a&gt;
-for non-covering range partitions. At the same time he improved how that client locates tables by
-leveraging the tablets cache.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;In the context of making multi-master reliable in 1.0, Adar Dembo posted a &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3393/&quot;&gt;design document&lt;/a&gt;
-on how to handle permanent master failures. Currently the master’s code is missing some features
-like &lt;code&gt;remote bootstrap&lt;/code&gt; which makes it possible for a new replica to download a snapshot of the data
-from the leader replica.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Tsuyoshi Ozawa refreshed &lt;a href=&quot;https://gerrit.cloudera.org/#/c/2162/&quot;&gt;a patch&lt;/a&gt; posted in February that
-makes it easier to get started contributing to Kudu by providing a Dockerfile with the right
-environment.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;on-the-blog&quot;&gt;On the blog&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Mike Percy &lt;a href=&quot;http://kudu.apache.org/2016/06/17/raft-consensus-single-node.html&quot;&gt;wrote&lt;/a&gt; about how Kudu
-uses Raft consensus on a single node, and some changes we’re making as Kudu is getting more mature.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
