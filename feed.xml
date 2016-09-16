@@ -1,4 +1,146 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-08-31T14:53:42-07:00</updated><id>/</id><entry><title>An Introduction to the Flume Kudu Sink</title><link href="/2016/08/31/intro-flume-kudu-sink.html" rel="alternate" type="text/html" title="An Introduction to the Flume Kudu Sink" /><published>2016-08-31T00:00:00-07:00</published><updated>2016-08-31T00:00:00-07:00</updated><id>/2016/08/31/intro-flume-kudu-sink</id><content type="html" xml:base="/2016/08/31/intro-flume-kudu-sink.html">&lt;p&gt;This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-15T21:39:34-07:00</updated><id>/</id><entry><title>Pushing Down Predicate Evaluation in Apache Kudu</title><link href="/2016/09/16/predicate-pushdown.html" rel="alternate" type="text/html" title="Pushing Down Predicate Evaluation in Apache Kudu" /><published>2016-09-16T00:00:00-07:00</published><updated>2016-09-16T00:00:00-07:00</updated><id>/2016/09/16/predicate-pushdown</id><content type="html" xml:base="/2016/09/16/predicate-pushdown.html">&lt;p&gt;I had the pleasure of interning with the Apache Kudu team at Cloudera this
+summer. This project was my summer contribution to Kudu: a restructuring of the
+scan path to speed up queries.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;In Kudu, &lt;em&gt;predicate pushdown&lt;/em&gt; refers to the way in which predicates are
+handled. When a scan is requested, its predicates are passed through the
+different layers of Kudu’s storage hierarchy, allowing for pruning and other
+optimizations to happen at each level before reaching the underlying data.&lt;/p&gt;
+
+&lt;p&gt;While predicates are pushed down, predicate evaluation itself occurs at a fairly
+high level, precluding the evaluation process from certain data-specific
+optimizations. These optimizations can make tablet scans an order of magnitude
+faster, if not more.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-day-in-the-life-of-a-query&quot;&gt;A Day in the Life of a Query&lt;/h2&gt;
+
+&lt;p&gt;Because Kudu is a columnar storage engine, its scan path has a number of
+optimizations to avoid extraneous reads, copies, and computation. When a query
+is sent to a tablet server, the server prunes tablets based on the
+primary key, directing the request to only the tablets that contain the key
+range of interest. Once at a tablet, only the columns relevant to the query are
+scanned. Further pruning is done over the primary key, and if the query is
+predicated on non-key columns, the entire column is scanned. The columns in a
+tablet are stored as &lt;em&gt;cfiles&lt;/em&gt;, which are split into encoded &lt;em&gt;blocks&lt;/em&gt;. Once the
+relevant cfiles are determined, the data are materialized by the block
+decoders, i.e. their underlying data are decoded and copied into a buffer,
+which is passed back to the tablet layer. The tablet can then evaluate the
+predicate on the batch of data and mark which rows should be returned to the
+client.&lt;/p&gt;
+
+&lt;p&gt;One of the encoding types I worked very closely with is &lt;em&gt;dictionary encoding&lt;/em&gt;,
+an encoding type for strings that performs particularly well for cfiles that
+have repeating values. Rather than storing every row’s string, each unique
+string is assigned a numeric codeword, and the rows are stored numerically on
+disk. When materializing a dictionary block, all of the numeric data are scanned
+and all of the corresponding strings are copied and buffered for evaluation.
+When the vocabulary of a dictionary-encoded cfile gets too large, the blocks
+begin switching to &lt;em&gt;plain encoding mode&lt;/em&gt; to act like &lt;em&gt;plain-encoded&lt;/em&gt; blocks.&lt;/p&gt;
+
+&lt;p&gt;In a plain-encoded block, strings are stored contiguously and the character
+offsets to the start of each string are stored as a list of integers. When
+materializing, all of the strings are copied to a buffer for evaluation.&lt;/p&gt;
+
+&lt;p&gt;Therein lies room for improvement: this predicate evaluation path is the same
+for all data types and encoding types. Within the tablet, the correct cfiles
+are determined, the cfiles’ decoders are opened, all of the data are copied to
+a buffer, and the predicates are evaluated on this buffered data via
+type-specific comparators. This path is extremely flexible, but because it was
+designed to be encoding-independent, there is room for improvement.&lt;/p&gt;
+
+&lt;h2 id=&quot;trimming-the-fat&quot;&gt;Trimming the Fat&lt;/h2&gt;
+
+&lt;p&gt;The first step is to allow the decoders access to the predicate. In doing so,
+each encoding type can specialize its evaluation. Additionally, this puts the
+decoder in a position where it can determine whether a given row satisfies the
+query, which in turn, allows the decoders to determine what data gets copied
+instead of eagerly copying all of its data to get evaluated.&lt;/p&gt;
+
+&lt;p&gt;Take the case of dictionary-encoded strings as an example. With the existing
+scan path, not only are all of the strings in a column copied into a buffer, but
+string comparisons are done on every row. By taking advantage of the fact that
+the data can be represented as integers, the cost of determining the query
+results can be greatly reduced. The string comparisons can be swapped out with
+evaluation based on the codewords, in which case the room for improvement boils
+down to how to most quickly determine whether or not a given codeword
+corresponds to a string that satisfies the predicate. Dictionary columns will
+now use a bitset to store the codewords that match the predicates.  It will then
+scan through the integer-valued data and checks the bitset to determine whether
+it should copy the corresponding string over.&lt;/p&gt;
+
+&lt;p&gt;This is great in the best case scenario where a cfile’s vocabulary is small,
+but when the vocabulary gets too large and the dictionary blocks switch to plain
+encoding mode, performance is hampered. In this mode, the blocks don’t utilize
+any dictionary metadata and end up wasting the codeword bitset. That isn’t to
+say all is lost: the decoders can still evaluate a predicate via string
+comparison, and the fact that evaluation can still occur at the decoder-level
+means the eager buffering can still be avoided.&lt;/p&gt;
+
+&lt;p&gt;Dictionary encoding is a perfect storm in that the decoders can completely
+evaluate the predicates. This is not the case for most other encoding types,
+but having decoders support evaluation leaves the door open for other encoding
+types to extend this idea.&lt;/p&gt;
+
+&lt;h2 id=&quot;performance&quot;&gt;Performance&lt;/h2&gt;
+&lt;p&gt;Depending on the dataset and query, predicate pushdown can lead to significant
+improvements. Tablet scans were timed with datasets consisting of repeated
+string patterns of tunable length and tunable cardinality.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/predicate-pushdown/pushdown-10.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
+&lt;img src=&quot;/img/predicate-pushdown/pushdown-10M.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The above plots show the time taken to completely scan a single tablet, recorded
+using a dataset of ten million rows of strings with length ten. Predicates were
+designed to select values out of bounds (Empty), select a single value (Equal,
+i.e. for cardinality &lt;em&gt;k&lt;/em&gt;, this would select 1/&lt;em&gt;k&lt;/em&gt; of the dataset), select half
+of the full range (Half), and select the full range of values (All).&lt;/p&gt;
+
+&lt;p&gt;With the original evaluation implementation, the tablet must copy and scan
+through the tablet to determine whether any values match. This means that even
+when the result set is small, the full column is still copied. This is avoided
+by pushing down predicates, which only copies as needed, and can be seen in the
+above queries: those with near-empty result sets (Empty and Equal) have shorter
+scan times than those with larger result sets (Half and All).&lt;/p&gt;
+
+&lt;p&gt;Note that for dictionary encoding, given a low cardinality, Kudu can completely
+rely on the dictionary codewords to evaluate, making the query significantly
+faster. At higher cardinalities, the dictionaries completely fill up and the
+blocks fall back on plain encoding. The slower, albeit still improved,
+performance on the dataset containing 10M unique values reflects this.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/predicate-pushdown/pushdown-tpch.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Similar predicates were run with the TPC-H dataset, querying on the shipdate
+column. The full path of a query includes not only the tablet scanning itself,
+but also RPCs and batched data transfer to the caller as the scan progresses.
+As such, the times plotted above refer to the average end-to-end time required
+to scan and return a batch of rows. Regardless of this additional overhead,
+significant improvements on the scan path still yield substantial improvements
+to the query performance as a whole.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Pushing down predicate evaluation in Kudu yielded substantial improvements to
+the scan path. For dictionary encoding, pushdown can be particularly powerful,
+and other encoding types are either unaffected or also improved. This change has
+been pushed to the main branch of Kudu, and relevant commits can be found
+&lt;a href=&quot;https://github.com/cloudera/kudu/commit/c0f37278cb09a7781d9073279ea54b08db6e2010&quot;&gt;here&lt;/a&gt;
+and
+&lt;a href=&quot;https://github.com/cloudera/kudu/commit/ec80fdb37be44d380046a823b5e6d8e2241ec3da&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;This summer has been a phenomenal learning experience for me, in terms of the
+tools, the workflow, the datasets, the thought-processes that go into building
+something at Kudu’s scale. I am extremely thankful for all of the mentoring and
+support I received, and that I got to be a part of Kudu’s journey from
+incubating to a Top Level Apache project. I can’t express enough how grateful I
+am for the amount of support I got from the Kudu team, from the intern
+coordinators, and from the Cloudera community as a whole.&lt;/p&gt;</content><author><name>Andrew Wong</name></author><summary>I had the pleasure of interning with the Apache Kudu team at Cloudera this
+summer. This project was my summer contribution to Kudu: a restructuring of the
+scan path to speed up queries.</summary></entry><entry><title>An Introduction to the Flume Kudu Sink</title><link href="/2016/08/31/intro-flume-kudu-sink.html" rel="alternate" type="text/html" title="An Introduction to the Flume Kudu Sink" /><published>2016-08-31T00:00:00-07:00</published><updated>2016-08-31T00:00:00-07:00</updated><id>/2016/08/31/intro-flume-kudu-sink</id><content type="html" xml:base="/2016/08/31/intro-flume-kudu-sink.html">&lt;p&gt;This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
 using Kudu, what Flume does for us, and how Flume fits with Kudu in our project.&lt;/p&gt;
 
 &lt;h2 id=&quot;why-kudu&quot;&gt;Why Kudu&lt;/h2&gt;
@@ -105,7 +247,7 @@ release and the source code can be found &lt;a href=&quot;https://github.com/apa
 
 &lt;p&gt;Here is a sample flume configuration file:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;agent1.sources  = source1
+&lt;pre&gt;&lt;code&gt;agent1.sources  = source1
 agent1.channels = channel1
 agent1.sinks = sink1
 
@@ -124,25 +266,24 @@ agent1.sinks.sink1.channel = channel1
 agent1.sinks.sink1.batchSize = 50
 agent1.sinks.sink1.producer = org.apache.kudu.flume.sink.SimpleKuduEventProducer
 &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
 
-&lt;p&gt;We define a source called &lt;code class=&quot;highlighter-rouge&quot;&gt;source1&lt;/code&gt; which simply executes a &lt;code class=&quot;highlighter-rouge&quot;&gt;vmstat&lt;/code&gt; command to continuously generate
-virtual memory statistics for the machine and queue events into an in-memory &lt;code class=&quot;highlighter-rouge&quot;&gt;channel1&lt;/code&gt; channel,
-which in turn is used for writing these events to a Kudu table called &lt;code class=&quot;highlighter-rouge&quot;&gt;stats&lt;/code&gt;. We are using
-&lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.kudu.flume.sink.SimpleKuduEventProducer&lt;/code&gt; as the producer. &lt;code class=&quot;highlighter-rouge&quot;&gt;SimpleKuduEventProducer&lt;/code&gt; is
+&lt;p&gt;We define a source called &lt;code&gt;source1&lt;/code&gt; which simply executes a &lt;code&gt;vmstat&lt;/code&gt; command to continuously generate
+virtual memory statistics for the machine and queue events into an in-memory &lt;code&gt;channel1&lt;/code&gt; channel,
+which in turn is used for writing these events to a Kudu table called &lt;code&gt;stats&lt;/code&gt;. We are using
+&lt;code&gt;org.apache.kudu.flume.sink.SimpleKuduEventProducer&lt;/code&gt; as the producer. &lt;code&gt;SimpleKuduEventProducer&lt;/code&gt; is
 the built-in and default producer, but it’s implemented as a showcase for how to write Flume
 events into Kudu tables. For any serious functionality we’d have to write a custom producer. We
-need to make this producer and the &lt;code class=&quot;highlighter-rouge&quot;&gt;KuduSink&lt;/code&gt; class available to Flume. We can do that by simply
-copying the &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu-flume-sink-&amp;lt;VERSION&amp;gt;.jar&lt;/code&gt; jar file from the Kudu distribution to the
-&lt;code class=&quot;highlighter-rouge&quot;&gt;$FLUME_HOME/plugins.d/kudu-sink/lib&lt;/code&gt; directory in the Flume installation. The jar file contains
-&lt;code class=&quot;highlighter-rouge&quot;&gt;KuduSink&lt;/code&gt; and all of its dependencies (including Kudu java client classes).&lt;/p&gt;
+need to make this producer and the &lt;code&gt;KuduSink&lt;/code&gt; class available to Flume. We can do that by simply
+copying the &lt;code&gt;kudu-flume-sink-&amp;lt;VERSION&amp;gt;.jar&lt;/code&gt; jar file from the Kudu distribution to the
+&lt;code&gt;$FLUME_HOME/plugins.d/kudu-sink/lib&lt;/code&gt; directory in the Flume installation. The jar file contains
+&lt;code&gt;KuduSink&lt;/code&gt; and all of its dependencies (including Kudu java client classes).&lt;/p&gt;
 
 &lt;p&gt;At a minimum, the Kudu Flume Sink needs to know where the Kudu masters are
-(&lt;code class=&quot;highlighter-rouge&quot;&gt;agent1.sinks.sink1.masterAddresses = localhost&lt;/code&gt;) and which Kudu table should be used for writing
-Flume events to (&lt;code class=&quot;highlighter-rouge&quot;&gt;agent1.sinks.sink1.tableName = stats&lt;/code&gt;). The Kudu Flume Sink doesn’t create this
+(&lt;code&gt;agent1.sinks.sink1.masterAddresses = localhost&lt;/code&gt;) and which Kudu table should be used for writing
+Flume events to (&lt;code&gt;agent1.sinks.sink1.tableName = stats&lt;/code&gt;). The Kudu Flume Sink doesn’t create this
 table, it has to be created before the Kudu Flume Sink is started.&lt;/p&gt;
 
-&lt;p&gt;You may also notice the &lt;code class=&quot;highlighter-rouge&quot;&gt;batchSize&lt;/code&gt; parameter. Batch size is used for batching up to that many
+&lt;p&gt;You may also notice the &lt;code&gt;batchSize&lt;/code&gt; parameter. Batch size is used for batching up to that many
 Flume events and flushing the entire batch in one shot. Tuning batchSize properly can have a huge
 impact on ingest performance of the Kudu cluster.&lt;/p&gt;
 
@@ -192,91 +333,89 @@ impact on ingest performance of the Kudu cluster.&lt;/p&gt;
 
 &lt;p&gt;Let’s take a look at the source code for the built-in producer class:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SimpleKuduEventProducer&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KuduEventProducer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KuduTable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;payloadColumn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public class SimpleKuduEventProducer implements KuduEventProducer {
+  private byte[] payload;
+  private KuduTable table;
+  private String payloadColumn;
 
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SimpleKuduEventProducer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(){&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  public SimpleKuduEventProducer(){
+  }
 
-  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;payloadColumn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;payloadColumn&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;payload&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  @Override
+  public void configure(Context context) {
+    payloadColumn = context.getString(&quot;payloadColumn&quot;,&quot;payload&quot;);
+  }
 
-  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ComponentConfiguration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  @Override
+  public void configure(ComponentConfiguration conf) {
+  }
 
-  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Event&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KuduTable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;payload&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getBody&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  @Override
+  public void initialize(Event event, KuduTable table) {
+    this.payload = event.getBody();
+    this.table = table;
+  }
 
-  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Operation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getOperations&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FlumeException&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;Insert&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInsert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;PartialRow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-      &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addBinary&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;payloadColumn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;payload&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  @Override
+  public List&amp;lt;Operation&amp;gt; getOperations() throws FlumeException {
+    try {
+      Insert insert = table.newInsert();
+      PartialRow row = insert.getRow();
+      row.addBinary(payloadColumn, payload);
 
-      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Collections&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;singletonList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Operation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;){&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FlumeException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Failed to create Kudu Insert object!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      return Collections.singletonList((Operation) insert);
+    } catch (Exception e){
+      throw new FlumeException(&quot;Failed to create Kudu Insert object!&quot;, e);
+    }
+  }
 
-  &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  @Override
+  public void close() {
+  }
+}
 &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;SimpleKuduEventProducer&lt;/code&gt; implements the &lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.kudu.flume.sink.KuduEventProducer&lt;/code&gt; interface,
+&lt;p&gt;&lt;code&gt;SimpleKuduEventProducer&lt;/code&gt; implements the &lt;code&gt;org.apache.kudu.flume.sink.KuduEventProducer&lt;/code&gt; interface,
 which itself looks like this:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KuduEventProducer&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Configurable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConfigurableComponent&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;cm&quot;&gt;/**
+&lt;pre&gt;&lt;code class=&quot;language-java&quot;&gt;public interface KuduEventProducer extends Configurable, ConfigurableComponent {
+  /**
    * Initialize the event producer.
    * @param event to be written to Kudu
    * @param table the KuduTable object used for creating Kudu Operation objects
-   */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Event&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KuduTable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+   */
+  void initialize(Event event, KuduTable table);
 
-  &lt;span class=&quot;cm&quot;&gt;/**
+  /**
    * Get the operations that should be written out to Kudu as a result of this
    * event. This list is written to Kudu using the Kudu client API.
    * @return List of {@link org.kududb.client.Operation} which
    * are written as such to Kudu
-   */&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Operation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getOperations&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+   */
+  List&amp;lt;Operation&amp;gt; getOperations();
 
-  &lt;span class=&quot;cm&quot;&gt;/*
+  /*
    * Clean up any state. This will be called when the sink is being stopped.
-   */&lt;/span&gt;
-  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+   */
+  void close();
+}
 &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;public void configure(Context context)&lt;/code&gt; is called when an instance of our producer is instantiated
+&lt;p&gt;&lt;code&gt;public void configure(Context context)&lt;/code&gt; is called when an instance of our producer is instantiated
 by the KuduSink. SimpleKuduEventProducer’s implementation looks for a producer parameter named
-&lt;code class=&quot;highlighter-rouge&quot;&gt;payloadColumn&lt;/code&gt; and uses its value (“payload” if not overridden in Flume configuration file) as the
+&lt;code&gt;payloadColumn&lt;/code&gt; and uses its value (“payload” if not overridden in Flume configuration file) as the
 column which will hold the value of the Flume event payload. If you recall from above, we had
-configured the KuduSink to listen for events generated from the &lt;code class=&quot;highlighter-rouge&quot;&gt;vmstat&lt;/code&gt; command. Each output row
-from that command will be stored as a new row containing a &lt;code class=&quot;highlighter-rouge&quot;&gt;payload&lt;/code&gt; column in the &lt;code class=&quot;highlighter-rouge&quot;&gt;stats&lt;/code&gt; table.
-&lt;code class=&quot;highlighter-rouge&quot;&gt;SimpleKuduEventProducer&lt;/code&gt; does not have any configuration parameters, but if it had any we would
-define them by prefixing it with &lt;code class=&quot;highlighter-rouge&quot;&gt;producer.&lt;/code&gt; (&lt;code class=&quot;highlighter-rouge&quot;&gt;agent1.sinks.sink1.producer.parameter1&lt;/code&gt; for
+configured the KuduSink to listen for events generated from the &lt;code&gt;vmstat&lt;/code&gt; command. Each output row
+from that command will be stored as a new row containing a &lt;code&gt;payload&lt;/code&gt; column in the &lt;code&gt;stats&lt;/code&gt; table.
+&lt;code&gt;SimpleKuduEventProducer&lt;/code&gt; does not have any configuration parameters, but if it had any we would
+define them by prefixing it with &lt;code&gt;producer.&lt;/code&gt; (&lt;code&gt;agent1.sinks.sink1.producer.parameter1&lt;/code&gt; for
 example).&lt;/p&gt;
 
-&lt;p&gt;The main producer logic resides in the &lt;code class=&quot;highlighter-rouge&quot;&gt;public List&amp;lt;Operation&amp;gt; getOperations()&lt;/code&gt; method. In
+&lt;p&gt;The main producer logic resides in the &lt;code&gt;public List&amp;lt;Operation&amp;gt; getOperations()&lt;/code&gt; method. In
 SimpleKuduEventProducer’s implementation we simply insert the binary body of the Flume event into
-the Kudu table. Here we call Kudu’s &lt;code class=&quot;highlighter-rouge&quot;&gt;newInsert()&lt;/code&gt; to initiate an insert, but could have used
-&lt;code class=&quot;highlighter-rouge&quot;&gt;Upsert&lt;/code&gt; if updating an existing row was also an option, in fact there’s another producer
-implementation available for doing just that: &lt;code class=&quot;highlighter-rouge&quot;&gt;SimpleKeyedKuduEventProducer&lt;/code&gt;. Most probably you
+the Kudu table. Here we call Kudu’s &lt;code&gt;newInsert()&lt;/code&gt; to initiate an insert, but could have used
+&lt;code&gt;Upsert&lt;/code&gt; if updating an existing row was also an option, in fact there’s another producer
+implementation available for doing just that: &lt;code&gt;SimpleKeyedKuduEventProducer&lt;/code&gt;. Most probably you
 will need to write your own custom producer in the real world, but you can base your implementation
 on the built-in ones.&lt;/p&gt;
 
@@ -295,12 +434,12 @@ disparate sources.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Ara Abrahamian is a software engineer at Argyle Data building fraud detection systems using
 sophisticated machine learning methods. Ara is the original author of the Flume Kudu Sink that
 is included in the Kudu distribution. You can follow him on Twitter at
-&lt;a href=&quot;https://twitter.com/ara_e&quot;&gt;@ara_e&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;</content><author><name>Ara Abrahamian</name></author><summary>This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
+&lt;a href=&quot;https://twitter.com/ara_e&quot;&gt;@ara_e&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;</content><author><name>Ara Abrahamian</name></author><summary>This post discusses the Kudu Flume Sink. First, I&amp;#8217;ll give some background on why we considered
 using Kudu, what Flume does for us, and how Flume fits with Kudu in our project.
 
 Why Kudu
 
-Traditionally in the Hadoop ecosystem we’ve dealt with various batch processing technologies such
+Traditionally in the Hadoop ecosystem we&amp;#8217;ve dealt with various batch processing technologies such
 as MapReduce and the many libraries and tools built on top of it in various languages (Apache Pig,
 Apache Hive, Apache Oozie and many others). The main problem with this approach is that it needs to
 process the whole data set in batches, again and again, as soon as new data gets added. Things get
@@ -340,14 +479,14 @@ And a Kudu-based near real-time approach is:
 
   flexible and expressive, thanks to SQL support via Apache Impala (incubating)
   a table-oriented, mutable data store that feels like a traditional relational database
-  very easy to program, you can even pretend it’s good old MySQL
+  very easy to program, you can even pretend it&amp;#8217;s good old MySQL
   low-latency and relatively high throughput, both for ingest and query
 
 
-At Argyle Data, we’re dealing with complex fraud detection scenarios. We need to ingest massive
+At Argyle Data, we&amp;#8217;re dealing with complex fraud detection scenarios. We need to ingest massive
 amounts of data, run machine learning algorithms and generate reports. When we created our current
 architecture two years ago we decided to opt for a database as the backbone of our system. That
-database is Apache Accumulo. It’s a key-value based database which runs on top of Hadoop HDFS,
+database is Apache Accumulo. It&amp;#8217;s a key-value based database which runs on top of Hadoop HDFS,
 quite similar to HBase but with some important improvements such as cell level security and ease
 of deployment and management. To enable querying of this data for quite complex reporting and
 analytics, we used Presto, a distributed query engine with a pluggable architecture open-sourced
@@ -360,12 +499,12 @@ architecture has served us well, but there were a few problems:
   we need to support ad-hoc queries, plus long-term data warehouse functionality
 
 
-So, we’ve started gradually moving the core machine-learning pipeline to a streaming based
+So, we&amp;#8217;ve started gradually moving the core machine-learning pipeline to a streaming based
 solution. This way we can ingest and process larger data-sets faster in the real-time. But then how
 would we take care of ad-hoc queries and long-term persistence? This is where Kudu comes in. While
 the machine learning pipeline ingests and processes real-time data, we store a copy of the same
 ingested data in Kudu for long-term access and ad-hoc queries. Kudu is our data warehouse. By
-using Kudu and Impala, we can retire our in-house Presto connector and rely on Impala’s
+using Kudu and Impala, we can retire our in-house Presto connector and rely on Impala&amp;#8217;s
 super-fast query engine.
 
 But how would we make sure data is reliably ingested into the streaming pipeline and the
@@ -373,10 +512,10 @@ Kudu-based data warehouse? This is where Apache Flume comes in.
 
 Why Flume
 
-According to their website “Flume is a distributed, reliable, and
+According to their website &amp;#8220;Flume is a distributed, reliable, and
 available service for efficiently collecting, aggregating, and moving large amounts of log data.
 It has a simple and flexible architecture based on streaming data flows. It is robust and fault
-tolerant with tunable reliability mechanisms and many failover and recovery mechanisms.” As you
+tolerant with tunable reliability mechanisms and many failover and recovery mechanisms.&amp;#8221; As you
 can see, nowhere is Hadoop mentioned but Flume is typically used for ingesting data to Hadoop
 clusters.
 
@@ -394,7 +533,7 @@ File-based channels are also provided. As for the sources, Avro, JMS, Thrift, sp
 source are some of the built-in ones. Flume also ships with many sinks, including sinks for writing
 data to HDFS, HBase, Hive, Kafka, as well as to other Flume agents.
 
-In the rest of this post I’ll go over the Kudu Flume sink and show you how to configure Flume to
+In the rest of this post I&amp;#8217;ll go over the Kudu Flume sink and show you how to configure Flume to
 write ingested data to a Kudu table. The sink has been part of the Kudu distribution since the 0.8
 release and the source code can be found here.
 
@@ -422,13 +561,12 @@ agent1.sinks.sink1.batchSize = 50
 agent1.sinks.sink1.producer = org.apache.kudu.flume.sink.SimpleKuduEventProducer
 
 
-
 We define a source called source1 which simply executes a vmstat command to continuously generate
 virtual memory statistics for the machine and queue events into an in-memory channel1 channel,
 which in turn is used for writing these events to a Kudu table called stats. We are using
 org.apache.kudu.flume.sink.SimpleKuduEventProducer as the producer. SimpleKuduEventProducer is
-the built-in and default producer, but it’s implemented as a showcase for how to write Flume
-events into Kudu tables. For any serious functionality we’d have to write a custom producer. We
+the built-in and default producer, but it&amp;#8217;s implemented as a showcase for how to write Flume
+events into Kudu tables. For any serious functionality we&amp;#8217;d have to write a custom producer. We
 need to make this producer and the KuduSink class available to Flume. We can do that by simply
 copying the kudu-flume-sink-&amp;lt;VERSION&amp;gt;.jar jar file from the Kudu distribution to the
 $FLUME_HOME/plugins.d/kudu-sink/lib directory in the Flume installation. The jar file contains
@@ -436,7 +574,7 @@ KuduSink and all of its dependencies (including Kudu java client classes).
 
 At a minimum, the Kudu Flume Sink needs to know where the Kudu masters are
 (agent1.sinks.sink1.masterAddresses = localhost) and which Kudu table should be used for writing
-Flume events to (agent1.sinks.sink1.tableName = stats). The Kudu Flume Sink doesn’t create this
+Flume events to (agent1.sinks.sink1.tableName = stats). The Kudu Flume Sink doesn&amp;#8217;t create this
 table, it has to be created before the Kudu Flume Sink is started.
 
 You may also notice the batchSize parameter. Batch size is used for batching up to that many
@@ -457,7 +595,7 @@ Here is a complete list of KuduSink parameters:
     
       masterAddresses
       N/A
-      Comma-separated list of “host:port” pairs of the masters (port optional)
+      Comma-separated list of &amp;#8220;host:port&amp;#8221; pairs of the masters (port optional)
     
     
       tableName
@@ -487,7 +625,7 @@ Here is a complete list of KuduSink parameters:
   
 
 
-Let’s take a look at the source code for the built-in producer class:
+Let&amp;#8217;s take a look at the source code for the built-in producer class:
 
 public class SimpleKuduEventProducer implements KuduEventProducer {
   private byte[] payload;
@@ -531,7 +669,6 @@ public class SimpleKuduEventProducer implements KuduEventProducer {
 }
 
 
-
 SimpleKuduEventProducer implements the org.apache.kudu.flume.sink.KuduEventProducer interface,
 which itself looks like this:
 
@@ -558,10 +695,9 @@ public interface KuduEventProducer extends Configurable, ConfigurableComponent {
 }
 
 
-
 public void configure(Context context) is called when an instance of our producer is instantiated
-by the KuduSink. SimpleKuduEventProducer’s implementation looks for a producer parameter named
-payloadColumn and uses its value (“payload” if not overridden in Flume configuration file) as the
+by the KuduSink. SimpleKuduEventProducer&amp;#8217;s implementation looks for a producer parameter named
+payloadColumn and uses its value (&amp;#8220;payload&amp;#8221; if not overridden in Flume configuration file) as the
 column which will hold the value of the Flume event payload. If you recall from above, we had
 configured the KuduSink to listen for events generated from the vmstat command. Each output row
 from that command will be stored as a new row containing a payload column in the stats table.
@@ -570,9 +706,9 @@ define them by prefixing it with producer. (agent1.sinks.sink1.producer.paramete
 example).
 
 The main producer logic resides in the public List&amp;lt;Operation&amp;gt; getOperations() method. In
-SimpleKuduEventProducer’s implementation we simply insert the binary body of the Flume event into
-the Kudu table. Here we call Kudu’s newInsert() to initiate an insert, but could have used
-Upsert if updating an existing row was also an option, in fact there’s another producer
+SimpleKuduEventProducer&amp;#8217;s implementation we simply insert the binary body of the Flume event into
+the Kudu table. Here we call Kudu&amp;#8217;s newInsert() to initiate an insert, but could have used
+Upsert if updating an existing row was also an option, in fact there&amp;#8217;s another producer
 implementation available for doing just that: SimpleKeyedKuduEventProducer. Most probably you
 will need to write your own custom producer in the real world, but you can base your implementation
 on the built-in ones.
@@ -771,20 +907,20 @@ from a single-master configuration to a multi-master one. Along the way, he
 started building some common infrastructure for command-line tooling.&lt;/p&gt;
 
     &lt;p&gt;Since Kudu’s initial release, it has included separate binaries for different
-administrative or operational tools (e.g. &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu-ts-cli&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu-ksck&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu-fs_dump&lt;/code&gt;,
-&lt;code class=&quot;highlighter-rouge&quot;&gt;log-dump&lt;/code&gt;, etc). Despite having similar usage, these tools don’t share much code,
+administrative or operational tools (e.g. &lt;code&gt;kudu-ts-cli&lt;/code&gt;, &lt;code&gt;kudu-ksck&lt;/code&gt;, &lt;code&gt;kudu-fs_dump&lt;/code&gt;,
+&lt;code&gt;log-dump&lt;/code&gt;, etc). Despite having similar usage, these tools don’t share much code,
 and the separate statically linked binaries make the Kudu packages take more disk
 space than strictly necessary.&lt;/p&gt;
 
-    &lt;p&gt;Adar’s work has introduced a new top-level &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu&lt;/code&gt; binary which exposes a set of subcommands,
-much like the &lt;code class=&quot;highlighter-rouge&quot;&gt;git&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;docker&lt;/code&gt; binaries with which readers may be familiar.
+    &lt;p&gt;Adar’s work has introduced a new top-level &lt;code&gt;kudu&lt;/code&gt; binary which exposes a set of subcommands,
+much like the &lt;code&gt;git&lt;/code&gt; and &lt;code&gt;docker&lt;/code&gt; binaries with which readers may be familiar.
 For example, a new tool he has built for dumping peer identifiers from a tablet’s
-consensus metadata is triggered using &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu tablet cmeta print_replica_uuids&lt;/code&gt;.&lt;/p&gt;
+consensus metadata is triggered using &lt;code&gt;kudu tablet cmeta print_replica_uuids&lt;/code&gt;.&lt;/p&gt;
 
     &lt;p&gt;This new tool will be available in the upcoming 0.10.0 release; however, migration
 of the existing tools to the new infrastructure has not yet been completed. We
 expect that by Kudu 1.0, the old tools will be removed in favor of more subcommands
-of the &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu&lt;/code&gt; tool.&lt;/p&gt;
+of the &lt;code&gt;kudu&lt;/code&gt; tool.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;Todd Lipcon picked up the work started by David Alves in July to provide
@@ -808,7 +944,7 @@ was &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3840/&quot;&gt;committed&lt
 docs will be published as part of the 0.10.0 release.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;Alexey also continued work on implementing the &lt;code class=&quot;highlighter-rouge&quot;&gt;AUTO_FLUSH_BACKGROUND&lt;/code&gt; write
+    &lt;p&gt;Alexey also continued work on implementing the &lt;code&gt;AUTO_FLUSH_BACKGROUND&lt;/code&gt; write
 mode for the C++ client. This feature makes it easier to implement high-throughput
 ingest using the C++ API by automatically handling the batching and flushing of writes
 based on a configurable buffer size.&lt;/p&gt;
@@ -923,8 +1059,8 @@ new name and status.&lt;/li&gt;
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;Dan Burkert contributed a few patches that repackage the Java client under &lt;code class=&quot;highlighter-rouge&quot;&gt;org.apache.kudu&lt;/code&gt;
-in place of &lt;code class=&quot;highlighter-rouge&quot;&gt;org.kududb&lt;/code&gt;. This was done in a &lt;strong&gt;backward-incompatible&lt;/strong&gt; way, meaning that import
+    &lt;p&gt;Dan Burkert contributed a few patches that repackage the Java client under &lt;code&gt;org.apache.kudu&lt;/code&gt;
+in place of &lt;code&gt;org.kududb&lt;/code&gt;. This was done in a &lt;strong&gt;backward-incompatible&lt;/strong&gt; way, meaning that import
 statements will have to be modified in existing Java code to compile against a newer Kudu JAR
 version (from 0.10.0 onward). This stems from &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-dev/201605.mbox/%3CCAGpTDNcJohQBgjzXafXJQdqmBB4sL495p5V_BJRXk_nAGWbzhA@mail.gmail.com%3E&quot;&gt;a discussion&lt;/a&gt;
 initiated in May. It won’t have an impact on C++ or Python users, and it isn’t affecting wire
@@ -934,12 +1070,12 @@ compatibility.&lt;/p&gt;
     &lt;p&gt;Still on the Java-side, J-D Cryans pushed &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3055/&quot;&gt;a patch&lt;/a&gt;
 that completely changes how Exceptions are managed. Before this change, users had to introspect
 generic Exception objects, making it a guessing game and discouraging good error handling.
-Now, the synchronous client’s methods throw &lt;code class=&quot;highlighter-rouge&quot;&gt;KuduException&lt;/code&gt; which packages a &lt;code class=&quot;highlighter-rouge&quot;&gt;Status&lt;/code&gt; object
+Now, the synchronous client’s methods throw &lt;code&gt;KuduException&lt;/code&gt; which packages a &lt;code&gt;Status&lt;/code&gt; object
 that can be interrogated. This is very similar to how the C++ API works.&lt;/p&gt;
 
     &lt;p&gt;Existing code that uses the new Kudu JAR should still compile since this change replaces generic
-&lt;code class=&quot;highlighter-rouge&quot;&gt;Exception&lt;/code&gt; with a more specific &lt;code class=&quot;highlighter-rouge&quot;&gt;KuduException&lt;/code&gt;. Error handling done by string-matching the
-exception messages should now use the provided &lt;code class=&quot;highlighter-rouge&quot;&gt;Status&lt;/code&gt; object.&lt;/p&gt;
+&lt;code&gt;Exception&lt;/code&gt; with a more specific &lt;code&gt;KuduException&lt;/code&gt;. Error handling done by string-matching the
+exception messages should now use the provided &lt;code&gt;Status&lt;/code&gt; object.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;Alexey Serbin’s &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3619/&quot;&gt;patch&lt;/a&gt; that adds Doxygen-based
@@ -947,11 +1083,11 @@ documentation was pushed and the new API documentation for C++ developers will b
 with the next release.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
-    &lt;p&gt;Todd has made many improvements to the &lt;code class=&quot;highlighter-rouge&quot;&gt;ksck&lt;/code&gt; tool over the last week. Building upon Will
-Berkeley’s &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3632/&quot;&gt;WIP patch for KUDU-1516&lt;/a&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;ksck&lt;/code&gt; can
+    &lt;p&gt;Todd has made many improvements to the &lt;code&gt;ksck&lt;/code&gt; tool over the last week. Building upon Will
+Berkeley’s &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3632/&quot;&gt;WIP patch for KUDU-1516&lt;/a&gt;, &lt;code&gt;ksck&lt;/code&gt; can
 now detect more problematic situations like if a tablet doesn’t have a majority of replicas on
 live tablet servers, or if those replicas aren’t in a good state.
-&lt;code class=&quot;highlighter-rouge&quot;&gt;ksck&lt;/code&gt; is also &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3705/&quot;&gt;now faster&lt;/a&gt; when run against a large
+&lt;code&gt;ksck&lt;/code&gt; is also &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3705/&quot;&gt;now faster&lt;/a&gt; when run against a large
 cluster with a lot of tablets, among other improvements.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
@@ -1140,21 +1276,4 @@ lot which doesn’t make for a stable 1.0 release.&lt;/p&gt;
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) 0.9.1 released</title><link href="/2016/07/01/apache-kudu-0-9-1-released.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) 0.9.1 released" /><published>2016-07-01T00:00:00-07:00</published><updated>2016-07-01T00:00:00-07:00</updated><id>/2016/07/01/apache-kudu-0-9-1-released</id><content type="html" xml:base="/2016/07/01/apache-kudu-0-9-1-released.html">&lt;p&gt;The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.9.1!&lt;/p&gt;
-
-&lt;p&gt;This release fixes a few issues found in the previous 0.9.0 release. All users
-of 0.9.0 are encouraged to update to the new version at their earliest convenience.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Read the detailed &lt;a href=&quot;http://kudu.apache.org/releases/0.9.1/docs/release_notes.html&quot;&gt;Kudu 0.9.1 release notes&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;http://kudu.apache.org/releases/0.9.1/&quot;&gt;Kudu 0.9.1 source release&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.9.1!
-
-This release fixes a few issues found in the previous 0.9.0 release. All users
-of 0.9.0 are encouraged to update to the new version at their earliest convenience.
-
-
-  Read the detailed Kudu 0.9.1 release notes
-  Download the Kudu 0.9.1 source release</summary></entry></feed>
+covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>

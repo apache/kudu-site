@@ -155,7 +155,7 @@ advanced configurations.</p>
 <h1 id="c-client">C++ Client</h1>
 
 <p>With the C++ client, creating a new table with hash partitions is as simple as
-calling <code class="highlighter-rouge">KuduTableCreator:add_hash_partitions</code> with the columns to hash and the
+calling <code>KuduTableCreator:add_hash_partitions</code> with the columns to hash and the
 number of buckets to use:</p>
 
 <div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">KuduTableCreator</span><span class="o">&gt;</span> <span class="n">table_creator</span><span class="p">(</span><span class="n">my_client</span><span class="o">-&gt;</span><span class="n">NewTableCreator</span><span class="p">());</span>
@@ -176,14 +176,14 @@ number of buckets to use:</p>
 <span class="n">myClient</span><span class="o">.</span><span class="na">createTable</span><span class="o">(</span><span class="s">&quot;my-table&quot;</span><span class="o">,</span> <span class="n">my_schema</span><span class="o">,</span> <span class="n">options</span><span class="o">);</span></code></pre></div>
 
 <p>In the examples above, if the hash partition configuration is omitted the create
-table operation will fail with the error <code class="highlighter-rouge">Table partitioning must be specified
+table operation will fail with the error <code>Table partitioning must be specified
 using setRangePartitionColumns or addHashPartitions</code>. In the Java client this
-manifests as a thrown <code class="highlighter-rouge">IllegalArgumentException</code>, while in the C++ client it is
-returned as a <code class="highlighter-rouge">Status::InvalidArgument</code>.</p>
+manifests as a thrown <code>IllegalArgumentException</code>, while in the C++ client it is
+returned as a <code>Status::InvalidArgument</code>.</p>
 
 <h1 id="impala">Impala</h1>
 
-<p>When creating Kudu tables with Impala, the formerly optional <code class="highlighter-rouge">DISTRIBUTE BY</code>
+<p>When creating Kudu tables with Impala, the formerly optional <code>DISTRIBUTE BY</code>
 clause is now required:</p>
 
 <div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">key_column_a</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">key_column_b</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">other_column</span> <span class="n">STRING</span><span class="p">)</span>
@@ -204,6 +204,8 @@ clause is now required:</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2016/09/16/predicate-pushdown.html">Pushing Down Predicate Evaluation in Apache Kudu</a> </li>
     
       <li> <a href="/2016/08/31/intro-flume-kudu-sink.html">An Introduction to the Flume Kudu Sink</a> </li>
     
@@ -232,8 +234,6 @@ clause is now required:</p>
       <li> <a href="/2016/06/21/weekly-update.html">Apache Kudu (incubating) Weekly Update June 21, 2016</a> </li>
     
       <li> <a href="/2016/06/17/raft-consensus-single-node.html">Using Raft Consensus on a Single Node</a> </li>
-    
-      <li> <a href="/2016/06/13/weekly-update.html">Apache Kudu (incubating) Weekly Update June 13, 2016</a> </li>
     
     </ul>
   </div>

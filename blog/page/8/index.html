@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update June 1, 2016</title>
+    <title>Apache Kudu - Blog</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -106,57 +106,42 @@
 
 <div class="row-fluid">
   <div class="col-lg-9">
-    <article>
+    
+
+<!-- Articles -->
+<article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update June 1, 2016</h1>
-    <p class="meta">Posted 01 Jun 2016 by Jean-Daniel Cryans</p>
+    <h1 class="entry-title"><a href="/2016/02/26/apache-kudu-0-7-0-released.html">Apache Kudu (incubating) 0.7.0 released</a></h1>
+    <p class="meta">Posted 26 Feb 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the eleventh edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    
+    <p>The Apache Kudu (incubating) team is happy to announce its first release as
+part of the ASF Incubator, version 0.7.0!</p>
 
-<!--more-->
+<p>This latest version has a number of improvements since 0.6.0:</p>
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
 
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
-
-<ul>
-  <li>
-    <p>Jean-Daniel Cryans, the release manager for 0.9.0, <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201605.mbox/%3CCAGpTDNe_gV5TTsJQSjx_Q-hSGjK9TesWkyP-k9rnhd0mBtYAYg%40mail.gmail.com%3E">indicated</a>
-that the release is almost ready and the first release candidate will be put up for vote this
-week.</p>
-  </li>
-  <li>
-    <p>Dan Burkert pushed <a href="http://gerrit.cloudera.org:8080/3131">a change</a> that disallows default
-partitioning when creating a new table. This is due to many reports from users experiencing bad
-performance because their table was created with only one tablet. Kudu will now force users to
-partition their tables.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon ran YCSB stress tests on a cluster and discovered that compactions were taking hours
-instead of seconds. He pushed <a href="http://gerrit.cloudera.org:8080/#/c/3221/">a change</a> that solves
-the issue as part of our <a href="https://issues.apache.org/jira/browse/KUDU-749">general effort</a> to
-improve performance for zipfian update workloads.</p>
-  </li>
-  <li>
-    <p>Todd also <a href="http://gerrit.cloudera.org:8080/#/c/3186/">changed</a> some flush-related defaults to
-encourage parallel IO and larger flushes. This is based on his previous work that he documented
-in this <a href="http://kudu.apache.org/2016/04/26/ycsb.html">blog post</a>.</p>
-  </li>
-  <li>
-    <p>Will Berkeley made a few improvements last week, but <a href="http://gerrit.cloudera.org:8080/3199">one</a>
-we’d like to call out is that he removed the Java’s kudu-mapreduce module dependency on Hadoop’s
-hadoop-common test jar. This solved build issues while also removing a nasty dependency.</p>
-  </li>
-</ul>
-
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/02/26/apache-kudu-0-7-0-released.html">Read full post...</a>
   </div>
 </article>
+
+
+
+<!-- Pagination links -->
+
+<nav>
+  <hr/>
+  <ul class="pager">
+  
+    <li class="previous"><a href="/blog/page/7"><span aria-hidden="true">&larr;</span> Newer posts</a></li>
+  
+  
+  </ul>
+</nav>
 
 
   </div>
