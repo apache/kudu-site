@@ -150,21 +150,8 @@ workloads.</p>
 
 <h4 id="is-apache-kudu-ready-to-be-deployed-into-production-yet">Is Apache Kudu ready to be deployed into production yet?</h4>
 
-<p>We don’t yet recommend this – Kudu is currently in Beta. During the next few months we
-might have to break backwards compatibility with our current on-the-wire or on-disk
-formats or change public APIs. There is also still work to do to improve data durability
-and consistency. Kudu is currently in a good state for using in a proof-of-concept
-scenario for a future deployment.</p>
-
-<p>For more details on the Kudu Beta period, see the
-<a href="docs/release_notes.html#_about_the_kudu_public_beta">release notes</a>.</p>
-
-<h4 id="when-can-i-expect-ga-or-version-10">When can I expect GA or version 1.0?</h4>
-
-<p>There is no set timeline for general availability (GA). We are looking forward to working
-with the community to continue stabilizing and improving Kudu. We want to implement some
-critical missing features such as security and fill in other gaps before releasing Kudu
-1.0.</p>
+<p>Yes! Although Kudu is still relatively new, as far as storage engines are considered,
+it is ready for production workloads.</p>
 
 <h4 id="is-kudu-open-source">Is Kudu open source?</h4>
 
@@ -299,8 +286,7 @@ partitioning.</p>
 <h4 id="is-there-any-limitation-to-the-size-of-data-that-can-be-added-to-a-column">Is there any limitation to the size of data that can be added to a column?</h4>
 
 <p>There is no hard limit imposed by Kudu, but large values (10s of KB and above)
-are likely to perform poorly and may cause stability issues in the current beta
-release.</p>
+are likely to perform poorly and may cause stability issues in current releases.</p>
 
 <h4 id="does-kudu-support-dynamic-partitioning">Does Kudu support dynamic partitioning?</h4>
 
@@ -331,7 +317,7 @@ sent to any of the replicas. If that replica fails, the query can be sent to ano
 replica immediately.</li>
 </ul>
 
-<p>During Kudu’s beta period, those properties maybe not be fully implemented and
+<p>In current releases, some of these properties are not be fully implemented and
 may suffer from some deficiencies. See the answer to
 “<a href="#is-kudus-consistency-level-tunable">Is Kudu’s consistency level tunable?</a>”
 for more information.</p>
@@ -399,7 +385,7 @@ to bulk load performance of other systems.</p>
 <p>Kudu uses typed storage and currently does not have a specific type for semi-
 structured data such as JSON. Semi-structured data can be stored in a STRING or
 BINARY column, but large values (10s of KB or more) are likely to cause
-performance or stability problems in the current beta release.</p>
+performance or stability problems in current versions.</p>
 
 <p>Fuller support for semi-structured types like JSON and protobuf will be added in
 the future, contingent on demand from early adopters.</p>
@@ -444,7 +430,7 @@ on HDFS, so there’s no need to accomodate reading Kudu’s data files directly
 
 <h4 id="what-frameworks-are-integrated-with-kudu-for-data-access">What frameworks are integrated with Kudu for data access?</h4>
 
-<p>Kudu is already integrated with Impala, MapReduce, and Spark (beta). Additional
+<p>Kudu is already integrated with Impala, MapReduce, and Spark. Additional
 frameworks are expected for GA with Hive being the current highest priority
 addition.</p>
 
@@ -475,9 +461,8 @@ required, but not more RAM than typical Hadoop worker nodes.</p>
 
 <h4 id="is-the-master-node-a-single-point-of-failure">Is the master node a single point of failure?</h4>
 
-<p>The beta release of Kudu includes only experimental support for master node
-failover, with some known limitations. Kudu’s first generally available
-release will feature a highly available master process.</p>
+<p>No. Kudu includes support for running multiple Master nodes, using the same Raft
+consensus algorithm that is used for durability of data.</p>
 
 <h4 id="does-kudu-require-the-use-of-ssds">Does Kudu require the use of SSDs?</h4>
 
@@ -541,8 +526,7 @@ Parquet format using a statement like:</p>
 </code></pre>
 
 <p>then use <a href="http://hadoop.apache.org/docs/r1.2.1/distcp2.html">distcp</a>
-to copy the Parquet data to another cluster. While Kudu is in beta, we’re not
-expecting people to deploy mission-critical workloads on it yet.</p>
+to copy the Parquet data to another cluster.</p>
 
 <h4 id="can-the-wal-transaction-logs-be-used-to-build-a-disaster-recovery-site">Can the WAL transaction logs be used to build a disaster recovery site?</h4>
 
@@ -598,8 +582,9 @@ transactions and secondary indexing typically needed to support OLTP.</p>
 currently some implementation issues that hurt Kudu’s performance on Zipfian distribution
 updates (see the YCSB results in the performance evaluation of our <a href="kudu.pdf">draft paper</a>.</p>
 
-<p>Our intention with the Kudu beta is that if you have a <em>light</em> OLTP-like workload,
-it should work, but if you have mostly random accesses something like HBase is probably better.</p>
+<p>We anticipate that future releases will continue to improve performance for these workloads,
+but Kudu is not designed to be a full replacement for OLTP stores for all workloads. Please
+consider other storage engines such as Apache HBase or a traditional RDBMS.</p>
 
 <h3 id="indexes">Indexes</h3>
 
