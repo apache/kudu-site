@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update May 16, 2016</title>
+    <title>Apache Kudu - Apache Kudu 1.0.0 released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,96 +108,45 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update May 16, 2016</h1>
-    <p class="meta">Posted 16 May 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu 1.0.0 released</h1>
+    <p class="meta">Posted 20 Sep 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the ninth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.0.0!</p>
+
+<p>This latest version adds several new features, including:</p>
 
 <!--more-->
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
-
 <ul>
   <li>
-    <p>Development and code reviews continued on Sameer Abhyankar’s patch which
-adds support for pushing down <a href="http://gerrit.cloudera.org:8080/#/c/2986/">‘IN’ predicates</a>
-to the Kudu tablet servers.</p>
+    <p>Removal of multiversion concurrency control (MVCC) history is now supported.
+This allows Kudu to reclaim disk space, where previously Kudu would keep a full
+history of all changes made to a given table since the beginning of time.</p>
   </li>
   <li>
-    <p>Todd Lipcon and Binglin Chang have been continuing to work on improving throughput
-for a high throughput random-read use case. Initial profiling indicated that the
-RPC system was a bottleneck, and patches have started to land which improve
-the throughput:</p>
-
-    <p>The largest bottleneck was in the queue which transfers RPC calls from the
-libev “reactor” threads which perform network IO to the “worker” threads
-which service the actual requests. Binglin borrowed some ideas from Facebook’s
-<a href="https://github.com/facebook/folly">folly</a> library, and implemented an
-<a href="http://gerrit.cloudera.org:8080/#/c/2938/">improved queue</a>
-which reduces context switches and lock contention while also
-improving CPU cache locality of the worker threads.</p>
-
-    <p>Todd identified that the hash function used to map connections to reactor
-threads was poor, resulting in uneven load distribution across cores.
-A <a href="http://gerrit.cloudera.org:8080/#/c/2939/">simple patch to change the hashcode implementation</a>
-improved the distribution substantially.</p>
-
-    <p>With just these patches, an RPC stress benchmark was improved from about 202K RPCs/second
-to 768K RPCs/second on a 24-core machine. Further improvements are in flight
-and under review this week.</p>
+    <p>Most of Kudu’s command line tools have been consolidated under a new
+top-level <code>kudu</code> tool. This reduces the number of large binaries distributed
+with Kudu and also includes much-improved help output.</p>
   </li>
   <li>
-    <p>Zhen Zhang is continuing to focus on adding more visibility into
-performance and resource usage by adding the ability to propagate various
-per-operation metrics from the server side back to the client. His latest patch
-under review <a href="http://gerrit.cloudera.org:8080/#/c/3013/">exposes scanner cache hit rate metrics</a>
-to the client.</p>
+    <p>Administrative tools including <code>kudu cluster ksck</code> now support running
+against multi-master Kudu clusters.</p>
   </li>
   <li>
-    <p>Todd Lipcon and Sarah Jelinek continue to make progress on the
-implementation of a persistent-memory backed block cache.
-This week a <a href="http://gerrit.cloudera.org:8080/#/c/2957/">substantial refactor to the block cache interface</a>
-was committed in preparation for the <a href="http://gerrit.cloudera.org:8080/#/c/2593/">NVM cache itself</a>.</p>
-  </li>
-  <li>
-    <p>Congratulations to Will Berkeley, a new contributor who has been
-contributing small fixes and improvements such as
-<a href="http://gerrit.cloudera.org:8080/#/c/3022/">exposing table partitioning information in the master web UI</a>.
-Thanks, Will!</p>
-  </li>
-  <li>
-    <p>David Alves has been continuing to make progress towards his implementation of
-the <a href="http://gerrit.cloudera.org:8080/#/c/2642/">Replay Cache</a>.
-This week, he refactored and cleaned up much of the client code involving
-error handling and retrying write operations, in preparation to inserting
-unique identifiers for these and other operations.</p>
-  </li>
-  <li>
-    <p>Chris George has continued to work on the Spark DataSource implementation.
-In particular, work is progressing on support for <a href="http://gerrit.cloudera.org:8080/#/c/2992/">inserting and updating
-rows via Spark</a>.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon and Mike Percy both committed improvements which will help speed up
-startup. Measurements on a cluster where each node stores a few TB of data
-showed a 3x improvement in startup time.</p>
+    <p>The C++ client API now supports writing data in <code>AUTO_FLUSH_BACKGROUND</code> mode.
+This can provide higher throughput for ingest workloads.</p>
   </li>
 </ul>
 
-<h2 id="upcoming-talks-and-meetups">Upcoming talks and meetups</h2>
+<p>This release also includes many bug fixes, optimizations, and other
+improvements, detailed in the <a href="/releases/1.0.0/docs/release_notes.html">release notes</a>.</p>
 
 <ul>
-  <li>Mladen Kovacevi will be presenting Kudu at the
-<a href="http://www.meetup.com/Big-Data-Montreal/events/230879277/?eventId=230879277">Big Data Montreal</a>
-meetup.</li>
+  <li>Download the <a href="/releases/1.0.0/">Kudu 1.0.0 source release</a></li>
+  <li>Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.</li>
 </ul>
 
   </div>

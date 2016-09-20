@@ -1,4 +1,41 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-19T20:51:37-07:00</updated><id>/</id><entry><title>Pushing Down Predicate Evaluation in Apache Kudu</title><link href="/2016/09/16/predicate-pushdown.html" rel="alternate" type="text/html" title="Pushing Down Predicate Evaluation in Apache Kudu" /><published>2016-09-16T00:00:00-07:00</published><updated>2016-09-16T00:00:00-07:00</updated><id>/2016/09/16/predicate-pushdown</id><content type="html" xml:base="/2016/09/16/predicate-pushdown.html">&lt;p&gt;I had the pleasure of interning with the Apache Kudu team at Cloudera this
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-20T10:22:39-07:00</updated><id>/</id><entry><title>Apache Kudu 1.0.0 released</title><link href="/2016/09/20/apache-kudu-1-0-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.0.0 released" /><published>2016-09-20T00:00:00-07:00</published><updated>2016-09-20T00:00:00-07:00</updated><id>/2016/09/20/apache-kudu-1-0-0-released</id><content type="html" xml:base="/2016/09/20/apache-kudu-1-0-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.0.0!&lt;/p&gt;
+
+&lt;p&gt;This latest version adds several new features, including:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Removal of multiversion concurrency control (MVCC) history is now supported.
+This allows Kudu to reclaim disk space, where previously Kudu would keep a full
+history of all changes made to a given table since the beginning of time.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Most of Kudu’s command line tools have been consolidated under a new
+top-level &lt;code&gt;kudu&lt;/code&gt; tool. This reduces the number of large binaries distributed
+with Kudu and also includes much-improved help output.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Administrative tools including &lt;code&gt;kudu cluster ksck&lt;/code&gt; now support running
+against multi-master Kudu clusters.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The C++ client API now supports writing data in &lt;code&gt;AUTO_FLUSH_BACKGROUND&lt;/code&gt; mode.
+This can provide higher throughput for ingest workloads.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This release also includes many bug fixes, optimizations, and other
+improvements, detailed in the &lt;a href=&quot;/releases/1.0.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.0.0/&quot;&gt;Kudu 1.0.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.0.0!
+
+This latest version adds several new features, including:</summary></entry><entry><title>Pushing Down Predicate Evaluation in Apache Kudu</title><link href="/2016/09/16/predicate-pushdown.html" rel="alternate" type="text/html" title="Pushing Down Predicate Evaluation in Apache Kudu" /><published>2016-09-16T00:00:00-07:00</published><updated>2016-09-16T00:00:00-07:00</updated><id>/2016/09/16/predicate-pushdown</id><content type="html" xml:base="/2016/09/16/predicate-pushdown.html">&lt;p&gt;I had the pleasure of interning with the Apache Kudu team at Cloudera this
 summer. This project was my summer contribution to Kudu: a restructuring of the
 scan path to speed up queries.&lt;/p&gt;
 
@@ -1208,72 +1245,4 @@ release. Accordingly, the version number in the master branch has been changed b
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update July 11, 2016</title><link href="/2016/07/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 11, 2016" /><published>2016-07-11T00:00:00-07:00</published><updated>2016-07-11T00:00:00-07:00</updated><id>/2016/07/11/weekly-update</id><content type="html" xml:base="/2016/07/11/weekly-update.html">&lt;p&gt;Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3517/&quot;&gt;changed the default&lt;/a&gt;
-bloom filter false positive (FP) ratio from 1% to 0.01%. The original value
-wasn’t scientifically chosen, but testing with billions of rows on a 5
-node cluster showed a 2x insert throughput improvement at the cost of
-some more disk space.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;J-D Cryans has been fixing some recently introduced bugs in the Java client.
-For example, see &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3541/&quot;&gt;this patch&lt;/a&gt; and
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3586/&quot;&gt;that one&lt;/a&gt;. Testability is a major
-concern right now in the Java client since triggering those issues requires
-a lot of time and data.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert has been making progress on the non-convering range partitioned
-tables front. The Java client &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3388/&quot;&gt;now supports&lt;/a&gt;
-such tables and Dan is currently implementing new functionality to add and remove
-tablets via simple APIs.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;David Alves is also making a lot of progress on the replay cache, this new component
-on the server-side which makes it possible for tablets to identify client write
-operations and enable exactly-once semantics. The main patch is up for review
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3449/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Adar Dembo is working on addressing multi-master issues, as he explained in this
-&lt;a href=&quot;http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html&quot;&gt;blog post&lt;/a&gt;. He just put
-up for review patches that enable tablet servers to heartbeat to all masters. Part
-one is &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3609/&quot;&gt;available here&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Misty prepared a document with J-D that contains instructions on how to release a
-new Kudu version. It is &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3614/&quot;&gt;up for review here&lt;/a&gt;
-if you are curious or want to learn more about this process.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;The &lt;a href=&quot;https://s.apache.org/l6Tw&quot;&gt;vote&lt;/a&gt; to graduate Kudu from the ASF’s Incubator passed!
-The next step is for the ASF Board to vote on the resolution at their next meeting.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;There’s &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCAGpTDNesxH43C-Yt5fNwpEpAxfb2P62Xpdi8AqT8jfvjeqnu0w%40mail.gmail.com%3E&quot;&gt;a discussion&lt;/a&gt;
-on the dev mailing list about having an intermediate release, called 0.10.0, before 1.0.0.
-The current issue is that the version in the code is current “1.0.0-SNAPSHOT” which doesn’t
-leave room for another other release, but the bigger issue is that code is still churning a
-lot which doesn’t make for a stable 1.0 release.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the sixteenth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
