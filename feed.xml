@@ -1,4 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-20T10:22:39-07:00</updated><id>/</id><entry><title>Apache Kudu 1.0.0 released</title><link href="/2016/09/20/apache-kudu-1-0-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.0.0 released" /><published>2016-09-20T00:00:00-07:00</published><updated>2016-09-20T00:00:00-07:00</updated><id>/2016/09/20/apache-kudu-1-0-0-released</id><content type="html" xml:base="/2016/09/20/apache-kudu-1-0-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.0.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-26T12:06:12-07:00</updated><id>/</id><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
+2016. If you’re interested in Kudu, there will be several opportunities to
+learn more, both from the open source development team as well as some companies
+who are already adopting Kudu for their use cases.
+&lt;!--more--&gt;
+Here are some of the sessions to check out:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52146&quot;&gt;Powering real-time analytics on Xfinity using Kudu&lt;/a&gt; (Wednesday, 11:20am)&lt;/p&gt;
+
+    &lt;p&gt;Sridhar Alla and Kiran Muglurmath from Comcast will talk about how they’re using
+Kudu to store hundreds of billions of Set-Top Box (STB) events, performing
+analytics concurrently with real-time streaming ingest of thousands of events
+per second.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52248&quot;&gt;Creating real-time, data-centric applications with Impala and Kudu&lt;/a&gt; (Wednesday, 2:05pm)&lt;/p&gt;
+
+    &lt;p&gt;Marcel Kornacker and Todd Lipcon will introduce how Impala and Kudu together
+allow users to build real-time applications that support streaming ingest,
+random access updates and deletes, and high performance analytic SQL in
+a single system.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52168&quot;&gt;Streaming cybersecurity into Graph: Accelerating data into Datastax Graph and Blazegraph&lt;/a&gt; (Thursday, 1:15pm)&lt;/p&gt;
+
+    &lt;p&gt;Joshua Patterson, Michael Wendt, and Keith Kraus from Accenture Labs will discuss
+how they have built cybersecurity solutions using graph analytics on top of open
+source technology like Apache Kafka, Spark, and Flink. They will also touch on
+why Kudu is becoming an integral part of Accenture’s technology stack.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52050&quot;&gt;How GE analyzes billions of mission-critical events in real time using Apache Apex, Spark, and Kudu&lt;/a&gt; (Thursday, 2:05pm)&lt;/p&gt;
+
+    &lt;p&gt;Venkatesh Sivasubramanian and Luis Ramos from GE Digital will discuss how they
+collect and process real-time IoT data using Apache Apex and Apache Spark, and
+how they’ve been experimenting with Apache Kudu for time series data storage.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Aside from these organized sessions, word has it that there will be various demos
+featuring Apache Kudu at the Cloudera and ZoomData vendor booths.&lt;/p&gt;
+
+&lt;p&gt;If you’re not attending the conference, but still based in NYC, all hope is
+not lost. Michael Crutcher from Cloudera will be presenting an introduction
+to Apache Kudu at the &lt;a href=&quot;http://www.meetup.com/mysqlnyc/events/233599664/&quot;&gt;SQL NYC Meetup&lt;/a&gt;.
+Be sure to RSVP as spots are filling up fast.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>This week in New York, O&amp;#8217;Reilly and Cloudera will be hosting Strata+Hadoop World
+2016. If you&amp;#8217;re interested in Kudu, there will be several opportunities to
+learn more, both from the open source development team as well as some companies
+who are already adopting Kudu for their use cases.</summary></entry><entry><title>Apache Kudu 1.0.0 released</title><link href="/2016/09/20/apache-kudu-1-0-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.0.0 released" /><published>2016-09-20T00:00:00-07:00</published><updated>2016-09-20T00:00:00-07:00</updated><id>/2016/09/20/apache-kudu-1-0-0-released</id><content type="html" xml:base="/2016/09/20/apache-kudu-1-0-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.0.0!&lt;/p&gt;
 
 &lt;p&gt;This latest version adds several new features, including:&lt;/p&gt;
 
@@ -1185,64 +1235,4 @@ Established in 1999, the all-volunteer Foundation oversees more than 350 leading
 
 Open Source columnar storage engine enables fast analytics across the Internet of Things, time series, cybersecurity, and other Big Data applications in the Apache Hadoop ecosystem
 
-Forest Hill, MD –25 July 2016– The Apache Software Foundation (ASF), the all-volunteer developers, stewards, and incubators of more than 350 Open Source projects and initiatives, announced today that Apache® Kudu™ has graduated from the Apache Incubator to become a Top-Level Project (TLP), signifying that the project’s community and products have been well-governed under the ASF’s meritocratic process and principles.</summary></entry><entry><title>Apache Kudu (incubating) Weekly Update July 18, 2016</title><link href="/2016/07/18/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu (incubating) Weekly Update July 18, 2016" /><published>2016-07-18T00:00:00-07:00</published><updated>2016-07-18T00:00:00-07:00</updated><id>/2016/07/18/weekly-update</id><content type="html" xml:base="/2016/07/18/weekly-update.html">&lt;p&gt;Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert has continued making progress on support for non-covering range partitioned
-tables. This past week, he posted a code review for
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3648/&quot;&gt;adding and dropping range partitions to the master&lt;/a&gt;
-and another for &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3581/&quot;&gt;handling non-covering ranges in the C++ client&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Adar Dembo continued working on addressing multi-master issues, as he explained in this
-&lt;a href=&quot;http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html&quot;&gt;blog post&lt;/a&gt;. This past week
-he worked on &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3550/&quot;&gt;tackling various race conditions&lt;/a&gt;
-that were possible when master operations were submitted concurrent with a master leader election.&lt;/p&gt;
-
-    &lt;p&gt;Adar also posted patches for most of the remaining known server-side issues, including
-posting a comprehensive &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3611/&quot;&gt;stress test&lt;/a&gt; which issues
-client DDL operations concurrent with triggering master crashes and associated failovers.&lt;/p&gt;
-
-    &lt;p&gt;As always, Adar’s commit messages are instructive and fun reads for those interested in
-following along.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;As mentioned last week, David Alves has been making a lot of progress on the implementation
-of the replay cache. Many patches landed in master this week, including:
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3192/&quot;&gt;RPC system integration&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3449/&quot;&gt;Integration with replicated writes&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3519/&quot;&gt;Correctness/stress tests&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-
-    &lt;p&gt;Currently, this new feature is disabled by default, as the support for evicting elements
-from the cache is not yet complete. This last missing feature is now
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3628/&quot;&gt;up for review&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Alexey Serbin has been working on adding Doxygen-based documentation for the public
-C++ API. This was originally &lt;a href=&quot;https://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CCANbMB4wtMz=JKwgKMNPvkjWX3t9NxCeGt04NmL=SyESyzUMWJg@mail.gmail.com%3E&quot;&gt;proposed on the mailing list&lt;/a&gt;
- a couple of weeks ago, and last week, Alexey posted the
- &lt;a href=&quot;https://gerrit.cloudera.org/#/c/3619/&quot;&gt;initial draft of the implementation&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;The &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCAGpTDNesxH43C-Yt5fNwpEpAxfb2P62Xpdi8AqT8jfvjeqnu0w%40mail.gmail.com%3E&quot;&gt;discussion&lt;/a&gt;
-on the dev mailing list about having an intermediate release, called 0.10.0, before 1.0.0,
-has wound down. The consensus seems to be that the development team is in favor of this
-release. Accordingly, the version number in the master branch has been changed back to
-0.10.0-SNAPSHOT.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#105;&amp;#110;&amp;#099;&amp;#117;&amp;#098;&amp;#097;&amp;#116;&amp;#111;&amp;#114;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the seventeenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</summary></entry></feed>
+Forest Hill, MD –25 July 2016– The Apache Software Foundation (ASF), the all-volunteer developers, stewards, and incubators of more than 350 Open Source projects and initiatives, announced today that Apache® Kudu™ has graduated from the Apache Incubator to become a Top-Level Project (TLP), signifying that the project’s community and products have been well-governed under the ASF’s meritocratic process and principles.</summary></entry></feed>

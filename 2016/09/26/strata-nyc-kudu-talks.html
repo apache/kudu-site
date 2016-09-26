@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update June 27, 2016</title>
+    <title>Apache Kudu - Apache Kudu at Strata+Hadoop World NYC 2016</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,112 +108,58 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update June 27, 2016</h1>
-    <p class="meta">Posted 27 Jun 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu at Strata+Hadoop World NYC 2016</h1>
+    <p class="meta">Posted 26 Sep 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
-
+    <p>This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
+2016. If you’re interested in Kudu, there will be several opportunities to
+learn more, both from the open source development team as well as some companies
+who are already adopting Kudu for their use cases.
 <!--more-->
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
-
-<ul>
-  <li>
-    <p>Todd Lipcon diagnosed and fixed a <a href="https://gerrit.cloudera.org/3445">tricky bug</a>
-which could cause Kudu servers to crash under load. It turned out that the bug
-was in a synchronization profiling code path related to the tcmalloc allocator.
-This allocator is used in release builds, but can’t be used in instrumented builds
-such as
-<a href="http://clang.llvm.org/docs/AddressSanitizer.html">AddressSanitizer</a> or
-<a href="http://clang.llvm.org/docs/ThreadSanitizer.html">ThreadSanitizer</a>. This made it particularly difficult
-to catch. The bug fix will be released in the upcoming 0.9.1 release.</p>
-  </li>
-  <li>
-    <p>Todd also finished and committed a fix for <a href="https://issues.apache.org/jira/browse/KUDU-1469">KUDU-1469</a>,
-a bug in which Kudu’s implementation of Raft consensus could get “stuck” not making
-progress replicating operations for a tablet. See the
-<a href="https://gerrit.cloudera.org/#/c/3228/7/src/kudu/integration-tests/raft_consensus-itest.cc">new integration test case</a>
-for more details on this bug.</p>
-  </li>
-  <li>
-    <p>Mike Percy finished implementing and committed a feature which allows
-<a href="https://gerrit.cloudera.org/#/c/3135/">reserving disk space for non-Kudu processes</a>.
-This feature causes Kudu to stop allocating new data blocks on a
-disk if it is within a user-specified threshold of being full, preventing
-possible crashes and allowing for safer collocation of Kudu with other processes
-on a cluster.</p>
-  </li>
-  <li>
-    <p>Will Berkeley finished implementing <a href="https://issues.apache.org/jira/browse/KUDU-1398">KUDU-1398</a>,
-a new optimization which reduces the amount of disk space used by
-indexing structures in Kudu’s internal storage format. This should
-improve storage efficiency for workloads with large keys, and can
-also improve write performance by increasing the number of index
-entries which can fit in a given amount of cache memory.</p>
-  </li>
-  <li>
-    <p>David Alves has completed posting a patch series that implements
-exactly-once RPC semantics. The design, as mentioned in previous
-blog posts, is described in a <a href="https://gerrit.cloudera.org/#/c/2642/">design document</a>
-and the patches can be found in a 10-patch series starting with
-<a href="https://gerrit.cloudera.org/#/c/3190/">gerrit #3190</a>.</p>
-  </li>
-  <li>
-    <p>Dan Burkert is continuing working on adding support for
-<a href="https://github.com/apache/incubator-kudu/blob/master/docs/design-docs/non-covering-range-partitions.md">tables with range partitions that don’t cover the entire key
-space</a>.
-This past week, he focused on adding <a href="https://gerrit.cloudera.org/#/c/3388/">support in the the Java client</a>
-which also necessitated some serious <a href="https://gerrit.cloudera.org/#/c/3477/">refactoring</a>. These patches
-are now under review.</p>
-  </li>
-  <li>
-    <p>Congratulations to Andrew Wong, a new contributor who committed his
-first patches this week. Andrew <a href="https://gerrit.cloudera.org/#/c/3424/">improved the build docs for OSX</a>
-and also fixed a <a href="https://gerrit.cloudera.org/#/c/3486/">crash if the user forgot to specify the master address
-in some command line tools</a>.
-Thanks, Andrew!</p>
-  </li>
-</ul>
-
-<h2 id="project-news">Project news</h2>
+Here are some of the sessions to check out:</p>
 
 <ul>
   <li>
-    <p>The Apache Kudu web site has finished migrating to Apache Software Foundation infrastructure.
-The site can now be found at <a href="http://kudu.incubator.apache.org/">kudu.incubator.apache.org</a>.
-Existing links will automatically redirect.</p>
+    <p><a href="http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52146">Powering real-time analytics on Xfinity using Kudu</a> (Wednesday, 11:20am)</p>
+
+    <p>Sridhar Alla and Kiran Muglurmath from Comcast will talk about how they’re using
+Kudu to store hundreds of billions of Set-Top Box (STB) events, performing
+analytics concurrently with real-time streaming ingest of thousands of events
+per second.</p>
   </li>
   <li>
-    <p>A Kudu 0.9.1 release candidate was posted and passed a
-<a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CCADY20s6%3D%2BnKNgvx%3DG_pKupQGiH%2B9ToS53LqExBwWM6vLp-ns9A%40mail.gmail.com%3E">release vote</a>
-by the Kudu Podling PMC (PPMC).
-The release candidate will now be voted upon by the Apache Incubator PMC. If all goes well, we
-can expect a release late this week. The release fixes a few critical bugs discovered in 0.9.0.</p>
+    <p><a href="http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52248">Creating real-time, data-centric applications with Impala and Kudu</a> (Wednesday, 2:05pm)</p>
+
+    <p>Marcel Kornacker and Todd Lipcon will introduce how Impala and Kudu together
+allow users to build real-time applications that support streaming ingest,
+random access updates and deletes, and high performance analytic SQL in
+a single system.</p>
   </li>
   <li>
-    <p>Chris Mattmann, one of Kudu’s mentors from the Apache Incubator,
-started a <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CAD4A858D-403D-4E74-A4F4-DE2F08FB761E%40jpl.nasa.gov%3E">discussion</a>
-about the project’s graduation to a top-level project (TLP).
-Initial responses seem to be positive, so the next step will
-be to work on a draft resolution and various stages of
-voting.</p>
+    <p><a href="http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52168">Streaming cybersecurity into Graph: Accelerating data into Datastax Graph and Blazegraph</a> (Thursday, 1:15pm)</p>
+
+    <p>Joshua Patterson, Michael Wendt, and Keith Kraus from Accenture Labs will discuss
+how they have built cybersecurity solutions using graph analytics on top of open
+source technology like Apache Kafka, Spark, and Flink. They will also touch on
+why Kudu is becoming an integral part of Accenture’s technology stack.</p>
+  </li>
+  <li>
+    <p><a href="http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52050">How GE analyzes billions of mission-critical events in real time using Apache Apex, Spark, and Kudu</a> (Thursday, 2:05pm)</p>
+
+    <p>Venkatesh Sivasubramanian and Luis Ramos from GE Digital will discuss how they
+collect and process real-time IoT data using Apache Apex and Apache Spark, and
+how they’ve been experimenting with Apache Kudu for time series data storage.</p>
   </li>
 </ul>
 
-<h2 id="on-the-kudu-blog">On the Kudu blog</h2>
+<p>Aside from these organized sessions, word has it that there will be various demos
+featuring Apache Kudu at the Cloudera and ZoomData vendor booths.</p>
 
-<ul>
-  <li>Adar Dembo published a post detailing his recent work on
-<a href="http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html">master fault tolerance in Kudu 1.0</a>.</li>
-</ul>
-
-<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
+<p>If you’re not attending the conference, but still based in NYC, all hope is
+not lost. Michael Crutcher from Cloudera will be presenting an introduction
+to Apache Kudu at the <a href="http://www.meetup.com/mysqlnyc/events/233599664/">SQL NYC Meetup</a>.
+Be sure to RSVP as spots are filling up fast.</p>
 
   </div>
 </article>
