@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-26T12:06:12-07:00</updated><id>/</id><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-27T21:19:00-07:00</updated><id>/</id><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
 2016. If you’re interested in Kudu, there will be several opportunities to
 learn more, both from the open source development team as well as some companies
 who are already adopting Kudu for their use cases.
@@ -36,6 +36,13 @@ why Kudu is becoming an integral part of Accenture’s technology stack.&lt;/p&g
     &lt;p&gt;Venkatesh Sivasubramanian and Luis Ramos from GE Digital will discuss how they
 collect and process real-time IoT data using Apache Apex and Apache Spark, and
 how they’ve been experimenting with Apache Kudu for time series data storage.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/51887&quot;&gt;Apache Kudu: 1.0 and Beyond&lt;/a&gt; (Thursday, 4:35pm)&lt;/p&gt;
+
+    &lt;p&gt;Todd Lipcon from Cloudera will review the new features that were developed between Kudu 0.5
+(the first public release one year ago) and Kudu 1.0, released just last week. Additionally,
+this talk will provide some insight into the upcoming project roadmap for the coming year.&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
 
