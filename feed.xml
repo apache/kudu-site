@@ -1,4 +1,170 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-09-27T21:19:00-07:00</updated><id>/</id><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-10-11T09:00:22-07:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update October 11th, 2016</title><link href="/2016/10/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 11th, 2016" /><published>2016-10-11T00:00:00-07:00</published><updated>2016-10-11T00:00:00-07:00</updated><id>/2016/10/11/weekly-update</id><content type="html" xml:base="/2016/10/11/weekly-update.html">&lt;p&gt;Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
+readers will notice that the weekly blog posts have been not-so-weekly
+of late – in fact, it has been nearly two months since the previous post
+as I and others have focused on releases, conferences, etc.&lt;/p&gt;
+
+&lt;p&gt;So, rather than covering just this past week, this post will cover highlights
+of the progress since the 1.0 release in mid-September. If you’re interested
+in learning about progress prior to that release, check the
+&lt;a href=&quot;http://kudu.apache.org/releases/1.0.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;On September 12th, the Kudu PMC announced that Alexey Serbin and Will
+Berkeley had been voted as new committers and PMC members.&lt;/p&gt;
+
+    &lt;p&gt;Alexey’s contributions prior to committership included
+&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3952/&quot;&gt;AUTO_FLUSH_BACKGROUND&lt;/a&gt; support
+in C++ as well as &lt;a href=&quot;http://kudu.apache.org/apidocs/&quot;&gt;API documentation&lt;/a&gt;
+for the C++ client API.&lt;/p&gt;
+
+    &lt;p&gt;Will’s contributions include several fixes to the web UIs, large
+improvements the Flume integration, and a lot of good work
+burning down long-standing bugs.&lt;/p&gt;
+
+    &lt;p&gt;Both contributors were “acting the part” and the PMC was pleased to
+recognize their contributions with committership.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Kudu 1.0.0 was &lt;a href=&quot;https://kudu.apache.org/2016/09/20/apache-kudu-1-0-0-released.html&quot;&gt;released&lt;/a&gt;
+on September 19th. Most community members have upgraded by this point
+and have been reporting improved stability and performance.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dan Burkert has been managing a Kudu 1.0.1 release to address a few
+important bugs discovered since 1.0.0. The vote passed on Monday
+afternoon, so the release should be made officially available
+later this week.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;After the 1.0 release, many contributors have gone into a design phase
+for upcoming work. Over the last couple of weeks, developers have posted
+scoping and design documents for topics including:
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem&quot;&gt;Security features&lt;/a&gt; (Todd Lipcon)&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://goo.gl/wP5BJb&quot;&gt;Improved disk-failure handling&lt;/a&gt; (Dinesh Bhat)&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/7K48&quot;&gt;Tools for manual recovery from corruption&lt;/a&gt; (Mike Percy and Dinesh Bhat)&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/uOOt&quot;&gt;Addressing issues seen with the LogBlockManager&lt;/a&gt; (Adar Dembo)&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/7VCo&quot;&gt;Providing proper snapshot/serializable consistency&lt;/a&gt; (David Alves)&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/ARUP&quot;&gt;Improving re-replication of under-replicated tablets&lt;/a&gt; (Mike Percy)&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://docs.google.com/document/d/1066W63e2YUTNnecmfRwgAHghBPnL1Pte_gJYAaZ_Bjo/edit&quot;&gt;Avoiding Raft election storms&lt;/a&gt; (Todd Lipcon)&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;The development community has no particular rule that all work must be
+accompanied by such a document, but in the past they have proven useful
+for fleshing out ideas around a design before beginning implementation.
+As Kudu matures, we can probably expect to see more of this kind of planning
+and design discussion.&lt;/p&gt;
+
+    &lt;p&gt;If any of the above work areas sounds interesting to you, please take a
+look and leave your comments! Similarly, if you are interested in contributing
+in any of these areas, please feel free to volunteer on the mailing list.
+Help of all kinds (coding, documentation, testing, etc) is welcomed.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Adar Dembo spent a chunk of time re-working the &lt;code&gt;thirdparty&lt;/code&gt; directory
+that contains most of Kudu’s native dependencies. The major resulting
+changes are:
+    &lt;ul&gt;
+      &lt;li&gt;Build directories are now cleanly isolated from source directories,
+improving cleanliness of re-builds.&lt;/li&gt;
+      &lt;li&gt;ThreadSanitizer (TSAN) builds now use &lt;code&gt;libc++&lt;/code&gt; instead of &lt;code&gt;libstdcxx&lt;/code&gt;
+for C++ library support. The &lt;code&gt;libc++&lt;/code&gt; library has better support for
+sanitizers, is easier to build in isolation, and solves some compatibility
+issues that Adar was facing with GCC 5 on Ubuntu Xenial.&lt;/li&gt;
+      &lt;li&gt;All of the thirdparty dependencies now build with TSAN instrumentation,
+which improves our coverage of this very effective tooling.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;The impact to most developers is that, if you have an old source checkout,
+it’s highly likely you will need to clean and re-build the thirdparty
+directory.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Many contributors spent time in recent weeks trying to address the
+flakiness of various test cases. The Kudu project uses a
+&lt;a href=&quot;http://dist-test.cloudera.org:8080/&quot;&gt;dashboard&lt;/a&gt; to track the flakiness
+of each test case, and &lt;a href=&quot;http://dist-test.cloudera.org/&quot;&gt;distributed test infrastructure&lt;/a&gt;
+to facilitate reproducing test flakes.    &lt;!-- spaces cause line break --&gt;
+As might be expected, some of the flaky tests were due to bugs or
+timing assumptions in the tests themselves. However, this effort
+also identified several real bugs:
+    &lt;ul&gt;
+      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4570]&quot;&gt;tight retry loop&lt;/a&gt; in the
+Java client.&lt;/li&gt;
+      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4395&quot;&gt;memory leak&lt;/a&gt; due to circular
+references in the C++ client.&lt;/li&gt;
+      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4551&quot;&gt;crash&lt;/a&gt; which could affect
+tools used for problem diagnosis.&lt;/li&gt;
+      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4409&quot;&gt;divergence bug&lt;/a&gt; in Raft consensus
+under particularly torturous scenarios.&lt;/li&gt;
+      &lt;li&gt;A potential &lt;a href=&quot;http://gerrit.cloudera.org:8080/4394&quot;&gt;crash during tablet server startup&lt;/a&gt;.&lt;/li&gt;
+      &lt;li&gt;A case in which &lt;a href=&quot;http://gerrit.cloudera.org:8080/4626&quot;&gt;thread startup could be delayed&lt;/a&gt;
+by built-in monitoring code.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;As a result of these efforts, the failure rate of these flaky tests has
+decreased significantly and the stability of Kudu releases continues
+to increase.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Dan Burkert picked up work originally started by Sameer Abhyankar on
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1363&quot;&gt;KUDU-1363&lt;/a&gt;, which adds
+support for adding &lt;code&gt;IN (...)&lt;/code&gt; predicates to scanners. Dan committed the
+&lt;a href=&quot;http://gerrit.cloudera.org:8080/2986&quot;&gt;main patch&lt;/a&gt; as well as corresponding
+&lt;a href=&quot;http://gerrit.cloudera.org:8080/4530&quot;&gt;support in the Java client&lt;/a&gt;.
+Jordan Birdsell quickly added corresponding support in &lt;a href=&quot;http://gerrit.cloudera.org:8080/4548&quot;&gt;Python&lt;/a&gt;.
+This new feature will be available in an upcoming release.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Work continues on the &lt;code&gt;kudu&lt;/code&gt; command line tool. Dinesh Bhat added
+the ability to ask a tablet’s leader to &lt;a href=&quot;http://gerrit.cloudera.org:8080/4533&quot;&gt;step down&lt;/a&gt;
+and Alexey Serbin added a &lt;a href=&quot;http://gerrit.cloudera.org:8080/4412&quot;&gt;tool to insert random data into a
+table&lt;/a&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Jordan Birdsell continues to be on a tear improving the Python client.
+The patches are too numerous to mention, but highlights include Python 3
+support as well as near feature parity with the C++ client.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Todd Lipcon has been doing some refactoring and cleanup in the Raft
+consensus implementation. In addition to simplifying and removing code,
+he committed &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1567&quot;&gt;KUDU-1567&lt;/a&gt;,
+which improves write performance in many cases by a factor of three
+or more while also improving stability.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Brock Noland is working on support for &lt;a href=&quot;https://gerrit.cloudera.org/#/c/4491/&quot;&gt;INSERT IGNORE&lt;/a&gt;
+as a first-class part of the Kudu API. Of course this functionality
+can already be done by simply performing normal inserts and ignoring any
+resulting errors, but pushing it to the server prevents the server
+from counting such operations as errors.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Congratulations to Ninad Shringarpure for contributing his first patches
+to Kudu. Ninad contributed two documentation fixes and improved
+formatting on the Kudu web UI.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
+tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
+readers will notice that the weekly blog posts have been not-so-weekly
+of late &amp;#8211; in fact, it has been nearly two months since the previous post
+as I and others have focused on releases, conferences, etc.
+
+So, rather than covering just this past week, this post will cover highlights
+of the progress since the 1.0 release in mid-September. If you&amp;#8217;re interested
+in learning about progress prior to that release, check the
+release notes.</summary></entry><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
 2016. If you’re interested in Kudu, there will be several opportunities to
 learn more, both from the open source development team as well as some companies
 who are already adopting Kudu for their use cases.
@@ -1203,43 +1369,4 @@ getting near the finish line.&lt;/p&gt;
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>Welcome to the eighteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>The Apache Software Foundation Announces Apache® Kudu™ as a Top-Level Project</title><link href="/2016/07/25/asf-graduation.html" rel="alternate" type="text/html" title="The Apache Software Foundation Announces Apache&amp;reg; Kudu&amp;trade; as a Top-Level Project" /><published>2016-07-25T00:00:00-07:00</published><updated>2016-07-25T00:00:00-07:00</updated><id>/2016/07/25/asf-graduation</id><content type="html" xml:base="/2016/07/25/asf-graduation.html">&lt;p&gt;The following post was originally published on &lt;a href=&quot;https://blogs.apache.org/foundation/entry/apache_software_foundation_announces_apache&quot;&gt;The Apache Software Foundation Blog&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;&lt;strong&gt;Open Source columnar storage engine enables fast analytics across the Internet of Things, time series, cybersecurity, and other Big Data applications in the Apache Hadoop ecosystem&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Forest Hill, MD –25 July 2016–&lt;/strong&gt; The Apache Software Foundation (ASF), the all-volunteer developers, stewards, and incubators of more than 350 Open Source projects and initiatives, announced today that Apache® Kudu™ has graduated from the Apache Incubator to become a Top-Level Project (TLP), signifying that the project’s community and products have been well-governed under the ASF’s meritocratic process and principles.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;Apache Kudu is an Open Source columnar storage engine built for the Apache Hadoop ecosystem designed to enable flexible, high-performance analytic pipelines.&lt;/p&gt;
-
-&lt;p&gt;“Under the Apache Incubator, the Kudu community has grown to more than 45 developers and hundreds of users,” said Todd Lipcon, Vice President of Apache Kudu and Software Engineer at Cloudera. “We are excited to be recognized for our strong Open Source community and are looking forward to our upcoming 1.0 release.”&lt;/p&gt;
-
-&lt;p&gt;Optimized for lightning-fast scans, Kudu is particularly well suited to hosting time-series data and various types of operational data. In addition to its impressive scan speed, Kudu supports many operations available in traditional databases, including real-time insert, update, and delete operations. Kudu enables a “bring your own SQL” philosophy, and supports being accessed by multiple different query engines including such other Apache projects as Drill, Spark, and Impala (incubating).&lt;/p&gt;
-
-&lt;p&gt;Apache Kudu is in use at diverse companies and organizations across many industries, including retail, online service delivery, risk management, and digital advertising.&lt;/p&gt;
-
-&lt;p&gt;“Using Apache Kudu alongside interactive SQL tools like Apache Impala (incubating) has allowed us to deploy a next-generation platform for real-time analytics and online reporting,” said Baoqiu Cui, Chief Architect at Xiaomi. “Apache Kudu has been deployed in production at Xiaomi for more than six months and has enabled us to improve key reliability and performance metrics for our customers. We are excited to see Kudu graduate to a top-level project and look forward to continuing to contribute to its success.”&lt;/p&gt;
-
-&lt;p&gt;“We are already seeing the many benefits of Apache Kudu. In fact we’re using its combination of fast scans and fast updates for upcoming releases of our risk solutions,” said Cory Isaacson, CTO at Risk Management Solutions, Inc. “Kudu is performing well, and RMS is proud to have contributed to the project’s integration with Apache Spark.”&lt;/p&gt;
-
-&lt;p&gt;“The Internet of Things, cybersecurity and other fast data drivers highlight the demands that real-time analytics place on Big Data platforms,” said Arvind Prabhakar, Apache Software Foundation member and CTO of StreamSets. “Apache Kudu fills a key architectural gap by providing an elegant solution spanning both traditional analytics and fast data access. StreamSets provides native support for Apache Kudu to help build real-time ingestion and analytics for our users.”&lt;/p&gt;
-
-&lt;p&gt;“Graduation to a Top-Level Project marks an important milestone in the Apache Kudu community, but we are really just beginning to achieve our vision of a hybrid storage engine for analytics and real-time processing,” added Lipcon. “As our community continues to grow, we welcome feedback, use cases, bug reports, patch submissions, documentation, new integrations, and all other contributions.”&lt;/p&gt;
-
-&lt;p&gt;The Apache Kudu project welcomes contributions and community participation through mailing lists, a Slack channel, face-to-face MeetUps, and other events. Catch Apache Kudu in action at Strata + Hadoop World, 26-29 September 2016 in New York.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Availability and Oversight&lt;/strong&gt;&lt;br /&gt;
-Apache Kudu software is released under the Apache License v2.0 and is overseen by a self-selected team of active contributors to the project. A Project Management Committee (PMC) guides the Project’s day-to-day operations, including community development and product releases. For project updates, downloads, documentation, and ways to become involved with Apache Kudu, visit &lt;a href=&quot;http://kudu.apache.org/&quot;&gt;http://kudu.apache.org/&lt;/a&gt; , &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;, and &lt;a href=&quot;http://kudu.apache.org/blog/&quot;&gt;http://kudu.apache.org/blog/&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;About the Apache Incubator&lt;/strong&gt;&lt;br /&gt;
-The Apache Incubator is the entry path for projects and codebases wishing to become part of the efforts at The Apache Software Foundation. All code donations from external organizations and existing external projects wishing to join the ASF enter through the Incubator to: 1) ensure all donations are in accordance with the ASF legal standards; and 2) develop new communities that adhere to our guiding principles. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF. For more information, visit &lt;a href=&quot;http://incubator.apache.org/&quot;&gt;http://incubator.apache.org/&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;About The Apache Software Foundation (ASF)&lt;/strong&gt;&lt;br /&gt;
-Established in 1999, the all-volunteer Foundation oversees more than 350 leading Open Source projects, including Apache HTTP Server –the world’s most popular Web server software. Through the ASF’s meritocratic process known as “The Apache Way,” more than 550 individual Members and 5,300 Committers successfully collaborate to develop freely available enterprise-grade software, benefiting millions of users worldwide: thousands of software solutions are distributed under the Apache License; and the community actively participates in ASF mailing lists, mentoring initiatives, and ApacheCon, the Foundation’s official user conference, trainings, and expo. The ASF is a US 501(c)(3) charitable organization, funded by individual donations and corporate sponsors including Alibaba Cloud Computing, ARM, Bloomberg, Budget Direct, Cerner, Cloudera, Comcast, Confluent, Facebook, Google, Hortonworks, HP, Huawei, IBM, InMotion Hosting, iSigma, LeaseWeb, Microsoft, OPDi, PhoenixNAP, Pivotal, Private Internet Access, Produban, Red Hat, Serenata Flowers, WANdisco, and Yahoo. For more information, visit &lt;a href=&quot;http://www.apache.org/&quot;&gt;http://www.apache.org/&lt;/a&gt; and &lt;a href=&quot;https://twitter.com/TheASF&quot;&gt;https://twitter.com/TheASF&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;© The Apache Software Foundation. “Apache”, “Kudu”, “Apache Kudu”, “Drill”, “Apache Drill”, “Hadoop”, “Apache Hadoop”, “Apache Impala (incubating)”, “Spark”, “Apache Spark”, and “ApacheCon” are registered trademarks or trademarks of the Apache Software Foundation in the United States and/or other countries. All other brands and trademarks are the property of their respective owners.&lt;/p&gt;</content><author><name>Jean-Daniel Cryans</name></author><summary>The following post was originally published on The Apache Software Foundation Blog.
-
-Open Source columnar storage engine enables fast analytics across the Internet of Things, time series, cybersecurity, and other Big Data applications in the Apache Hadoop ecosystem
-
-Forest Hill, MD –25 July 2016– The Apache Software Foundation (ASF), the all-volunteer developers, stewards, and incubators of more than 350 Open Source projects and initiatives, announced today that Apache® Kudu™ has graduated from the Apache Incubator to become a Top-Level Project (TLP), signifying that the project’s community and products have been well-governed under the ASF’s meritocratic process and principles.</summary></entry></feed>
+covers ongoing development and news in the Apache Kudu project.</summary></entry></feed>

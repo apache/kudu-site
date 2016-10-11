@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update April 18, 2016</title>
+    <title>Apache Kudu - Apache Kudu Weekly Update October 11th, 2016</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,98 +108,169 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update April 18, 2016</h1>
-    <p class="meta">Posted 18 Apr 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu Weekly Update October 11th, 2016</h1>
+    <p class="meta">Posted 11 Oct 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the fifth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
+readers will notice that the weekly blog posts have been not-so-weekly
+of late – in fact, it has been nearly two months since the previous post
+as I and others have focused on releases, conferences, etc.</p>
+
+<p>So, rather than covering just this past week, this post will cover highlights
+of the progress since the 1.0 release in mid-September. If you’re interested
+in learning about progress prior to that release, check the
+<a href="http://kudu.apache.org/releases/1.0.0/docs/release_notes.html">release notes</a>.</p>
 
 <!--more-->
-
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
 
 <h2 id="project-news">Project news</h2>
 
 <ul>
   <li>
-    <p>Cloudera announced that it has posted <a href="http://markmail.org/thread/tghwcux5k4qvcsep">binary packages</a>
-for the recent 0.8.0 release. These are not official packages from
-the Apache Kudu (incubating) project, but users who prefer not to
-build from source may find them convenient.</p>
+    <p>On September 12th, the Kudu PMC announced that Alexey Serbin and Will
+Berkeley had been voted as new committers and PMC members.</p>
+
+    <p>Alexey’s contributions prior to committership included
+<a href="https://gerrit.cloudera.org/#/c/3952/">AUTO_FLUSH_BACKGROUND</a> support
+in C++ as well as <a href="http://kudu.apache.org/apidocs/">API documentation</a>
+for the C++ client API.</p>
+
+    <p>Will’s contributions include several fixes to the web UIs, large
+improvements the Flume integration, and a lot of good work
+burning down long-standing bugs.</p>
+
+    <p>Both contributors were “acting the part” and the PMC was pleased to
+recognize their contributions with committership.</p>
   </li>
   <li>
-    <p>Jean-Daniel Cryans has volunteered to continue to act as release manager for
-the 0.x release line, and has start a <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201604.mbox/%3CCAGpTDNcfTOcp%2Beb39h5j%3DoxttZNhOBZ7v%2B%2B6hxRtWCh3t_psbQ%40mail.gmail.com%3E">discussion</a>
-detailing what features and improvements he expects will be ready
-for an 0.9 release in June.</p>
+    <p>Kudu 1.0.0 was <a href="https://kudu.apache.org/2016/09/20/apache-kudu-1-0-0-released.html">released</a>
+on September 19th. Most community members have upgraded by this point
+and have been reporting improved stability and performance.</p>
+  </li>
+  <li>
+    <p>Dan Burkert has been managing a Kudu 1.0.1 release to address a few
+important bugs discovered since 1.0.0. The vote passed on Monday
+afternoon, so the release should be made officially available
+later this week.</p>
   </li>
 </ul>
 
 <h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
 
 <ul>
-  <li>
-    <p>Chris George posted a <a href="http://gerrit.cloudera.org:8080/#/c/2754/">work in progress patch</a>
-for a native Kudu RDD implementation for Spark. Kudu already ships an RDD
-based on the generic HadoopRDD and Kudu’s MapReduce integration, but Chris’s
-new version paves the way for new features like pushing down predicates.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon has been working on <a href="https://issues.apache.org/jira/browse/KUDU-1410">KUDU-1410</a>,
-a small project which makes it easier to diagnose performance issues on a Kudu
-cluster.</p>
+  <li>After the 1.0 release, many contributors have gone into a design phase
+for upcoming work. Over the last couple of weeks, developers have posted
+scoping and design documents for topics including:
+    <ul>
+      <li><a href="https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem">Security features</a> (Todd Lipcon)</li>
+      <li><a href="https://goo.gl/wP5BJb">Improved disk-failure handling</a> (Dinesh Bhat)</li>
+      <li><a href="https://s.apache.org/7K48">Tools for manual recovery from corruption</a> (Mike Percy and Dinesh Bhat)</li>
+      <li><a href="https://s.apache.org/uOOt">Addressing issues seen with the LogBlockManager</a> (Adar Dembo)</li>
+      <li><a href="https://s.apache.org/7VCo">Providing proper snapshot/serializable consistency</a> (David Alves)</li>
+      <li><a href="https://s.apache.org/ARUP">Improving re-replication of under-replicated tablets</a> (Mike Percy)</li>
+      <li><a href="https://docs.google.com/document/d/1066W63e2YUTNnecmfRwgAHghBPnL1Pte_gJYAaZ_Bjo/edit">Avoiding Raft election storms</a> (Todd Lipcon)</li>
+    </ul>
 
-    <p>The first feature proposed by this JIRA is the idea of collecting
-“exemplar” traces: for each type of RPC (e.g. <em>Write</em>, <em>Scan</em>, etc.)
-the RPC system will collect a few <em>exemplar</em> RPCs in different
-latency buckets and retain their traces.  This makes it easier for
-an operator to see what might have caused a slow response from a
-server even after the request has been finished for some time.</p>
+    <p>The development community has no particular rule that all work must be
+accompanied by such a document, but in the past they have proven useful
+for fleshing out ideas around a design before beginning implementation.
+As Kudu matures, we can probably expect to see more of this kind of planning
+and design discussion.</p>
 
-    <p>The second new feature is the collection of per-RPC-request metrics
-such as lock acquisition time, time spent waiting on disk, and other
-metrics specific to each type of RPC. In combination with the
-exemplar trace feature above, this should make it easy to root-cause
-whether a request is slow due to underlying hardware issues,
-Kudu-specific issues, or a particular workload characteristic.</p>
+    <p>If any of the above work areas sounds interesting to you, please take a
+look and leave your comments! Similarly, if you are interested in contributing
+in any of these areas, please feel free to volunteer on the mailing list.
+Help of all kinds (coding, documentation, testing, etc) is welcomed.</p>
+  </li>
+  <li>Adar Dembo spent a chunk of time re-working the <code>thirdparty</code> directory
+that contains most of Kudu’s native dependencies. The major resulting
+changes are:
+    <ul>
+      <li>Build directories are now cleanly isolated from source directories,
+improving cleanliness of re-builds.</li>
+      <li>ThreadSanitizer (TSAN) builds now use <code>libc++</code> instead of <code>libstdcxx</code>
+for C++ library support. The <code>libc++</code> library has better support for
+sanitizers, is easier to build in isolation, and solves some compatibility
+issues that Adar was facing with GCC 5 on Ubuntu Xenial.</li>
+      <li>All of the thirdparty dependencies now build with TSAN instrumentation,
+which improves our coverage of this very effective tooling.</li>
+    </ul>
 
-    <p>Todd posted a work-in-progress implementation of these features on gerrit
-in a five-part patch series:
-<a href="http://gerrit.cloudera.org:8080/#/c/2794/">(1)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2795/">(2)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2796/">(3)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2797/">(4)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2798/">(5)</a></p>
+    <p>The impact to most developers is that, if you have an old source checkout,
+it’s highly likely you will need to clean and re-build the thirdparty
+directory.</p>
+  </li>
+  <li>Many contributors spent time in recent weeks trying to address the
+flakiness of various test cases. The Kudu project uses a
+<a href="http://dist-test.cloudera.org:8080/">dashboard</a> to track the flakiness
+of each test case, and <a href="http://dist-test.cloudera.org/">distributed test infrastructure</a>
+to facilitate reproducing test flakes.    <!-- spaces cause line break -->
+As might be expected, some of the flaky tests were due to bugs or
+timing assumptions in the tests themselves. However, this effort
+also identified several real bugs:
+    <ul>
+      <li>A <a href="http://gerrit.cloudera.org:8080/4570]">tight retry loop</a> in the
+Java client.</li>
+      <li>A <a href="http://gerrit.cloudera.org:8080/4395">memory leak</a> due to circular
+references in the C++ client.</li>
+      <li>A <a href="http://gerrit.cloudera.org:8080/4551">crash</a> which could affect
+tools used for problem diagnosis.</li>
+      <li>A <a href="http://gerrit.cloudera.org:8080/4409">divergence bug</a> in Raft consensus
+under particularly torturous scenarios.</li>
+      <li>A potential <a href="http://gerrit.cloudera.org:8080/4394">crash during tablet server startup</a>.</li>
+      <li>A case in which <a href="http://gerrit.cloudera.org:8080/4626">thread startup could be delayed</a>
+by built-in monitoring code.</li>
+    </ul>
+
+    <p>As a result of these efforts, the failure rate of these flaky tests has
+decreased significantly and the stability of Kudu releases continues
+to increase.</p>
   </li>
   <li>
-    <p>Dan Burkert continued working on the <a href="http://gerrit.cloudera.org:8080/#/c/2592/">Java implementation of the Scan Token API</a>
-described in previous weekly updates, with reviews this week from Jean-Daniel
-Cryans and Adar Dembo. He also posted a patch for the <a href="http://gerrit.cloudera.org:8080/#/c/2757/">C++ implementation</a>
-which has seen some review action as well.</p>
+    <p>Dan Burkert picked up work originally started by Sameer Abhyankar on
+<a href="https://issues.apache.org/jira/browse/KUDU-1363">KUDU-1363</a>, which adds
+support for adding <code>IN (...)</code> predicates to scanners. Dan committed the
+<a href="http://gerrit.cloudera.org:8080/2986">main patch</a> as well as corresponding
+<a href="http://gerrit.cloudera.org:8080/4530">support in the Java client</a>.
+Jordan Birdsell quickly added corresponding support in <a href="http://gerrit.cloudera.org:8080/4548">Python</a>.
+This new feature will be available in an upcoming release.</p>
   </li>
   <li>
-    <p>Dan also posted a <a href="http://gerrit.cloudera.org:8080/#/c/2772/">design document for non-covering range partitioning</a>.
-This new feature will allow Kudu operators to add or drop tablets to
-an existing range-partitioned table. This is very important for time
-series use cases where new partitions may need to be added daily,
-and old partitions potentially dropped in order to achieve a
-“sliding window” table. Read the design document for more details on
-use cases and the expected semantics.</p>
+    <p>Work continues on the <code>kudu</code> command line tool. Dinesh Bhat added
+the ability to ask a tablet’s leader to <a href="http://gerrit.cloudera.org:8080/4533">step down</a>
+and Alexey Serbin added a <a href="http://gerrit.cloudera.org:8080/4412">tool to insert random data into a
+table</a>.</p>
   </li>
+  <li>
+    <p>Jordan Birdsell continues to be on a tear improving the Python client.
+The patches are too numerous to mention, but highlights include Python 3
+support as well as near feature parity with the C++ client.</p>
+  </li>
+  <li>
+    <p>Todd Lipcon has been doing some refactoring and cleanup in the Raft
+consensus implementation. In addition to simplifying and removing code,
+he committed <a href="https://issues.apache.org/jira/browse/KUDU-1567">KUDU-1567</a>,
+which improves write performance in many cases by a factor of three
+or more while also improving stability.</p>
+  </li>
+  <li>
+    <p>Brock Noland is working on support for <a href="https://gerrit.cloudera.org/#/c/4491/">INSERT IGNORE</a>
+as a first-class part of the Kudu API. Of course this functionality
+can already be done by simply performing normal inserts and ignoring any
+resulting errors, but pushing it to the server prevents the server
+from counting such operations as errors.</p>
+  </li>
+  <li>Congratulations to Ninad Shringarpure for contributing his first patches
+to Kudu. Ninad contributed two documentation fixes and improved
+formatting on the Kudu web UI.</li>
 </ul>
 
-<h2 id="on-the-kudu-blog">On the Kudu blog</h2>
-
-<ul>
-  <li>Pat Patterson wrote a post about <a href="http://kudu.apache.org/2016/04/14/ingesting-json-apache-kudu-streamsets-data-collector.html">Ingesting JSON Data into Apache Kudu with StreamSets
-Data Collector</a>.</li>
-</ul>
-
+<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
+<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
+tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
+aware of some Kudu news we missed, let us know so we can cover it in
+a future post.</p>
 
   </div>
 </article>
