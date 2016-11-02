@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update April 11, 2016</title>
+    <title>Apache Kudu - Blog</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -106,105 +106,42 @@
 
 <div class="row-fluid">
   <div class="col-lg-9">
-    <article>
+    
+
+<!-- Articles -->
+<article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update April 11, 2016</h1>
-    <p class="meta">Posted 11 Apr 2016 by Todd Lipcon</p>
+    <h1 class="entry-title"><a href="/2016/02/26/apache-kudu-0-7-0-released.html">Apache Kudu (incubating) 0.7.0 released</a></h1>
+    <p class="meta">Posted 26 Feb 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the fourth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    
+    <p>The Apache Kudu (incubating) team is happy to announce its first release as
+part of the ASF Incubator, version 0.7.0!</p>
 
-<!--more-->
+<p>This latest version has a number of improvements since 0.6.0:</p>
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
 
-<h2 id="project-news">Project news</h2>
-
-<ul>
-  <li>
-    <p>The first release candidate for the 0.8.0 release was voted upon last week by
-the Kudu project members as well as the Apache Incubator PMC. The vote passed
-on the first try, so this release candidate will is now the official 0.8.0
-release.</p>
-
-    <p>The <a href="http://kudu.apache.org/releases/0.8.0/docs/release_notes.html">release notes</a>
-summarize the new features, improvements, and important bug fixes. The
-release itself and its documentation can be found at the
-<a href="http://kudu.apache.org/releases/0.8.0/">Kudu 0.8.0 release</a> page.</p>
-
-    <p>Thank you to the 11 developers who contributed the 172 bug fixes and
-improvements for this release!</p>
-  </li>
-  <li>
-    <p>Congratulations to Binglin Chang who was elected as a new committer and
-Podling Project Management Committee (PPMC) member this past week.
-Binglin has contributed many bug reports and fixes and new features,
-and has also given several presentations about Kudu. He is also the
-first community member to run a Kudu cluster in a real production workload.
-Thanks for your contributions, Binglin!</p>
-  </li>
-</ul>
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
-
-<ul>
-  <li>
-    <p>Darren Hoo reported an issue on the mailing list where his Kudu daemons were
-occasionally crashing in a workload involving large string cell values on the
-order of tens of KB. Todd Lipcon investigated the issue and provided a <a href="http://gerrit.cloudera.org:8080/2725">bug
-fix</a>.</p>
-
-    <p>It turns out that this bug has been present since the third week of Kudu
-development in 2012. Given that the bug persisted so long, yet it was
-relatively easy to reproduce, it highlights that Kudu needs further
-testing for use cases with larger cell values. In particular, large
-primary keys or updates containing large cells would trigger this problem.</p>
-  </li>
-  <li>
-    <p>Activity picked back up on the <a href="http://gerrit.cloudera.org:8080/#/c/2642/">design document for the Replay Cache feature</a>.
-This feature’s goal is to allow more transparent failovers between Kudu
-servers and allow operations to be retried without affecting the semantics
-seen by clients.</p>
-
-    <p>As an example, consider the case when an ‘INSERT’ operation of a single
-row times out. Upon receiving a timeout response, the client does not know
-whether the time out occurred before the insert was processed, or after.
-The client may then retry the operation, perhaps on a different replica.
-If the original operation was in fact successfully applied before the
-timeout occurred, the client might receive an erroneous “row already exists”
-error.</p>
-
-    <p>The “replay cache” feature, currently being designed by David Alves, is
-meant to avoid this issue: each server will keep a relatively small cache
-of recently applied operations so that, if a retry arrives, it can
-correctly respond with the original result rather than applying it a second
-time.</p>
-  </li>
-  <li>
-    <p>Binglin Chang reported an interesting bug where <a href="https://issues.apache.org/jira/browse/KUDU-1391">two of three replicas were
-online, but neither one was being elected as leader</a>.
-The issue occurred on his 70-node cluster after accidentally shutting down
-about half of the servers for ten minutes. Upon recovery, one out of the
-thousands of tablets got stuck in this situation. Mike Percy and Todd Lipcon
-have been discussing the issue on the JIRA and seem to be converging on
-some action items to prevent it from reoccurring.</p>
-  </li>
-  <li>
-    <p>Benjamin Kim revived an old thread about running <a href="http://markmail.org/thread/mznrulrh3o4625ei">Spark on Kudu</a>.
-Users on the thread are piping up to write about their Spark use cases.
-It seems likely that, given this interest, some Spark-on-Kudu improvements
-will be happening in the near term. If you are interested in contributing,
-please pipe up on the mailing list.</p>
-  </li>
-</ul>
-
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/02/26/apache-kudu-0-7-0-released.html">Read full post...</a>
   </div>
 </article>
+
+
+
+<!-- Pagination links -->
+
+<nav>
+  <hr/>
+  <ul class="pager">
+  
+    <li class="previous"><a href="/blog/page/8"><span aria-hidden="true">&larr;</span> Newer posts</a></li>
+  
+  
+  </ul>
+</nav>
 
 
   </div>
