@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-11-01T23:21:55-07:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update November 1st, 2016</title><link href="/2016/11/01/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update November 1st, 2016" /><published>2016-11-01T00:00:00-07:00</published><updated>2016-11-01T00:00:00-07:00</updated><id>/2016/11/01/weekly-update</id><content type="html" xml:base="/2016/11/01/weekly-update.html">&lt;p&gt;Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2016-11-09T09:31:51-05:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update November 1st, 2016</title><link href="/2016/11/01/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update November 1st, 2016" /><published>2016-11-01T00:00:00-04:00</published><updated>2016-11-01T00:00:00-04:00</updated><id>/2016/11/01/weekly-update</id><content type="html" xml:base="/2016/11/01/weekly-update.html">&lt;p&gt;Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -84,7 +84,7 @@ David’s patch series fixes this.&lt;/p&gt;
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update October 20th, 2016</title><link href="/2016/10/20/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 20th, 2016" /><published>2016-10-20T00:00:00-07:00</published><updated>2016-10-20T00:00:00-07:00</updated><id>/2016/10/20/weekly-update</id><content type="html" xml:base="/2016/10/20/weekly-update.html">&lt;p&gt;Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update October 20th, 2016</title><link href="/2016/10/20/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 20th, 2016" /><published>2016-10-20T00:00:00-04:00</published><updated>2016-10-20T00:00:00-04:00</updated><id>/2016/10/20/weekly-update</id><content type="html" xml:base="/2016/10/20/weekly-update.html">&lt;p&gt;Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -172,7 +172,7 @@ clients as well as a way to mutually authenticate tablet servers with the master
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update October 11th, 2016</title><link href="/2016/10/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 11th, 2016" /><published>2016-10-11T00:00:00-07:00</published><updated>2016-10-11T00:00:00-07:00</updated><id>/2016/10/11/weekly-update</id><content type="html" xml:base="/2016/10/11/weekly-update.html">&lt;p&gt;Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
+covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update October 11th, 2016</title><link href="/2016/10/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 11th, 2016" /><published>2016-10-11T00:00:00-04:00</published><updated>2016-10-11T00:00:00-04:00</updated><id>/2016/10/11/weekly-update</id><content type="html" xml:base="/2016/10/11/weekly-update.html">&lt;p&gt;Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
 readers will notice that the weekly blog posts have been not-so-weekly
 of late – in fact, it has been nearly two months since the previous post
 as I and others have focused on releases, conferences, etc.&lt;/p&gt;
@@ -332,13 +332,13 @@ tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
 readers will notice that the weekly blog posts have been not-so-weekly
-of late &amp;#8211; in fact, it has been nearly two months since the previous post
+of late – in fact, it has been nearly two months since the previous post
 as I and others have focused on releases, conferences, etc.
 
 So, rather than covering just this past week, this post will cover highlights
-of the progress since the 1.0 release in mid-September. If you&amp;#8217;re interested
+of the progress since the 1.0 release in mid-September. If you’re interested
 in learning about progress prior to that release, check the
-release notes.</summary></entry><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
+release notes.</summary></entry><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-04:00</published><updated>2016-09-26T00:00:00-04:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
 2016. If you’re interested in Kudu, there will be several opportunities to
 learn more, both from the open source development team as well as some companies
 who are already adopting Kudu for their use cases.
@@ -392,10 +392,10 @@ featuring Apache Kudu at the Cloudera and ZoomData vendor booths.&lt;/p&gt;
 &lt;p&gt;If you’re not attending the conference, but still based in NYC, all hope is
 not lost. Michael Crutcher from Cloudera will be presenting an introduction
 to Apache Kudu at the &lt;a href=&quot;http://www.meetup.com/mysqlnyc/events/233599664/&quot;&gt;SQL NYC Meetup&lt;/a&gt;.
-Be sure to RSVP as spots are filling up fast.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>This week in New York, O&amp;#8217;Reilly and Cloudera will be hosting Strata+Hadoop World
-2016. If you&amp;#8217;re interested in Kudu, there will be several opportunities to
+Be sure to RSVP as spots are filling up fast.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
+2016. If you’re interested in Kudu, there will be several opportunities to
 learn more, both from the open source development team as well as some companies
-who are already adopting Kudu for their use cases.</summary></entry><entry><title>Apache Kudu 1.0.0 released</title><link href="/2016/09/20/apache-kudu-1-0-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.0.0 released" /><published>2016-09-20T00:00:00-07:00</published><updated>2016-09-20T00:00:00-07:00</updated><id>/2016/09/20/apache-kudu-1-0-0-released</id><content type="html" xml:base="/2016/09/20/apache-kudu-1-0-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.0.0!&lt;/p&gt;
+who are already adopting Kudu for their use cases.</summary></entry><entry><title>Apache Kudu 1.0.0 released</title><link href="/2016/09/20/apache-kudu-1-0-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.0.0 released" /><published>2016-09-20T00:00:00-04:00</published><updated>2016-09-20T00:00:00-04:00</updated><id>/2016/09/20/apache-kudu-1-0-0-released</id><content type="html" xml:base="/2016/09/20/apache-kudu-1-0-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.0.0!&lt;/p&gt;
 
 &lt;p&gt;This latest version adds several new features, including:&lt;/p&gt;
 
@@ -432,7 +432,7 @@ integrations (eg Spark, Flume) are also now available via the ASF Maven
 repository.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.0.0!
 
-This latest version adds several new features, including:</summary></entry><entry><title>Pushing Down Predicate Evaluation in Apache Kudu</title><link href="/2016/09/16/predicate-pushdown.html" rel="alternate" type="text/html" title="Pushing Down Predicate Evaluation in Apache Kudu" /><published>2016-09-16T00:00:00-07:00</published><updated>2016-09-16T00:00:00-07:00</updated><id>/2016/09/16/predicate-pushdown</id><content type="html" xml:base="/2016/09/16/predicate-pushdown.html">&lt;p&gt;I had the pleasure of interning with the Apache Kudu team at Cloudera this
+This latest version adds several new features, including:</summary></entry><entry><title>Pushing Down Predicate Evaluation in Apache Kudu</title><link href="/2016/09/16/predicate-pushdown.html" rel="alternate" type="text/html" title="Pushing Down Predicate Evaluation in Apache Kudu" /><published>2016-09-16T00:00:00-04:00</published><updated>2016-09-16T00:00:00-04:00</updated><id>/2016/09/16/predicate-pushdown</id><content type="html" xml:base="/2016/09/16/predicate-pushdown.html">&lt;p&gt;I had the pleasure of interning with the Apache Kudu team at Cloudera this
 summer. This project was my summer contribution to Kudu: a restructuring of the
 scan path to speed up queries.&lt;/p&gt;
 
@@ -574,7 +574,7 @@ incubating to a Top Level Apache project. I can’t express enough how grateful 
 am for the amount of support I got from the Kudu team, from the intern
 coordinators, and from the Cloudera community as a whole.&lt;/p&gt;</content><author><name>Andrew Wong</name></author><summary>I had the pleasure of interning with the Apache Kudu team at Cloudera this
 summer. This project was my summer contribution to Kudu: a restructuring of the
-scan path to speed up queries.</summary></entry><entry><title>An Introduction to the Flume Kudu Sink</title><link href="/2016/08/31/intro-flume-kudu-sink.html" rel="alternate" type="text/html" title="An Introduction to the Flume Kudu Sink" /><published>2016-08-31T00:00:00-07:00</published><updated>2016-08-31T00:00:00-07:00</updated><id>/2016/08/31/intro-flume-kudu-sink</id><content type="html" xml:base="/2016/08/31/intro-flume-kudu-sink.html">&lt;p&gt;This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
+scan path to speed up queries.</summary></entry><entry><title>An Introduction to the Flume Kudu Sink</title><link href="/2016/08/31/intro-flume-kudu-sink.html" rel="alternate" type="text/html" title="An Introduction to the Flume Kudu Sink" /><published>2016-08-31T00:00:00-04:00</published><updated>2016-08-31T00:00:00-04:00</updated><id>/2016/08/31/intro-flume-kudu-sink</id><content type="html" xml:base="/2016/08/31/intro-flume-kudu-sink.html">&lt;p&gt;This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
 using Kudu, what Flume does for us, and how Flume fits with Kudu in our project.&lt;/p&gt;
 
 &lt;h2 id=&quot;why-kudu&quot;&gt;Why Kudu&lt;/h2&gt;
@@ -868,12 +868,12 @@ disparate sources.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Ara Abrahamian is a software engineer at Argyle Data building fraud detection systems using
 sophisticated machine learning methods. Ara is the original author of the Flume Kudu Sink that
 is included in the Kudu distribution. You can follow him on Twitter at
-&lt;a href=&quot;https://twitter.com/ara_e&quot;&gt;@ara_e&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;</content><author><name>Ara Abrahamian</name></author><summary>This post discusses the Kudu Flume Sink. First, I&amp;#8217;ll give some background on why we considered
+&lt;a href=&quot;https://twitter.com/ara_e&quot;&gt;@ara_e&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;</content><author><name>Ara Abrahamian</name></author><summary>This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
 using Kudu, what Flume does for us, and how Flume fits with Kudu in our project.
 
 Why Kudu
 
-Traditionally in the Hadoop ecosystem we&amp;#8217;ve dealt with various batch processing technologies such
+Traditionally in the Hadoop ecosystem we’ve dealt with various batch processing technologies such
 as MapReduce and the many libraries and tools built on top of it in various languages (Apache Pig,
 Apache Hive, Apache Oozie and many others). The main problem with this approach is that it needs to
 process the whole data set in batches, again and again, as soon as new data gets added. Things get
@@ -913,14 +913,14 @@ And a Kudu-based near real-time approach is:
 
   flexible and expressive, thanks to SQL support via Apache Impala (incubating)
   a table-oriented, mutable data store that feels like a traditional relational database
-  very easy to program, you can even pretend it&amp;#8217;s good old MySQL
+  very easy to program, you can even pretend it’s good old MySQL
   low-latency and relatively high throughput, both for ingest and query
 
 
-At Argyle Data, we&amp;#8217;re dealing with complex fraud detection scenarios. We need to ingest massive
+At Argyle Data, we’re dealing with complex fraud detection scenarios. We need to ingest massive
 amounts of data, run machine learning algorithms and generate reports. When we created our current
 architecture two years ago we decided to opt for a database as the backbone of our system. That
-database is Apache Accumulo. It&amp;#8217;s a key-value based database which runs on top of Hadoop HDFS,
+database is Apache Accumulo. It’s a key-value based database which runs on top of Hadoop HDFS,
 quite similar to HBase but with some important improvements such as cell level security and ease
 of deployment and management. To enable querying of this data for quite complex reporting and
 analytics, we used Presto, a distributed query engine with a pluggable architecture open-sourced
@@ -933,12 +933,12 @@ architecture has served us well, but there were a few problems:
   we need to support ad-hoc queries, plus long-term data warehouse functionality
 
 
-So, we&amp;#8217;ve started gradually moving the core machine-learning pipeline to a streaming based
+So, we’ve started gradually moving the core machine-learning pipeline to a streaming based
 solution. This way we can ingest and process larger data-sets faster in the real-time. But then how
 would we take care of ad-hoc queries and long-term persistence? This is where Kudu comes in. While
 the machine learning pipeline ingests and processes real-time data, we store a copy of the same
 ingested data in Kudu for long-term access and ad-hoc queries. Kudu is our data warehouse. By
-using Kudu and Impala, we can retire our in-house Presto connector and rely on Impala&amp;#8217;s
+using Kudu and Impala, we can retire our in-house Presto connector and rely on Impala’s
 super-fast query engine.
 
 But how would we make sure data is reliably ingested into the streaming pipeline and the
@@ -946,10 +946,10 @@ Kudu-based data warehouse? This is where Apache Flume comes in.
 
 Why Flume
 
-According to their website &amp;#8220;Flume is a distributed, reliable, and
+According to their website “Flume is a distributed, reliable, and
 available service for efficiently collecting, aggregating, and moving large amounts of log data.
 It has a simple and flexible architecture based on streaming data flows. It is robust and fault
-tolerant with tunable reliability mechanisms and many failover and recovery mechanisms.&amp;#8221; As you
+tolerant with tunable reliability mechanisms and many failover and recovery mechanisms.” As you
 can see, nowhere is Hadoop mentioned but Flume is typically used for ingesting data to Hadoop
 clusters.
 
@@ -967,7 +967,7 @@ File-based channels are also provided. As for the sources, Avro, JMS, Thrift, sp
 source are some of the built-in ones. Flume also ships with many sinks, including sinks for writing
 data to HDFS, HBase, Hive, Kafka, as well as to other Flume agents.
 
-In the rest of this post I&amp;#8217;ll go over the Kudu Flume sink and show you how to configure Flume to
+In the rest of this post I’ll go over the Kudu Flume sink and show you how to configure Flume to
 write ingested data to a Kudu table. The sink has been part of the Kudu distribution since the 0.8
 release and the source code can be found here.
 
@@ -999,8 +999,8 @@ We define a source called source1 which simply executes a vmstat command to cont
 virtual memory statistics for the machine and queue events into an in-memory channel1 channel,
 which in turn is used for writing these events to a Kudu table called stats. We are using
 org.apache.kudu.flume.sink.SimpleKuduEventProducer as the producer. SimpleKuduEventProducer is
-the built-in and default producer, but it&amp;#8217;s implemented as a showcase for how to write Flume
-events into Kudu tables. For any serious functionality we&amp;#8217;d have to write a custom producer. We
+the built-in and default producer, but it’s implemented as a showcase for how to write Flume
+events into Kudu tables. For any serious functionality we’d have to write a custom producer. We
 need to make this producer and the KuduSink class available to Flume. We can do that by simply
 copying the kudu-flume-sink-&amp;lt;VERSION&amp;gt;.jar jar file from the Kudu distribution to the
 $FLUME_HOME/plugins.d/kudu-sink/lib directory in the Flume installation. The jar file contains
@@ -1008,7 +1008,7 @@ KuduSink and all of its dependencies (including Kudu java client classes).
 
 At a minimum, the Kudu Flume Sink needs to know where the Kudu masters are
 (agent1.sinks.sink1.masterAddresses = localhost) and which Kudu table should be used for writing
-Flume events to (agent1.sinks.sink1.tableName = stats). The Kudu Flume Sink doesn&amp;#8217;t create this
+Flume events to (agent1.sinks.sink1.tableName = stats). The Kudu Flume Sink doesn’t create this
 table, it has to be created before the Kudu Flume Sink is started.
 
 You may also notice the batchSize parameter. Batch size is used for batching up to that many
@@ -1029,7 +1029,7 @@ Here is a complete list of KuduSink parameters:
     
       masterAddresses
       N/A
-      Comma-separated list of &amp;#8220;host:port&amp;#8221; pairs of the masters (port optional)
+      Comma-separated list of “host:port” pairs of the masters (port optional)
     
     
       tableName
@@ -1059,7 +1059,7 @@ Here is a complete list of KuduSink parameters:
   
 
 
-Let&amp;#8217;s take a look at the source code for the built-in producer class:
+Let’s take a look at the source code for the built-in producer class:
 
 public class SimpleKuduEventProducer implements KuduEventProducer {
   private byte[] payload;
@@ -1130,8 +1130,8 @@ public interface KuduEventProducer extends Configurable, ConfigurableComponent {
 
 
 public void configure(Context context) is called when an instance of our producer is instantiated
-by the KuduSink. SimpleKuduEventProducer&amp;#8217;s implementation looks for a producer parameter named
-payloadColumn and uses its value (&amp;#8220;payload&amp;#8221; if not overridden in Flume configuration file) as the
+by the KuduSink. SimpleKuduEventProducer’s implementation looks for a producer parameter named
+payloadColumn and uses its value (“payload” if not overridden in Flume configuration file) as the
 column which will hold the value of the Flume event payload. If you recall from above, we had
 configured the KuduSink to listen for events generated from the vmstat command. Each output row
 from that command will be stored as a new row containing a payload column in the stats table.
@@ -1140,9 +1140,9 @@ define them by prefixing it with producer. (agent1.sinks.sink1.producer.paramete
 example).
 
 The main producer logic resides in the public List&amp;lt;Operation&amp;gt; getOperations() method. In
-SimpleKuduEventProducer&amp;#8217;s implementation we simply insert the binary body of the Flume event into
-the Kudu table. Here we call Kudu&amp;#8217;s newInsert() to initiate an insert, but could have used
-Upsert if updating an existing row was also an option, in fact there&amp;#8217;s another producer
+SimpleKuduEventProducer’s implementation we simply insert the binary body of the Flume event into
+the Kudu table. Here we call Kudu’s newInsert() to initiate an insert, but could have used
+Upsert if updating an existing row was also an option, in fact there’s another producer
 implementation available for doing just that: SimpleKeyedKuduEventProducer. Most probably you
 will need to write your own custom producer in the real world, but you can base your implementation
 on the built-in ones.
@@ -1162,7 +1162,7 @@ disparate sources.
 Ara Abrahamian is a software engineer at Argyle Data building fraud detection systems using
 sophisticated machine learning methods. Ara is the original author of the Flume Kudu Sink that
 is included in the Kudu distribution. You can follow him on Twitter at
-@ara_e.</summary></entry><entry><title>New Range Partitioning Features in Kudu 0.10</title><link href="/2016/08/23/new-range-partitioning-features.html" rel="alternate" type="text/html" title="New Range Partitioning Features in Kudu 0.10" /><published>2016-08-23T00:00:00-07:00</published><updated>2016-08-23T00:00:00-07:00</updated><id>/2016/08/23/new-range-partitioning-features</id><content type="html" xml:base="/2016/08/23/new-range-partitioning-features.html">&lt;p&gt;Kudu 0.10 is shipping with a few important new features for range partitioning.
+@ara_e.</summary></entry><entry><title>New Range Partitioning Features in Kudu 0.10</title><link href="/2016/08/23/new-range-partitioning-features.html" rel="alternate" type="text/html" title="New Range Partitioning Features in Kudu 0.10" /><published>2016-08-23T00:00:00-04:00</published><updated>2016-08-23T00:00:00-04:00</updated><id>/2016/08/23/new-range-partitioning-features</id><content type="html" xml:base="/2016/08/23/new-range-partitioning-features.html">&lt;p&gt;Kudu 0.10 is shipping with a few important new features for range partitioning.
 These features are designed to make Kudu easier to scale for certain workloads,
 like time series. This post will introduce these features, and discuss how to use
 them to effectively design tables for scalability and performance.&lt;/p&gt;
@@ -1257,7 +1257,7 @@ dropped and replacements added, but it requires the servers and all clients to
 be updated to 0.10.&lt;/p&gt;</content><author><name>Dan Burkert</name></author><summary>Kudu 0.10 is shipping with a few important new features for range partitioning.
 These features are designed to make Kudu easier to scale for certain workloads,
 like time series. This post will introduce these features, and discuss how to use
-them to effectively design tables for scalability and performance.</summary></entry><entry><title>Apache Kudu 0.10.0 released</title><link href="/2016/08/23/apache-kudu-0-10-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 0.10.0 released" /><published>2016-08-23T00:00:00-07:00</published><updated>2016-08-23T00:00:00-07:00</updated><id>/2016/08/23/apache-kudu-0-10-0-released</id><content type="html" xml:base="/2016/08/23/apache-kudu-0-10-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 0.10.0!&lt;/p&gt;
+them to effectively design tables for scalability and performance.</summary></entry><entry><title>Apache Kudu 0.10.0 released</title><link href="/2016/08/23/apache-kudu-0-10-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 0.10.0 released" /><published>2016-08-23T00:00:00-04:00</published><updated>2016-08-23T00:00:00-04:00</updated><id>/2016/08/23/apache-kudu-0-10-0-released</id><content type="html" xml:base="/2016/08/23/apache-kudu-0-10-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 0.10.0!&lt;/p&gt;
 
 &lt;p&gt;This latest version adds several new features, including:
 &lt;!--more--&gt;&lt;/p&gt;
@@ -1291,7 +1291,7 @@ the release notes below.&lt;/p&gt;
   &lt;li&gt;Download the &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/&quot;&gt;Kudu 0.10.0 source release&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 0.10.0!
 
-This latest version adds several new features, including:</summary></entry><entry><title>Apache Kudu Weekly Update August 16th, 2016</title><link href="/2016/08/16/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update August 16th, 2016" /><published>2016-08-16T00:00:00-07:00</published><updated>2016-08-16T00:00:00-07:00</updated><id>/2016/08/16/weekly-update</id><content type="html" xml:base="/2016/08/16/weekly-update.html">&lt;p&gt;Welcome to the twentieth edition of the Kudu Weekly Update. This weekly blog post
+This latest version adds several new features, including:</summary></entry><entry><title>Apache Kudu Weekly Update August 16th, 2016</title><link href="/2016/08/16/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update August 16th, 2016" /><published>2016-08-16T00:00:00-04:00</published><updated>2016-08-16T00:00:00-04:00</updated><id>/2016/08/16/weekly-update</id><content type="html" xml:base="/2016/08/16/weekly-update.html">&lt;p&gt;Welcome to the twentieth edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
 
 &lt;!--more--&gt;
