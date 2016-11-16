@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update June 21, 2016</title>
+    <title>Apache Kudu - Apache Kudu Weekly Update November 15th, 2016</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,45 +108,109 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update June 21, 2016</h1>
-    <p class="meta">Posted 21 Jun 2016 by Jean-Daniel Cryans</p>
+    <h1 class="entry-title">Apache Kudu Weekly Update November 15th, 2016</h1>
+    <p class="meta">Posted 15 Nov 2016 by David Alves</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the fourteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</p>
 
 <!--more-->
+
+<h2 id="project-news">Project news</h2>
+
+<ul>
+  <li>
+    <p>The first release candidate for Kudu 1.1.0 is <a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201611.mbox/%3CCADY20s7ZKZkPmUEcTexW%3D%2B_%2BLnDY2hABZg0-UZD3jvWAs9-pog%40mail.gmail.com%3E">now available</a>.</p>
+
+    <p>Noteworthy new features/improvements:
+* The Python client has been brought to feature parity with the C++ and Java clients.
+* IN LIST predicates.
+* Java client now features client-side tracing.
+* Kudu now publishes jar files for Spark 2.0 compiled with Scala 2.11.
+* Kudu’s Raft implementation now features pre-elections. In our tests this has greatly
+  improved stability.</p>
+
+    <p>Community developers and users are encouraged to download the source
+tarball and vote on the release.</p>
+
+    <p>For more information on what’s new, check out the
+<a href="https://github.com/apache/kudu/blob/branch-1.1.x/docs/release_notes.adoc">release notes</a>.
+<em>Note:</em> some links from these in-progress release notes will not be live until the
+release itself is published.</p>
+  </li>
+  <li>
+    <p>On November 7th, the Kudu PMC announced that Jordan Birdsell, from State Farm, had been voted
+in as a new committer and PMC member.</p>
+
+    <p>Jordan’s contributions include extensive work on the python client, throwing it some much needed
+love, and bringing it to feature parity with the other clients.</p>
+
+    <p>Besides his extensive code contributions Jordan has also been active in reviewing other
+developer’s patches and helping the community in general, on slack and other channels.</p>
+
+    <p>Jordan has been doing great work and the Kudu PMC was pleased to recognize his contributions
+with committership.</p>
+  </li>
+  <li>
+    <p>Mike Percy will be presenting Kudu Wednesday 16th November at <a href="https://apachebigdataeu2016.sched.org/">Apache Big Data Europe, in Seville</a>.</p>
+  </li>
+  <li>
+    <p>Congratulations to Haijie Hong for his <a href="https://gerrit.cloudera.org/#/c/4822/">first contribution to Kudu!</a>.
+Haijie fixed some edge cases in BitWriter that were blocking RLE usage for 64 bit types.</p>
+  </li>
+  <li>
+    <p>Congratulations to Maxim Smyatkin for his <a href="https://gerrit.cloudera.org/#/q/Maxim">first contributions to Kudu!</a>.
+Maxim has contributed several patches helping with debug and cleanup.</p>
+  </li>
+</ul>
 
 <h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
 
 <ul>
   <li>
-    <p>Dan Burkert posted a series of patches to <a href="https://gerrit.cloudera.org/#/c/3388/">add support in the Java client</a>
-for non-covering range partitions. At the same time he improved how that client locates tables by
-leveraging the tablets cache.</p>
-  </li>
-  <li>
-    <p>In the context of making multi-master reliable in 1.0, Adar Dembo posted a <a href="https://gerrit.cloudera.org/#/c/3393/">design document</a>
-on how to handle permanent master failures. Currently the master’s code is missing some features
-like <code>remote bootstrap</code> which makes it possible for a new replica to download a snapshot of the data
-from the leader replica.</p>
-  </li>
-  <li>
-    <p>Tsuyoshi Ozawa refreshed <a href="https://gerrit.cloudera.org/#/c/2162/">a patch</a> posted in February that
-makes it easier to get started contributing to Kudu by providing a Dockerfile with the right
-environment.</p>
-  </li>
-</ul>
+    <p>A lot of progress has been done towards the goals that were set in the scope docs introduced in
+the last couple of posts. Specifically:</p>
 
-<h2 id="on-the-blog">On the blog</h2>
-
-<ul>
-  <li>Mike Percy <a href="http://kudu.apache.org/2016/06/17/raft-consensus-single-node.html">wrote</a> about how Kudu
-uses Raft consensus on a single node, and some changes we’re making as Kudu is getting more mature.</li>
+    <ul>
+      <li>
+        <p>Dan Burkert, Todd Lipcon and Alexey Serbin have doubled down on the security effort. They have
+been working on enabling Kerberos authentication and rpc encryption. The <a href="https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem">security scope doc</a>
+has been updated with the latest plans for security and many patches have been merged already.</p>
+      </li>
+      <li>
+        <p>David Alves has continued the work on <a href="https://s.apache.org/7VCo">consistency</a>. Up for review
+and partially pushed is a patch series to address row history loss if a row is deleted and then
+re-inserted. Also in progress is work to make sure that scans at a snapshot from followers
+always return same data as if they were executed on the leader. This helps with Read-Your-Writes
+when reading from lagging replicas.</p>
+      </li>
+      <li>
+        <p>Adar Dembo has been making good progress <a href="https://s.apache.org/uOOt">addressing issues seen with the LogBlockManager</a>.
+A series of patches have been merged with various fixes to block managers in general and to the
+log block manager in particular.</p>
+      </li>
+      <li>
+        <p>Dinesh Bhat has been working on improving the manual recovery tools for Kudu. Namely, he has
+added a tool to force a remote replica copy to a destination server, and a tool to delete a
+local replica of a tablet. The latter is useful when a tablet cannot come up due to bad state.</p>
+      </li>
+      <li>
+        <p>Jean-Daniel Cryans has implemented RPC tracing for the java client, greatly improving
+debuggability. JD also has added ReplicaSelection to the java client, allowing to perform
+scans on replicas other than the leader, which should be of great help for load-balancing.</p>
+      </li>
+      <li>
+        <p>Besides the feature parity contributions, Jordan Birdsell has laid out a
+<a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201611.mbox/%3CCAGaaj_VKfB4mhu6eExHCWo0%3D6Qd0HFWy7bg9e39JgOaFPGJ1nQ%40mail.gmail.com%3E">roadmap for Python client work</a>
+for the 1.2 release. Feedback from other Python client users is certainly appreciated.</p>
+      </li>
+    </ul>
+  </li>
 </ul>
 
 <p>Want to learn more about a specific topic from this blog post? Shoot an email to the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
+<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
 tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.</p>
