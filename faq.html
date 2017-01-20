@@ -173,11 +173,21 @@ forward to working with a larger community during its next phase of development.
 
 <h4 id="is-training-available">Is training available?</h4>
 
-<p>Currently, commercial training for Kudu is not available. You can get help with using
-Kudu through <a href="docs/index.html">documentation</a>,
+<p>Training is not provided by the Apache Software Foundation, but may be provided
+by third-party vendors.</p>
+
+<p>As of January 2016, Cloudera offers an
+<a href="https://university.cloudera.com/content/cloudera-university-ondemand-introduction-to-apache-kudu">on-demand training course</a>
+entitled “Introduction to Apache Kudu”.
+This training covers what Kudu is, and how it compares to other Hadoop-related
+storage systems, use cases that will benefit from using Kudu, and how to create,
+store, and access data in Kudu tables with Apache Impala.</p>
+
+<p>Aside from training, you can also get help with using Kudu through
+<a href="docs/index.html">documentation</a>,
 the <a href="community.html">mailing lists</a>,
-the <a href="https://getkudu-slack.herokuapp.com/">Kudu chat room</a>, and the <a href="https://community.cloudera.com/t5/Beta-Releases-Kudu-RecordService/bd-p/Beta">Cloudera beta
-release forum</a>.</p>
+the <a href="https://getkudu-slack.herokuapp.com/">Kudu chat room</a>, and the
+<a href="https://community.cloudera.com/t5/Beta-Releases-Kudu-RecordService/bd-p/Beta">Cloudera beta release forum</a>.</p>
 
 <h4 id="is-there-a-quickstart-vm">Is there a quickstart VM?</h4>
 
@@ -214,8 +224,9 @@ allow the cache to survive tablet server restarts, so that it never starts “co
 
 <p>In addition, Kudu’s C++ implementation can scale to very large heaps. Coupled
 with its CPU-efficient design, Kudu’s heap scalability offers outstanding
-performance for data sets that fit in memory.
-#### Does Kudu run its own format type or does it use Parquet? What is the compression recommendation?</p>
+performance for data sets that fit in memory.</p>
+
+<h4 id="does-kudu-run-its-own-format-type-or-does-it-use-parquet-what-is-the-compression-recommendation">Does Kudu run its own format type or does it use Parquet? What is the compression recommendation?</h4>
 
 <p>Kudu’s on-disk data format closely resembles Parquet, with a few differences to
 support efficient random access as well as updates. The underlying data is not
