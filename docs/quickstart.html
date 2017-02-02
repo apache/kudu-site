@@ -269,20 +269,12 @@ the string <code>report_time</code> field into a unix-style timestamp for more e
 storage.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-sql" data-lang="sql">CREATE TABLE sfmta (
-  report_time BIGINT NOT NULL,
-  vehicle_tag STRING NOT NULL,
-  longitude FLOAT NOT NULL,
-  latitude FLOAT NOT NULL,
-  speed FLOAT NOT NULL,
-  heading FLOAT NOT NULL,
-  PRIMARY KEY (report_time, vehicle_tag)
-)
-DISTRIBUTE BY HASH(report_time) INTO 8 BUCKETS
-STORED AS KUDU;
-
-INSERT INTO sfmta SELECT
-  UNIX_TIMESTAMP(report_time,  'MM/dd/yyyy HH:mm:ss'),
+<pre class="highlight"><code class="language-sql" data-lang="sql">CREATE TABLE sfmta
+PRIMARY KEY (report_time, vehicle_tag)
+PARTITION BY HASH(report_time) PARTITIONS 8
+STORED AS KUDU
+AS SELECT
+  UNIX_TIMESTAMP(report_time,  'MM/dd/yyyy HH:mm:ss') AS report_time,
   vehicle_tag,
   longitude,
   latitude,
@@ -290,7 +282,12 @@ INSERT INTO sfmta SELECT
   heading
 FROM sfmta_raw;
 
--- Modified 859086 row(s), 0 row error(s) in 8.55s</code></pre>
++------------------------+
+| summary                |
++------------------------+
+| Inserted 859086 row(s) |
++------------------------+
+Fetched 1 row(s) in 5.75s</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -516,7 +513,7 @@ contain references to the previous VM&#8217;s SSH credentials. Remove any refere
   </div>
       <footer class="footer">
         <p class="small">
-        Copyright &copy; 2016 The Apache Software Foundation.  Last updated 2017-01-12 20:06:29 PST 
+        Copyright &copy; 2016 The Apache Software Foundation.  Last updated 2017-02-02 13:49:37 PST 
         </p>
       </footer>
     </div>
