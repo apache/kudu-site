@@ -1,4 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-02-02T14:12:57-08:00</updated><id>/</id><entry><title>Apache Kudu Weekly Update November 15th, 2016</title><link href="/2016/11/15/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update November 15th, 2016" /><published>2016-11-15T00:00:00-08:00</published><updated>2016-11-15T00:00:00-08:00</updated><id>/2016/11/15/weekly-update</id><content type="html" xml:base="/2016/11/15/weekly-update.html">&lt;p&gt;Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-02-13T12:23:54-08:00</updated><id>/</id><entry><title>Apache Kudu 1.2.0 released</title><link href="/2017/01/20/apache-kudu-1-2-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.2.0 released" /><published>2017-01-20T00:00:00-08:00</published><updated>2017-01-20T00:00:00-08:00</updated><id>/2017/01/20/apache-kudu-1-2-0-released</id><content type="html" xml:base="/2017/01/20/apache-kudu-1-2-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.2.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;User data such as row contents is now redacted from logging statements.&lt;/li&gt;
+  &lt;li&gt;Kudu’s ability to provide strong consistency guarantees has been substantially improved.&lt;/li&gt;
+  &lt;li&gt;Various performance improvements in metadata management as well as optimizations for BITSHUFFLE encoding on AVX2-capable hosts.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Additionally, 1.2.0 fixes a number of important bugs, including:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Kudu now automatically limits its usage of file descriptors, preventing crashes due to ulimit exhaustion.&lt;/li&gt;
+  &lt;li&gt;Fixed a long-standing issue which could cause ext4 file system corruption on RHEL 6.&lt;/li&gt;
+  &lt;li&gt;Fixed a disk space leak.&lt;/li&gt;
+  &lt;li&gt;Several fixes for correctness in various edge cases.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above list of changes is non-exhaustive. Please refer to the
+&lt;a href=&quot;/releases/1.2.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;
+for an expanded list of important improvements, bug fixes, and
+incompatible changes before upgrading.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.2.0/&quot;&gt;Kudu 1.2.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.2.0!
+
+The new release adds several new features and improvements, including:</summary></entry><entry><title>Apache Kudu Weekly Update November 15th, 2016</title><link href="/2016/11/15/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update November 15th, 2016" /><published>2016-11-15T00:00:00-08:00</published><updated>2016-11-15T00:00:00-08:00</updated><id>/2016/11/15/weekly-update</id><content type="html" xml:base="/2016/11/15/weekly-update.html">&lt;p&gt;Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
 
 &lt;!--more--&gt;
@@ -1364,38 +1397,4 @@ dropped and replacements added, but it requires the servers and all clients to
 be updated to 0.10.&lt;/p&gt;</content><author><name>Dan Burkert</name></author><summary>Kudu 0.10 is shipping with a few important new features for range partitioning.
 These features are designed to make Kudu easier to scale for certain workloads,
 like time series. This post will introduce these features, and discuss how to use
-them to effectively design tables for scalability and performance.</summary></entry><entry><title>Apache Kudu 0.10.0 released</title><link href="/2016/08/23/apache-kudu-0-10-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 0.10.0 released" /><published>2016-08-23T00:00:00-07:00</published><updated>2016-08-23T00:00:00-07:00</updated><id>/2016/08/23/apache-kudu-0-10-0-released</id><content type="html" xml:base="/2016/08/23/apache-kudu-0-10-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 0.10.0!&lt;/p&gt;
-
-&lt;p&gt;This latest version adds several new features, including:
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Users may now manually manage the partitioning of a range-partitioned table
-by adding or dropping range partitions after a table has been created. This
-can be particularly helpful for time-series workloads. Dan Burkert posted
-an &lt;a href=&quot;/2016/08/23/new-range-partitioning-features.html&quot;&gt;in-depth blog&lt;/a&gt; today
-detailing the new feature.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Multi-master (HA) Kudu clusters are now significantly more stable.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Administrators may now reserve a certain amount of disk space on each of its
-configured data directories.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Kudu’s integration with Spark has been substantially improved and is much
-more flexible.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;This release also includes many bug fixes and other improvements, detailed in
-the release notes below.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Read the detailed &lt;a href=&quot;http://kudu.apache.org/releases/0.10.0/docs/release_notes.html&quot;&gt;Kudu 0.10.0 release notes&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;http://kudu.apache.org/releases/0.9.0/&quot;&gt;Kudu 0.10.0 source release&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 0.10.0!
-
-This latest version adds several new features, including:</summary></entry></feed>
+them to effectively design tables for scalability and performance.</summary></entry></feed>

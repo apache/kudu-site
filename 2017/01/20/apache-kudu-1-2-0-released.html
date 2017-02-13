@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update June 13, 2016</title>
+    <title>Apache Kudu - Apache Kudu 1.2.0 released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,54 +108,41 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update June 13, 2016</h1>
-    <p class="meta">Posted 13 Jun 2016 by Jean-Daniel Cryans</p>
+    <h1 class="entry-title">Apache Kudu 1.2.0 released</h1>
+    <p class="meta">Posted 20 Jan 2017 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the thirteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.2.0!</p>
+
+<p>The new release adds several new features and improvements, including:</p>
 
 <!--more-->
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
-
 <ul>
-  <li>
-    <p>The IPMC vote for 0.9.0 RC1 passed and Kudu 0.9.0 is now
-<a href="http://kudu.apache.org/2016/06/10/apache-kudu-0-9-0-released.html">officially released</a>. Per the
-lazily agreed-upon <a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201602.mbox/%3CCAGpTDNcMBWwX8p+yGKzHfL2xcmKTScU-rhLcQFSns1UVSbrXhw@mail.gmail.com%3E">plan</a>,
-the next release will be 1.0.0 in about two months.</p>
-  </li>
-  <li>
-    <p>Adar Dembo has been cleaning up and improving the Master process’s code. Last week he
-<a href="https://gerrit.cloudera.org/#/c/2887/">finished</a> removing the per-tablet replica locations cache.</p>
-  </li>
-  <li>
-    <p>Alexey Serbin contributed his first patch last week by <a href="https://gerrit.cloudera.org/#/c/3360/">fixing</a>
-most of the unit tests that were failing on OSX.</p>
-  </li>
-  <li>
-    <p>Sameer Abhyankar is nearly finished adding support for “in-list” predicates,
-follow <a href="https://gerrit.cloudera.org/#/c/2986/">this link</a> to the gerrit
-review. This will enable specifying predicates in the style of “column IN (list, of, values)”.</p>
-  </li>
-  <li>
-    <p>Mike Percy posted a few patches that remove LocalConsensus for single-node tablets, with the actual
-removal happening in this <a href="https://gerrit.cloudera.org/#/c/3350/">patch</a>.</p>
-  </li>
+  <li>User data such as row contents is now redacted from logging statements.</li>
+  <li>Kudu’s ability to provide strong consistency guarantees has been substantially improved.</li>
+  <li>Various performance improvements in metadata management as well as optimizations for BITSHUFFLE encoding on AVX2-capable hosts.</li>
 </ul>
 
-<h2 id="slides-and-recordings">Slides and recordings</h2>
+<p>Additionally, 1.2.0 fixes a number of important bugs, including:</p>
 
 <ul>
-  <li>Todd Lipcon presented Kudu at Berlin Buzzwords earlier this month. The recording is available
-<a href="https://berlinbuzzwords.de/session/apache-kudu-incubating-fast-analytics-fast-data">here</a>.</li>
+  <li>Kudu now automatically limits its usage of file descriptors, preventing crashes due to ulimit exhaustion.</li>
+  <li>Fixed a long-standing issue which could cause ext4 file system corruption on RHEL 6.</li>
+  <li>Fixed a disk space leak.</li>
+  <li>Several fixes for correctness in various edge cases.</li>
+</ul>
+
+<p>The above list of changes is non-exhaustive. Please refer to the
+<a href="/releases/1.2.0/docs/release_notes.html">release notes</a>
+for an expanded list of important improvements, bug fixes, and
+incompatible changes before upgrading.</p>
+
+<ul>
+  <li>Download the <a href="/releases/1.2.0/">Kudu 1.2.0 source release</a></li>
+  <li>Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.</li>
 </ul>
 
   </div>
