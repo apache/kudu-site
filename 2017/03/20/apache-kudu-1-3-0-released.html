@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update May 3, 2016</title>
+    <title>Apache Kudu - Apache Kudu 1.3.0 released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,71 +108,40 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update May 3, 2016</h1>
-    <p class="meta">Posted 03 May 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu 1.3.0 released</h1>
+    <p class="meta">Posted 20 Mar 2017 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the seventh edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.3.0!</p>
+
+<p>Apache Kudu 1.3 is a minor release which adds various new features,
+improvements, bug fixes, and optimizations on top of Kudu
+1.2. Highlights include:</p>
 
 <!--more-->
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
-
 <ul>
-  <li>
-    <p>Chris George completed his
-<a href="http://gerrit.cloudera.org:8080/#/c/2848/">improved Spark DataSource implementation for Kudu</a>
-and the new feature will be available in the upcoming 0.9.0 release.
-The improved DataSource supports features such as predicate pushdown
-and Chris reports that it is able to perform subsecond queries on
-millions of rows of data.</p>
-  </li>
-  <li>
-    <p>As mentioned last week, Binglin Chang has been working on and off
-on a new <a href="https://issues.apache.org/jira/browse/KUDU-1235">Get API</a> for
-Kudu. The purpose of this new API is to provide an optimized path for
-looking up a single row.</p>
-
-    <p>In some initial benchmarking of the feature, it became apparent that Kudu’s
-RPC mechanism was a scalability bottleneck on servers with 12 or more CPU
-cores. With some more prototype optimizations of the RPC system, Binglin
-has been able to push approximately 220K random reads per second on a single
-server.</p>
-
-    <p>It may be a few more weeks before this work progresses from prototype stage
-to completion, but initial results are looking quite promising.</p>
-  </li>
-  <li>
-    <p>Discussion continued on the design document for the upcoming
-<a href="http://gerrit.cloudera.org:8080/#/c/2642/">Replay Cache</a> feature. This feature
-was previously introduced in an <a href="http://kudu.apache.org/2016/04/11/weekly-update.html">earlier weekly update
-post</a>
-and development is now fully under way.</p>
-  </li>
+  <li>significantly improved support for security, including Kerberos
+authentication, TLS encryption, and coarse-grained (cluster-level)
+authorization</li>
+  <li>automatic garbage collection of historical versions of data</li>
+  <li>lower space consumption and better performance in default
+configurations.</li>
 </ul>
 
-<h2 id="on-the-kudu-blog">On the Kudu blog</h2>
+<p>The above list of changes is non-exhaustive. Please refer to the
+<a href="/releases/1.3.0/docs/release_notes.html">release notes</a>
+for an expanded list of important improvements, bug fixes, and
+incompatible changes before upgrading.</p>
+
+<p>Thanks to the 25 developers who contributed code or documentation to
+this release!</p>
 
 <ul>
-  <li>Todd Lipcon wrote a post about <a href="http://kudu.apache.org/2016/04/26/ycsb.html">benchmarking Kudu insert performance with
-YCSB</a>. This post was quite popular,
-so Todd is currently working on a follow-up which will include more experiments
-around Kudu configuration tuning.</li>
-</ul>
-
-<h2 id="upcoming-talks-and-meetups">Upcoming talks and meetups</h2>
-
-<ul>
-  <li>ApacheCon Big Data will be next week in Vancouver. As always, you can check
-the <a href="http://kudu.apache.org/community.html">Kudu Community page</a> for an up-to-date
-list of conferenace sessions and meetups near you.</li>
+  <li>Download the <a href="/releases/1.3.0/">Kudu 1.3.0 source release</a></li>
+  <li>Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.</li>
 </ul>
 
   </div>
