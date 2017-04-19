@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Predicate Improvements in Kudu 0.8</title>
+    <title>Apache Kudu - Apache Kudu 1.3.1 released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,78 +108,25 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Predicate Improvements in Kudu 0.8</h1>
-    <p class="meta">Posted 19 Apr 2016 by Dan Burkert</p>
+    <h1 class="entry-title">Apache Kudu 1.3.1 released</h1>
+    <p class="meta">Posted 19 Apr 2017 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>The recently released Kudu version 0.8 ships with a host of new improvements to
-scan predicates. Performance and usability have been improved, especially for
-tables taking advantage of <a href="http://kudu.apache.org/docs/schema_design.html#data-distribution">advanced partitioning
-options</a>.</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.3.1!</p>
 
-<!--more-->
+<p>Apache Kudu 1.3.1 is a bug fix release which fixes critical issues discovered
+in Apache Kudu 1.3.0. In particular, this fixes a bug in which data could be
+incorrectly deleted after certain sequences of node failures. Several other
+bugs are also fixed. See the release notes for details.</p>
 
-<h2 id="scan-optimizations-in-the-server-and-c-client">Scan Optimizations in the Server and C++ Client</h2>
+<p>Users of Kudu 1.3.0 are encouraged to upgrade to 1.3.1 immediately.</p>
 
-<p>The server and C++ client have gotten more sophisticated in how they handle and
-optimize scan constraints. Constraints specified in the predicates and lower
-and upper bound primary keys are better unified, resulting in more predicates
-being pushed into primary key bounds, which can turn full table scans with
-predicates into much more efficient bounded scans.</p>
-
-<p>Additionally, the server and C++ client now recognize more opportunities to
-prune entire tablets during scans. For example, for the following schema and
-query Kudu will now be able to skip scanning 15 out of the 16 tablets in the
-table:</p>
-
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- create a table with 16 tablets</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span> <span class="p">(</span><span class="n">id</span> <span class="n">INT64</span><span class="p">,</span> <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">address</span> <span class="n">STRING</span><span class="p">)</span>
-<span class="n">DISTRIBUTE</span> <span class="k">BY</span> <span class="n">HASH</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">INTO</span> <span class="mi">16</span> <span class="n">BUCKETS</span><span class="p">;</span>
-
-<span class="c1">-- scan over a single tablet</span>
-<span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span> <span class="k">FROM</span> <span class="n">users</span>
-<span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">876932</span><span class="p">;</span></code></pre></div>
-
-<p>For a deeper look at the newly implemented scan and partition pruning
-optimizations, see the associated <a href="https://github.com/apache/incubator-kudu/blob/master/docs/design-docs/scan-optimization-partition-pruning.md">design
-document</a>.
-These optimizations will eventually be incorporated into the Java client as
-well, but until that time they are still used on the server side for scans
-initiated by Java clients. If you would like to help with this effort, let us
-know on the <a href="https://issues.apache.org/jira/browse/KUDU-1065">JIRA issue</a>.</p>
-
-<h2 id="redesigned-predicate-api-in-the-java-client">Redesigned Predicate API in the Java Client</h2>
-
-<p>The Java client has a new way to express scan predicates: the
-<a href="http://kudu.apache.org/apidocs/org/kududb/client/KuduPredicate.html"><code>KuduPredicate</code></a>.
-The API matches the corresponding C++ API more closely, and adds support for
-specifying exclusive, as well as inclusive, range predicates. The existing
-<a href="http://kudu.apache.org/apidocs/org/kududb/client/ColumnRangePredicate.html"><code>ColumnRangePredicate</code></a>
-API has been deprecated, and will be removed soon. Example of transitioning from
-the old to new API:</p>
-
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ColumnSchema</span> <span class="n">myIntColumnSchema</span> <span class="o">=</span> <span class="o">...;</span>
-<span class="n">KuduScanner</span><span class="o">.</span><span class="na">KuduScannerBuilder</span> <span class="n">scannerBuilder</span> <span class="o">=</span> <span class="o">...;</span>
-
-<span class="c1">// Old predicate API</span>
-<span class="n">ColumnRangePredicate</span> <span class="n">predicate</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ColumnRangePredicate</span><span class="o">(</span><span class="n">myIntColumnSchema</span><span class="o">);</span>
-<span class="n">predicate</span><span class="o">.</span><span class="na">setLowerBound</span><span class="o">(</span><span class="mi">20</span><span class="o">);</span>
-<span class="n">scannerBuilder</span><span class="o">.</span><span class="na">addColumnRangePredicate</span><span class="o">(</span><span class="n">predicate</span><span class="o">);</span>
-
-<span class="c1">// New predicate API</span>
-<span class="n">scannerBuilder</span><span class="o">.</span><span class="na">newPredicate</span><span class="o">(</span>
-    <span class="n">KuduPredicate</span><span class="o">.</span><span class="na">newComparisonPredicate</span><span class="o">(</span><span class="n">myIntColumnSchema</span><span class="o">,</span> <span class="n">ComparisonOp</span><span class="o">.</span><span class="na">GREATER_EQUAL</span><span class="o">,</span> <span class="mi">20</span><span class="o">));</span></code></pre></div>
-
-<h2 id="under-the-covers-changes">Under the Covers Changes</h2>
-
-<p>The scan optimizations in the server and C++ client, and the new <code>KuduPredicate</code>
-API in the Java client are made possible by an overhaul of how predicates are
-handled internally. A new protobuf message type,
-<a href="https://github.com/apache/incubator-kudu/blob/master/src/kudu/common/common.proto#L273"><code>ColumnPredicatePB</code></a>
-has been introduced, and will allow more column predicate types to be introduced
-in the future. If you are interested in contributing to Kudu but don’t know
-where to start, consider adding a new predicate type; for example the <code>IS NULL</code>,
-<code>IS NOT NULL</code>, <code>IN</code>, and <code>LIKE</code> predicates types are currently not implemented.</p>
+<ul>
+  <li>Download the <a href="/releases/1.3.1/">Kudu 1.3.1 source release</a></li>
+  <li>Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.</li>
+</ul>
 
   </div>
 </article>
