@@ -1,4 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-06-15T10:02:16-07:00</updated><id>/</id><entry><title>Apache Kudu 1.3.1 released</title><link href="/2017/04/19/apache-kudu-1-3-1-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.1 released" /><published>2017-04-19T00:00:00-07:00</published><updated>2017-04-19T00:00:00-07:00</updated><id>/2017/04/19/apache-kudu-1-3-1-released</id><content type="html" xml:base="/2017/04/19/apache-kudu-1-3-1-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.1!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-08-03T12:03:05-07:00</updated><id>/</id><entry><title>Apache Kudu 1.4.0 released</title><link href="/2017/06/13/apache-kudu-1-4-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.4.0 released" /><published>2017-06-13T00:00:00-07:00</published><updated>2017-06-13T00:00:00-07:00</updated><id>/2017/06/13/apache-kudu-1-4-0-released</id><content type="html" xml:base="/2017/06/13/apache-kudu-1-4-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.4.0!&lt;/p&gt;
+
+&lt;p&gt;Apache Kudu 1.4.0 is a minor release which offers several new features,
+improvements, optimizations, and bug fixes.&lt;/p&gt;
+
+&lt;p&gt;Highlights include:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;ability to alter storage attributes and default values for existing columns&lt;/li&gt;
+  &lt;li&gt;a new C++ client API to efficiently map primary keys to their associated partitions
+and hosts&lt;/li&gt;
+  &lt;li&gt;support for long-running fault-tolerant scans in the Java client&lt;/li&gt;
+  &lt;li&gt;a new &lt;code&gt;kudu fs check&lt;/code&gt; command which can perform offline consistency checks
+and repairs on the local on-disk storage of a Tablet Server or Master.&lt;/li&gt;
+  &lt;li&gt;many optimizations to reduce disk space usage, improve write throughput,
+and improve throughput of background maintenance operations.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above list of changes is non-exhaustive. Please refer to the
+&lt;a href=&quot;/releases/1.4.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;
+for an expanded list of important improvements, bug fixes, and
+incompatible changes before upgrading.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.4.0/&quot;&gt;Kudu 1.4.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Convenience binary artifacts for the Java client and various Java
+integrations (eg Spark, Flume) are also now available via the ASF Maven
+repository.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.4.0!
+
+Apache Kudu 1.4.0 is a minor release which offers several new features,
+improvements, optimizations, and bug fixes.
+
+Highlights include:</summary></entry><entry><title>Apache Kudu 1.3.1 released</title><link href="/2017/04/19/apache-kudu-1-3-1-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.1 released" /><published>2017-04-19T00:00:00-07:00</published><updated>2017-04-19T00:00:00-07:00</updated><id>/2017/04/19/apache-kudu-1-3-1-released</id><content type="html" xml:base="/2017/04/19/apache-kudu-1-3-1-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.1!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.3.1 is a bug fix release which fixes critical issues discovered
 in Apache Kudu 1.3.0. In particular, this fixes a bug in which data could be
@@ -633,146 +668,4 @@ integrations (eg Spark, Flume) are also now available via the ASF Maven
 repository.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.0.0!
 
-This latest version adds several new features, including:</summary></entry><entry><title>Pushing Down Predicate Evaluation in Apache Kudu</title><link href="/2016/09/16/predicate-pushdown.html" rel="alternate" type="text/html" title="Pushing Down Predicate Evaluation in Apache Kudu" /><published>2016-09-16T00:00:00-07:00</published><updated>2016-09-16T00:00:00-07:00</updated><id>/2016/09/16/predicate-pushdown</id><content type="html" xml:base="/2016/09/16/predicate-pushdown.html">&lt;p&gt;I had the pleasure of interning with the Apache Kudu team at Cloudera this
-summer. This project was my summer contribution to Kudu: a restructuring of the
-scan path to speed up queries.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
-
-&lt;p&gt;In Kudu, &lt;em&gt;predicate pushdown&lt;/em&gt; refers to the way in which predicates are
-handled. When a scan is requested, its predicates are passed through the
-different layers of Kudu’s storage hierarchy, allowing for pruning and other
-optimizations to happen at each level before reaching the underlying data.&lt;/p&gt;
-
-&lt;p&gt;While predicates are pushed down, predicate evaluation itself occurs at a fairly
-high level, precluding the evaluation process from certain data-specific
-optimizations. These optimizations can make tablet scans an order of magnitude
-faster, if not more.&lt;/p&gt;
-
-&lt;h2 id=&quot;a-day-in-the-life-of-a-query&quot;&gt;A Day in the Life of a Query&lt;/h2&gt;
-
-&lt;p&gt;Because Kudu is a columnar storage engine, its scan path has a number of
-optimizations to avoid extraneous reads, copies, and computation. When a query
-is sent to a tablet server, the server prunes tablets based on the
-primary key, directing the request to only the tablets that contain the key
-range of interest. Once at a tablet, only the columns relevant to the query are
-scanned. Further pruning is done over the primary key, and if the query is
-predicated on non-key columns, the entire column is scanned. The columns in a
-tablet are stored as &lt;em&gt;cfiles&lt;/em&gt;, which are split into encoded &lt;em&gt;blocks&lt;/em&gt;. Once the
-relevant cfiles are determined, the data are materialized by the block
-decoders, i.e. their underlying data are decoded and copied into a buffer,
-which is passed back to the tablet layer. The tablet can then evaluate the
-predicate on the batch of data and mark which rows should be returned to the
-client.&lt;/p&gt;
-
-&lt;p&gt;One of the encoding types I worked very closely with is &lt;em&gt;dictionary encoding&lt;/em&gt;,
-an encoding type for strings that performs particularly well for cfiles that
-have repeating values. Rather than storing every row’s string, each unique
-string is assigned a numeric codeword, and the rows are stored numerically on
-disk. When materializing a dictionary block, all of the numeric data are scanned
-and all of the corresponding strings are copied and buffered for evaluation.
-When the vocabulary of a dictionary-encoded cfile gets too large, the blocks
-begin switching to &lt;em&gt;plain encoding mode&lt;/em&gt; to act like &lt;em&gt;plain-encoded&lt;/em&gt; blocks.&lt;/p&gt;
-
-&lt;p&gt;In a plain-encoded block, strings are stored contiguously and the character
-offsets to the start of each string are stored as a list of integers. When
-materializing, all of the strings are copied to a buffer for evaluation.&lt;/p&gt;
-
-&lt;p&gt;Therein lies room for improvement: this predicate evaluation path is the same
-for all data types and encoding types. Within the tablet, the correct cfiles
-are determined, the cfiles’ decoders are opened, all of the data are copied to
-a buffer, and the predicates are evaluated on this buffered data via
-type-specific comparators. This path is extremely flexible, but because it was
-designed to be encoding-independent, there is room for improvement.&lt;/p&gt;
-
-&lt;h2 id=&quot;trimming-the-fat&quot;&gt;Trimming the Fat&lt;/h2&gt;
-
-&lt;p&gt;The first step is to allow the decoders access to the predicate. In doing so,
-each encoding type can specialize its evaluation. Additionally, this puts the
-decoder in a position where it can determine whether a given row satisfies the
-query, which in turn, allows the decoders to determine what data gets copied
-instead of eagerly copying all of its data to get evaluated.&lt;/p&gt;
-
-&lt;p&gt;Take the case of dictionary-encoded strings as an example. With the existing
-scan path, not only are all of the strings in a column copied into a buffer, but
-string comparisons are done on every row. By taking advantage of the fact that
-the data can be represented as integers, the cost of determining the query
-results can be greatly reduced. The string comparisons can be swapped out with
-evaluation based on the codewords, in which case the room for improvement boils
-down to how to most quickly determine whether or not a given codeword
-corresponds to a string that satisfies the predicate. Dictionary columns will
-now use a bitset to store the codewords that match the predicates.  It will then
-scan through the integer-valued data and checks the bitset to determine whether
-it should copy the corresponding string over.&lt;/p&gt;
-
-&lt;p&gt;This is great in the best case scenario where a cfile’s vocabulary is small,
-but when the vocabulary gets too large and the dictionary blocks switch to plain
-encoding mode, performance is hampered. In this mode, the blocks don’t utilize
-any dictionary metadata and end up wasting the codeword bitset. That isn’t to
-say all is lost: the decoders can still evaluate a predicate via string
-comparison, and the fact that evaluation can still occur at the decoder-level
-means the eager buffering can still be avoided.&lt;/p&gt;
-
-&lt;p&gt;Dictionary encoding is a perfect storm in that the decoders can completely
-evaluate the predicates. This is not the case for most other encoding types,
-but having decoders support evaluation leaves the door open for other encoding
-types to extend this idea.&lt;/p&gt;
-
-&lt;h2 id=&quot;performance&quot;&gt;Performance&lt;/h2&gt;
-&lt;p&gt;Depending on the dataset and query, predicate pushdown can lead to significant
-improvements. Tablet scans were timed with datasets consisting of repeated
-string patterns of tunable length and tunable cardinality.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/predicate-pushdown/pushdown-10.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
-&lt;img src=&quot;/img/predicate-pushdown/pushdown-10M.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The above plots show the time taken to completely scan a single tablet, recorded
-using a dataset of ten million rows of strings with length ten. Predicates were
-designed to select values out of bounds (Empty), select a single value (Equal,
-i.e. for cardinality &lt;em&gt;k&lt;/em&gt;, this would select 1/&lt;em&gt;k&lt;/em&gt; of the dataset), select half
-of the full range (Half), and select the full range of values (All).&lt;/p&gt;
-
-&lt;p&gt;With the original evaluation implementation, the tablet must copy and scan
-through the tablet to determine whether any values match. This means that even
-when the result set is small, the full column is still copied. This is avoided
-by pushing down predicates, which only copies as needed, and can be seen in the
-above queries: those with near-empty result sets (Empty and Equal) have shorter
-scan times than those with larger result sets (Half and All).&lt;/p&gt;
-
-&lt;p&gt;Note that for dictionary encoding, given a low cardinality, Kudu can completely
-rely on the dictionary codewords to evaluate, making the query significantly
-faster. At higher cardinalities, the dictionaries completely fill up and the
-blocks fall back on plain encoding. The slower, albeit still improved,
-performance on the dataset containing 10M unique values reflects this.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/predicate-pushdown/pushdown-tpch.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Similar predicates were run with the TPC-H dataset, querying on the shipdate
-column. The full path of a query includes not only the tablet scanning itself,
-but also RPCs and batched data transfer to the caller as the scan progresses.
-As such, the times plotted above refer to the average end-to-end time required
-to scan and return a batch of rows. Regardless of this additional overhead,
-significant improvements on the scan path still yield substantial improvements
-to the query performance as a whole.&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;Pushing down predicate evaluation in Kudu yielded substantial improvements to
-the scan path. For dictionary encoding, pushdown can be particularly powerful,
-and other encoding types are either unaffected or also improved. This change has
-been pushed to the main branch of Kudu, and relevant commits can be found
-&lt;a href=&quot;https://github.com/cloudera/kudu/commit/c0f37278cb09a7781d9073279ea54b08db6e2010&quot;&gt;here&lt;/a&gt;
-and
-&lt;a href=&quot;https://github.com/cloudera/kudu/commit/ec80fdb37be44d380046a823b5e6d8e2241ec3da&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;This summer has been a phenomenal learning experience for me, in terms of the
-tools, the workflow, the datasets, the thought-processes that go into building
-something at Kudu’s scale. I am extremely thankful for all of the mentoring and
-support I received, and that I got to be a part of Kudu’s journey from
-incubating to a Top Level Apache project. I can’t express enough how grateful I
-am for the amount of support I got from the Kudu team, from the intern
-coordinators, and from the Cloudera community as a whole.&lt;/p&gt;</content><author><name>Andrew Wong</name></author><summary>I had the pleasure of interning with the Apache Kudu team at Cloudera this
-summer. This project was my summer contribution to Kudu: a restructuring of the
-scan path to speed up queries.</summary></entry></feed>
+This latest version adds several new features, including:</summary></entry></feed>
