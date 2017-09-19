@@ -1,4 +1,183 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-09-13T14:09:28-07:00</updated><id>/</id><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00-07:00</published><updated>2017-09-08T00:00:00-07:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-09-19T09:30:06-07:00</updated><id>/</id><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00-07:00</published><updated>2017-09-18T00:00:00-07:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
+its design and ultimate goals, current features, and next steps.
+On the way, we’ll shed some light on the more relevant components and how they
+fit together.&lt;/p&gt;
+
+&lt;p&gt;In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
+the current status.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;what-is-consistency-and-why-is-it-relevant&quot;&gt;What is “consistency” and why is it relevant?&lt;/h2&gt;
+
+&lt;p&gt;In order to cope with ever increasing data volumes, modern storage systems like Kudu have to support
+many concurrent users while coordinating requests across many machines, each with many threads executing
+work at the same time. However, application developers shouldn’t have to understand the internal
+details of how these systems implement this parallel, distributed, execution in order to write
+correct applications. &lt;em&gt;Consistency in the context of parallel, distributed systems roughly
+refers to how the system behaves in comparison to a single-machine, single-thread system&lt;/em&gt;. In a
+single-threaded, single-machine storage system operations happen one-at-a-time, in a clearly
+defined order, making correct applications easy to code and reason about. A developer writing an
+application against such a system doesn’t have to care about how simultaneous operations interact
+or about ordering anomalies, so the code is simpler, but more importantly, cognitive load is greatly
+reduced, freeing focus for the application logic itself.&lt;/p&gt;
+
+&lt;p&gt;While such a simple system is definitely possible to build, it wouldn’t be able to cope with very
+large amounts of data. In order to deal with big data volumes and write throughputs modern storage
+systems like Kudu are designed to be distributed, storing and processing data across many machines
+and cores. This means that many things happen simultaneously in the same and different machines,
+that there are more moving parts and thus more oportunity for mis-orderings and for components
+to fail. How far systems like Kudu go (or don’t go) in emulating the simple single-threaded, single-machine
+system a distributed, parallel setting where failures are common is roughly what is referred to
+as how &lt;em&gt;“consistent”&lt;/em&gt; the system is.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Consistency&lt;/em&gt; as a term is somewhat overloaded in the distributed systems and database communities,
+there are many different models, properties, different names for the same concept, and often
+different concepts under the same name. This post is not meant to introduce these concepts
+as there are excellent references already available elsewhere (we recommend Kyle Kinsbury’s excellent
+series of blog posts on the matter, like &lt;a href=&quot;https://aphyr.com/posts/313-strong-consistency-models&quot;&gt;this one&lt;/a&gt;).
+Throughout this and follow-up posts we’ll refer to consistency loosely as the &lt;strong&gt;C&lt;/strong&gt; in &lt;strong&gt;CAP&lt;/strong&gt;[1]
+in some cases and as the &lt;strong&gt;I&lt;/strong&gt; in &lt;strong&gt;ACID&lt;/strong&gt;[2] in others; we’ll try to be specific when relevant.&lt;/p&gt;
+
+&lt;h2 id=&quot;design-decisions-trade-offs-and-motivation&quot;&gt;Design decisions, trade-offs and motivation&lt;/h2&gt;
+
+&lt;p&gt;Consistency is essentially about ordering and ordering usually has a cost. Distributed storage
+system design must choose to prioritize some properties over others according to the target use
+cases. That is, trade-offs must be made or, borrowing a term from economics, there is
+“no free lunch”. Different systems choose different trade-off points; for instance, systems inspired by &lt;em&gt;Dynamo&lt;/em&gt;[3], usually favor availability in the consistency/availability
+trade-off: by allowing a write to a data item to succeed even when a majority (or even all) of the
+replicas serving that data item are unreachable, Dynamo’s design is minimizing insertion errors and
+insert latency (related to availability) at the cost having to perform extra work for value
+reconciliation on reads and possibly returning stale or disordered values (related to consistency).
+On the other end of the spectrum, traditional DBMS design is often driven by the need to support
+transactions of arbitrary complexity while providing the users stronger, predictable, semantics,
+favoring consistency at the cost of scalability and availability.&lt;/p&gt;
+
+&lt;p&gt;Kudu’s overarching goal is to enable &lt;em&gt;fast analytic workloads over large amounts of mutable&lt;/em&gt; data,
+ meaning it was designed to perform fast scans over large volumes of data stored in many servers.
+In practical terms this means that, when given a choice, more often than not, we opted for the
+design that would enable Kudu to have faster scan performance (i.e. favoring reads even if it meant pushing
+a bit more work to the path that mutates data, i.e. writes). This does not mean that the write path
+was not a concern altogether. In fact, modern storage systems like &lt;em&gt;Google’s Spanner&lt;/em&gt;[4]
+global-scale database demonstrate that, with the right set of trade-offs, it is possible to have strong
+consistency semantics with write latencies and overall availability that are adequate for most use
+cases (e.g. Spanner achieves 5 9’s of availability). For the write path, we often made similar choices in Kudu.&lt;/p&gt;
+
+&lt;p&gt;Another important aspect that directed our design decisions is the type of &lt;em&gt;write workload&lt;/em&gt; we targeted.
+Traditionally, analytical storage systems target periodic bulk write workloads and a continuous
+stream of analytical scans. This design is often problematic in that it forces users to have to
+build complex pipelines where data is accumulated in one place for later loading into the storage
+ system. Moreover, beyond the architectural complexity, this kind of design usually also
+means that the data that is available for analytics is not the most recent. In Kudu we aimed for
+enabling continuous ingest, i.e. having a continuous stream of small writes, obviating the need to
+assemble a pipeline for data accumulation/loading and allowing analytical scans to have access to
+the most recent data. Another important aspect of the write workloads that we targeted in Kudu is
+that they are append-mostly, i.e. most insert new values into the table, with a smaller percentage
+updating currently existing values. Both the average write size and the data distribution influence
+the design of the write path, as we’ll see in the following sections.&lt;/p&gt;
+
+&lt;p&gt;One last concern we had in mind is that different users have different needs when it comes to
+consistency semantics, particularly as it applies to an analytical storage system like Kudu. For
+some users consistency isn’t a primary concern, they just want fast scans, and the ability to
+update/insert/delete values without needing to build a complex pipeline. For example, many machine
+learning models are mostly insensitive to data recency or ordering so, when using Kudu to store data that
+will be used to train such a model, consistency is often not as primary a concern as read/write performance is.
+ In other cases consistency is a much higher priority. For example, when using Kudu to
+store transaction data for fraud analysis it might be important to capture if events are causally
+related. Fraudulent transactions might be characterized by a specific sequence of events and when
+retrieving that data it might be important for the scan result to reflect that sequence. Kudu’s
+design allows users to make a trade-off between consistency and performance at scan time. That is,
+users can choose to have stronger consistency semantics for scans at the penalty of latency and
+throughput or they can choose to weaken the consistency semantics for an extra performance boost.&lt;/p&gt;
+
+&lt;h3 id=&quot;note&quot;&gt;Note&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Kudu currently lacks support for atomic multi-row mutation operations (i.e. mutation
+operations to more than one row in the same or different tablets, planned as a future feature).
+So, when discussing writes, we’ll be talking about the consistency semantics of single row mutations.
+In this context we’ll discuss Kudu’s properties more from a key/value store standpoint. On the
+other hand Kudu is an analytical storage engine so, for the read path, we’ll also discuss the
+semantics of large (multi-row) scans. This moves the discussion more into the field of traditional
+DBMSs. These ingredients make for a non-traditional discussion that is not exactly apples-to-apples
+with what the reader might be familiar with, but our hope is that it still provides valuable, or
+at least interesting, insight.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;consistency-options-in-kudu&quot;&gt;Consistency options in Kudu&lt;/h2&gt;
+
+&lt;p&gt;Consistency, as well as other properties, are underpinned in Kudu by the concept of a &lt;em&gt;timestamp&lt;/em&gt;.
+In follow-up posts we’ll look into detail how these are assigned and how they are assembled. For now
+it’s sufficient to know that a timestamp is a single, usually large, number that has some mapping
+to wall time. Each mutation of a Kudu row is tagged with one such timestamp. Globally, these timestamps
+form a partial order over all the rows with the particularity that causally related mutations (e.g.
+a write mutation that is the result of the value obtained from a previous read) may be required to
+have increasing timestamps, depending on the user’s choices.&lt;/p&gt;
+
+&lt;p&gt;Row mutations performed by a single client &lt;em&gt;instance&lt;/em&gt; are guaranteed to have increasing timestamps
+thus reflecting their potential causal relationship. This property is always enforced. However
+there are two major &lt;em&gt;“knobs”&lt;/em&gt; that are available to the user to make performance trade-offs, the
+&lt;code&gt;Read&lt;/code&gt; mode, and the &lt;code&gt;External Consistency&lt;/code&gt; mode (see &lt;a href=&quot;https://kudu.apache.org/docs/transaction_semantics.html&quot;&gt;here&lt;/a&gt;
+for more information on how to use the relevant APIs).&lt;/p&gt;
+
+&lt;p&gt;The first and most important knob, the &lt;code&gt;Read&lt;/code&gt; mode, pertains to what is the guaranteed recency of
+data resulting from scans. Since Kudu uses replication for availability and fault-tolerance, there
+are always multiple replicas of any data item.
+Not all replicas must be up-to-date so if the user cares about recency, e.g. if the user requires
+that any data read includes all previously written data &lt;em&gt;from a single client instance&lt;/em&gt; then it must
+choose the &lt;code&gt;READ_AT_SNAPSHOT&lt;/code&gt; read mode. With this mode enabled the client is guaranteed to observe
+ &lt;strong&gt;“READ YOUR OWN WRITES”&lt;/strong&gt; semantics, i.e. scans from a client will always include all previous mutations
+performed by that client. Note that this property is local to a single client instance, not a global
+property.&lt;/p&gt;
+
+&lt;p&gt;The second “knob”, the &lt;code&gt;External Consistency&lt;/code&gt; mode, defines the semantics of how reads and writes
+are performed across multiple client instances. By default, &lt;code&gt;External Consistency&lt;/code&gt; is set to
+ &lt;code&gt;CLIENT_PROPAGATED&lt;/code&gt;, meaning it’s up to the user to coordinate a set of &lt;em&gt;timestamp tokens&lt;/em&gt; with clients (even
+across different machines) if they are performing writes/reads that are somehow causally linked.
+If done correctly this enables &lt;strong&gt;STRICT SERIALIZABILITY&lt;/strong&gt;[5], i.e. &lt;strong&gt;LINEARIZABILITY&lt;/strong&gt;[6] and
+&lt;strong&gt;SERIALIZABILITY&lt;/strong&gt;[7] at the same time, at the cost of having the user coordinate the timestamp
+tokens across clients (a survey of the meaning of these, and other definitions can be found
+&lt;a href=&quot;http://www.ics.forth.gr/tech-reports/2013/2013.TR439_Survey_on_Consistency_Conditions.pdf&quot;&gt;here&lt;/a&gt;).
+The alternative setting for &lt;code&gt;External Consistency&lt;/code&gt; is to have it set to
+&lt;code&gt;COMMIT_WAIT&lt;/code&gt; (experimental), which guarantees the same properties through a different means, by
+implementing Google Spanner’s &lt;em&gt;TrueTime&lt;/em&gt;. This comes at the cost of higher latency (depending on how
+tightly synchronized the system clocks of the various tablet servers are), but doesn’t require users
+to propagate timestamps programmatically.&lt;/p&gt;
+
+&lt;h2 id=&quot;next-up&quot;&gt;Next up&lt;/h2&gt;
+
+&lt;p&gt;In following posts we’ll look into the several components of Kudu’s architecture that come together
+to enable the consistency semantics introduced in the previous section, including:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Transactions and the Transaction Driver&lt;/li&gt;
+  &lt;li&gt;Concurrent execution with Multi-Version Concurrency Control&lt;/li&gt;
+  &lt;li&gt;Exactly-Once semantics with Replay Cache&lt;/li&gt;
+  &lt;li&gt;Replication, Crash Recovery with Consensus and the Write-Ahead-Log&lt;/li&gt;
+  &lt;li&gt;Time keeping and timestamp assignment&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.24.3690&amp;amp;rep=rep1&amp;amp;type=pdf&quot;&gt;[1]&lt;/a&gt;: Armando Fox and Eric A. Brewer. 1999. Harvest, Yield, and Scalable Tolerant Systems. In Proceedings of the The Seventh Workshop on Hot Topics in Operating Systems (HOTOS ‘99). IEEE Computer Society, Washington, DC, USA.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/ACID&quot;&gt;[2]&lt;/a&gt;: ACID - Wikipedia entry&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf&quot;&gt;[3]&lt;/a&gt;: Giuseppe DeCandia, Deniz Hastorun, Madan Jampani, Gunavardhan Kakulapati, Avinash Lakshman, Alex Pilchin, Swaminathan Sivasubramanian, Peter Vosshall, and Werner Vogels. 2007. Dynamo: amazon’s highly available key-value store. In Proceedings of twenty-first ACM SIGOPS symposium on Operating systems principles (SOSP ‘07). ACM, New York, NY, USA.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://research.google.com/archive/spanner-osdi2012.pdf&quot;&gt;[4]&lt;/a&gt;: James C. Corbett, Jeffrey Dean, Michael Epstein, Andrew Fikes, Christopher Frost, J. J. Furman, Sanjay Ghemawat, Andrey Gubarev, Christopher Heiser, Peter Hochschild, Wilson Hsieh, Sebastian Kanthak, Eugene Kogan, Hongyi Li, Alexander Lloyd, Sergey Melnik, David Mwaura, David Nagle, Sean Quinlan, Rajesh Rao, Lindsay Rolig, Yasushi Saito, Michal Szymaniak, Christopher Taylor, Ruth Wang, and Dale Woodford. 2012. Spanner: Google’s globally-distributed database. In Proceedings of the 10th USENIX conference on Operating Systems Design and Implementation (OSDI’12). USENIX Association, Berkeley, CA, USA.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://pdfs.semanticscholar.org/fafa/ebf830bc900bccc5e4fd508fd592f5581cbe.pdf&quot;&gt;[5]&lt;/a&gt;: Gifford, David K. Information storage in a decentralized computer system. Diss. Stanford University, 1981.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.doc.ic.ac.uk/~gbd10/aw590/Linearizability%20-%20A%20Correctness%20Condition%20for%20Concurrent%20Objects.pdf&quot;&gt;[6]&lt;/a&gt;: Herlihy, Maurice P., and Jeannette M. Wing. “Linearizability: A correctness condition for concurrent objects.” ACM Transactions on Programming Languages and Systems (TOPLAS) 12.3 (1990): 463-492.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.dtic.mil/get-tr-doc/pdf?AD=ADA078414&quot;&gt;[7]&lt;/a&gt;: Papadimitriou, Christos H. “The serializability of concurrent database updates.” Journal of the ACM (JACM) 26.4 (1979): 631-653.&lt;/p&gt;</content><author><name>David Alves</name></author><summary>In this series of short blog posts we will introduce Kudu’s consistency model,
+its design and ultimate goals, current features, and next steps.
+On the way, we’ll shed some light on the more relevant components and how they
+fit together.
+
+In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
+the current status.</summary></entry><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00-07:00</published><updated>2017-09-08T00:00:00-07:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.5.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.&lt;/p&gt;
@@ -615,61 +794,4 @@ as I and others have focused on releases, conferences, etc.
 So, rather than covering just this past week, this post will cover highlights
 of the progress since the 1.0 release in mid-September. If you’re interested
 in learning about progress prior to that release, check the
-release notes.</summary></entry><entry><title>Apache Kudu at Strata+Hadoop World NYC 2016</title><link href="/2016/09/26/strata-nyc-kudu-talks.html" rel="alternate" type="text/html" title="Apache Kudu at Strata+Hadoop World NYC 2016" /><published>2016-09-26T00:00:00-07:00</published><updated>2016-09-26T00:00:00-07:00</updated><id>/2016/09/26/strata-nyc-kudu-talks</id><content type="html" xml:base="/2016/09/26/strata-nyc-kudu-talks.html">&lt;p&gt;This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
-2016. If you’re interested in Kudu, there will be several opportunities to
-learn more, both from the open source development team as well as some companies
-who are already adopting Kudu for their use cases.
-&lt;!--more--&gt;
-Here are some of the sessions to check out:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52146&quot;&gt;Powering real-time analytics on Xfinity using Kudu&lt;/a&gt; (Wednesday, 11:20am)&lt;/p&gt;
-
-    &lt;p&gt;Sridhar Alla and Kiran Muglurmath from Comcast will talk about how they’re using
-Kudu to store hundreds of billions of Set-Top Box (STB) events, performing
-analytics concurrently with real-time streaming ingest of thousands of events
-per second.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52248&quot;&gt;Creating real-time, data-centric applications with Impala and Kudu&lt;/a&gt; (Wednesday, 2:05pm)&lt;/p&gt;
-
-    &lt;p&gt;Marcel Kornacker and Todd Lipcon will introduce how Impala and Kudu together
-allow users to build real-time applications that support streaming ingest,
-random access updates and deletes, and high performance analytic SQL in
-a single system.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52168&quot;&gt;Streaming cybersecurity into Graph: Accelerating data into Datastax Graph and Blazegraph&lt;/a&gt; (Thursday, 1:15pm)&lt;/p&gt;
-
-    &lt;p&gt;Joshua Patterson, Michael Wendt, and Keith Kraus from Accenture Labs will discuss
-how they have built cybersecurity solutions using graph analytics on top of open
-source technology like Apache Kafka, Spark, and Flink. They will also touch on
-why Kudu is becoming an integral part of Accenture’s technology stack.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/52050&quot;&gt;How GE analyzes billions of mission-critical events in real time using Apache Apex, Spark, and Kudu&lt;/a&gt; (Thursday, 2:05pm)&lt;/p&gt;
-
-    &lt;p&gt;Venkatesh Sivasubramanian and Luis Ramos from GE Digital will discuss how they
-collect and process real-time IoT data using Apache Apex and Apache Spark, and
-how they’ve been experimenting with Apache Kudu for time series data storage.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://conferences.oreilly.com/strata/hadoop-big-data-ny/public/schedule/detail/51887&quot;&gt;Apache Kudu: 1.0 and Beyond&lt;/a&gt; (Thursday, 4:35pm)&lt;/p&gt;
-
-    &lt;p&gt;Todd Lipcon from Cloudera will review the new features that were developed between Kudu 0.5
-(the first public release one year ago) and Kudu 1.0, released just last week. Additionally,
-this talk will provide some insight into the upcoming project roadmap for the coming year.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Aside from these organized sessions, word has it that there will be various demos
-featuring Apache Kudu at the Cloudera and ZoomData vendor booths.&lt;/p&gt;
-
-&lt;p&gt;If you’re not attending the conference, but still based in NYC, all hope is
-not lost. Michael Crutcher from Cloudera will be presenting an introduction
-to Apache Kudu at the &lt;a href=&quot;http://www.meetup.com/mysqlnyc/events/233599664/&quot;&gt;SQL NYC Meetup&lt;/a&gt;.
-Be sure to RSVP as spots are filling up fast.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>This week in New York, O’Reilly and Cloudera will be hosting Strata+Hadoop World
-2016. If you’re interested in Kudu, there will be several opportunities to
-learn more, both from the open source development team as well as some companies
-who are already adopting Kudu for their use cases.</summary></entry></feed>
+release notes.</summary></entry></feed>
