@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update April 18, 2016</title>
+    <title>Apache Kudu - Slides: A brave new world in mutable big data: Relational storage</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,98 +108,65 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update April 18, 2016</h1>
-    <p class="meta">Posted 18 Apr 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Slides: A brave new world in mutable big data: Relational storage</h1>
+    <p class="meta">Posted 23 Oct 2017 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the fifth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Since the Apache Kudu project made its debut in 2015, there have been
+a few common questions that kept coming up at every presentation:</p>
+
+<ul>
+  <li>Is Kudu an open source version of Google’s Spanner system?</li>
+  <li>Is Kudu NoSQL or SQL?</li>
+  <li>Why does Kudu have a relational data model? Isn’t SQL dead?</li>
+</ul>
 
 <!--more-->
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
+<p>A few of these questions are addressed in the
+<a href="https://kudu.apache.org/faq.html">Kudu FAQ</a>, but I thought they were
+interesting enough that I decided to give a talk on these subjects
+at <a href="https://conferences.oreilly.com/strata/strata-ny">Strata Data Conference NYC 2017</a>.</p>
 
-<h2 id="project-news">Project news</h2>
+<p>Preparing this talk was particularly interesting, since Google recently released
+Spanner to the public in SaaS form as <a href="https://cloud.google.com/spanner/">Google Cloud Spanner</a>.
+This meant that I was able to compare Kudu vs Spanner not just qualitatively
+based on some academic papers, but quantitatively as well.</p>
 
-<ul>
-  <li>
-    <p>Cloudera announced that it has posted <a href="http://markmail.org/thread/tghwcux5k4qvcsep">binary packages</a>
-for the recent 0.8.0 release. These are not official packages from
-the Apache Kudu (incubating) project, but users who prefer not to
-build from source may find them convenient.</p>
-  </li>
-  <li>
-    <p>Jean-Daniel Cryans has volunteered to continue to act as release manager for
-the 0.x release line, and has start a <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201604.mbox/%3CCAGpTDNcfTOcp%2Beb39h5j%3DoxttZNhOBZ7v%2B%2B6hxRtWCh3t_psbQ%40mail.gmail.com%3E">discussion</a>
-detailing what features and improvements he expects will be ready
-for an 0.9 release in June.</p>
-  </li>
-</ul>
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+<p>To summarize the key points of the presentation:</p>
 
 <ul>
   <li>
-    <p>Chris George posted a <a href="http://gerrit.cloudera.org:8080/#/c/2754/">work in progress patch</a>
-for a native Kudu RDD implementation for Spark. Kudu already ships an RDD
-based on the generic HadoopRDD and Kudu’s MapReduce integration, but Chris’s
-new version paves the way for new features like pushing down predicates.</p>
+    <p>Despite the growing popularity of “NoSQL” from 2009 through 2013, SQL has
+once again become the access mechanism of choice for the majority of
+analytic applications. NoSQL has become “Not Only SQL”.</p>
   </li>
   <li>
-    <p>Todd Lipcon has been working on <a href="https://issues.apache.org/jira/browse/KUDU-1410">KUDU-1410</a>,
-a small project which makes it easier to diagnose performance issues on a Kudu
-cluster.</p>
+    <p>Spanner and Kudu share a lot of common features. However:</p>
 
-    <p>The first feature proposed by this JIRA is the idea of collecting
-“exemplar” traces: for each type of RPC (e.g. <em>Write</em>, <em>Scan</em>, etc.)
-the RPC system will collect a few <em>exemplar</em> RPCs in different
-latency buckets and retain their traces.  This makes it easier for
-an operator to see what might have caused a slow response from a
-server even after the request has been finished for some time.</p>
-
-    <p>The second new feature is the collection of per-RPC-request metrics
-such as lock acquisition time, time spent waiting on disk, and other
-metrics specific to each type of RPC. In combination with the
-exemplar trace feature above, this should make it easy to root-cause
-whether a request is slow due to underlying hardware issues,
-Kudu-specific issues, or a particular workload characteristic.</p>
-
-    <p>Todd posted a work-in-progress implementation of these features on gerrit
-in a five-part patch series:
-<a href="http://gerrit.cloudera.org:8080/#/c/2794/">(1)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2795/">(2)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2796/">(3)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2797/">(4)</a>
-<a href="http://gerrit.cloudera.org:8080/#/c/2798/">(5)</a></p>
-  </li>
-  <li>
-    <p>Dan Burkert continued working on the <a href="http://gerrit.cloudera.org:8080/#/c/2592/">Java implementation of the Scan Token API</a>
-described in previous weekly updates, with reviews this week from Jean-Daniel
-Cryans and Adar Dembo. He also posted a patch for the <a href="http://gerrit.cloudera.org:8080/#/c/2757/">C++ implementation</a>
-which has seen some review action as well.</p>
-  </li>
-  <li>
-    <p>Dan also posted a <a href="http://gerrit.cloudera.org:8080/#/c/2772/">design document for non-covering range partitioning</a>.
-This new feature will allow Kudu operators to add or drop tablets to
-an existing range-partitioned table. This is very important for time
-series use cases where new partitions may need to be added daily,
-and old partitions potentially dropped in order to achieve a
-“sliding window” table. Read the design document for more details on
-use cases and the expected semantics.</p>
+    <ul>
+      <li>
+        <p>Spanner offers a superior feature set and performance for Online
+ Transactional Processing (OLTP) workloads, including ACID transactions and
+ secondary indexing.</p>
+      </li>
+      <li>
+        <p>Kudu offers a superior feature set and performance for Online
+ Analytical Processing (OLAP) and Hybrid Transactional/Analytic Processing
+ (HTAP) workloads, including more complete SQL support and orders of
+ magnitude better performance on large queries.</p>
+      </li>
+    </ul>
   </li>
 </ul>
 
-<h2 id="on-the-kudu-blog">On the Kudu blog</h2>
+<p>For more details and for the full benchmark numbers, check out the slide deck
+below:</p>
 
-<ul>
-  <li>Pat Patterson wrote a post about <a href="http://kudu.apache.org/2016/04/14/ingesting-json-apache-kudu-streamsets-data-collector.html">Ingesting JSON Data into Apache Kudu with StreamSets
-Data Collector</a>.</li>
-</ul>
+<iframe src="//www.slideshare.net/slideshow/embed_code/key/loQpO2vzlwGGgz" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen=""> </iframe>
+<div style="margin-bottom:15px"> <strong> <a href="//www.slideshare.net/secret/loQpO2vzlwGGgz" title="A brave new world in mutable big data relational storage (Strata NYC 2017)" target="_blank">A brave new world in mutable big data relational storage (Strata NYC 2017)</a> </strong> from <strong><a href="https://www.slideshare.net/ToddLipcon" target="_blank">Todd Lipcon</a></strong> </div>
 
+<p>Questions or comments? Join the <a href="/community.html">Apache Kudu Community</a> to discuss.</p>
 
   </div>
 </article>

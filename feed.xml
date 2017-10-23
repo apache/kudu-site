@@ -1,4 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-09-19T09:30:06-07:00</updated><id>/</id><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00-07:00</published><updated>2017-09-18T00:00:00-07:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-10-23T14:46:38-07:00</updated><id>/</id><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
+a few common questions that kept coming up at every presentation:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Is Kudu an open source version of Google’s Spanner system?&lt;/li&gt;
+  &lt;li&gt;Is Kudu NoSQL or SQL?&lt;/li&gt;
+  &lt;li&gt;Why does Kudu have a relational data model? Isn’t SQL dead?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;A few of these questions are addressed in the
+&lt;a href=&quot;https://kudu.apache.org/faq.html&quot;&gt;Kudu FAQ&lt;/a&gt;, but I thought they were
+interesting enough that I decided to give a talk on these subjects
+at &lt;a href=&quot;https://conferences.oreilly.com/strata/strata-ny&quot;&gt;Strata Data Conference NYC 2017&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Preparing this talk was particularly interesting, since Google recently released
+Spanner to the public in SaaS form as &lt;a href=&quot;https://cloud.google.com/spanner/&quot;&gt;Google Cloud Spanner&lt;/a&gt;.
+This meant that I was able to compare Kudu vs Spanner not just qualitatively
+based on some academic papers, but quantitatively as well.&lt;/p&gt;
+
+&lt;p&gt;To summarize the key points of the presentation:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Despite the growing popularity of “NoSQL” from 2009 through 2013, SQL has
+once again become the access mechanism of choice for the majority of
+analytic applications. NoSQL has become “Not Only SQL”.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Spanner and Kudu share a lot of common features. However:&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Spanner offers a superior feature set and performance for Online
+ Transactional Processing (OLTP) workloads, including ACID transactions and
+ secondary indexing.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Kudu offers a superior feature set and performance for Online
+ Analytical Processing (OLAP) and Hybrid Transactional/Analytic Processing
+ (HTAP) workloads, including more complete SQL support and orders of
+ magnitude better performance on large queries.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For more details and for the full benchmark numbers, check out the slide deck
+below:&lt;/p&gt;
+
+&lt;iframe src=&quot;//www.slideshare.net/slideshow/embed_code/key/loQpO2vzlwGGgz&quot; width=&quot;595&quot; height=&quot;485&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; scrolling=&quot;no&quot; style=&quot;border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;&quot; allowfullscreen=&quot;&quot;&gt; &lt;/iframe&gt;
+&lt;div style=&quot;margin-bottom:15px&quot;&gt; &lt;strong&gt; &lt;a href=&quot;//www.slideshare.net/secret/loQpO2vzlwGGgz&quot; title=&quot;A brave new world in mutable big data relational storage (Strata NYC 2017)&quot; target=&quot;_blank&quot;&gt;A brave new world in mutable big data relational storage (Strata NYC 2017)&lt;/a&gt; &lt;/strong&gt; from &lt;strong&gt;&lt;a href=&quot;https://www.slideshare.net/ToddLipcon&quot; target=&quot;_blank&quot;&gt;Todd Lipcon&lt;/a&gt;&lt;/strong&gt; &lt;/div&gt;
+
+&lt;p&gt;Questions or comments? Join the &lt;a href=&quot;/community.html&quot;&gt;Apache Kudu Community&lt;/a&gt; to discuss.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Since the Apache Kudu project made its debut in 2015, there have been
+a few common questions that kept coming up at every presentation:
+
+
+  Is Kudu an open source version of Google’s Spanner system?
+  Is Kudu NoSQL or SQL?
+  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00-07:00</published><updated>2017-09-18T00:00:00-07:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
 its design and ultimate goals, current features, and next steps.
 On the way, we’ll shed some light on the more relevant components and how they
 fit together.&lt;/p&gt;
@@ -628,170 +688,4 @@ clients as well as a way to mutually authenticate tablet servers with the master
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update October 11th, 2016</title><link href="/2016/10/11/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 11th, 2016" /><published>2016-10-11T00:00:00-07:00</published><updated>2016-10-11T00:00:00-07:00</updated><id>/2016/10/11/weekly-update</id><content type="html" xml:base="/2016/10/11/weekly-update.html">&lt;p&gt;Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
-readers will notice that the weekly blog posts have been not-so-weekly
-of late – in fact, it has been nearly two months since the previous post
-as I and others have focused on releases, conferences, etc.&lt;/p&gt;
-
-&lt;p&gt;So, rather than covering just this past week, this post will cover highlights
-of the progress since the 1.0 release in mid-September. If you’re interested
-in learning about progress prior to that release, check the
-&lt;a href=&quot;http://kudu.apache.org/releases/1.0.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;On September 12th, the Kudu PMC announced that Alexey Serbin and Will
-Berkeley had been voted as new committers and PMC members.&lt;/p&gt;
-
-    &lt;p&gt;Alexey’s contributions prior to committership included
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/3952/&quot;&gt;AUTO_FLUSH_BACKGROUND&lt;/a&gt; support
-in C++ as well as &lt;a href=&quot;http://kudu.apache.org/apidocs/&quot;&gt;API documentation&lt;/a&gt;
-for the C++ client API.&lt;/p&gt;
-
-    &lt;p&gt;Will’s contributions include several fixes to the web UIs, large
-improvements the Flume integration, and a lot of good work
-burning down long-standing bugs.&lt;/p&gt;
-
-    &lt;p&gt;Both contributors were “acting the part” and the PMC was pleased to
-recognize their contributions with committership.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Kudu 1.0.0 was &lt;a href=&quot;https://kudu.apache.org/2016/09/20/apache-kudu-1-0-0-released.html&quot;&gt;released&lt;/a&gt;
-on September 19th. Most community members have upgraded by this point
-and have been reporting improved stability and performance.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert has been managing a Kudu 1.0.1 release to address a few
-important bugs discovered since 1.0.0. The vote passed on Monday
-afternoon, so the release should be made officially available
-later this week.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;After the 1.0 release, many contributors have gone into a design phase
-for upcoming work. Over the last couple of weeks, developers have posted
-scoping and design documents for topics including:
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem&quot;&gt;Security features&lt;/a&gt; (Todd Lipcon)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://goo.gl/wP5BJb&quot;&gt;Improved disk-failure handling&lt;/a&gt; (Dinesh Bhat)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/7K48&quot;&gt;Tools for manual recovery from corruption&lt;/a&gt; (Mike Percy and Dinesh Bhat)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/uOOt&quot;&gt;Addressing issues seen with the LogBlockManager&lt;/a&gt; (Adar Dembo)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/7VCo&quot;&gt;Providing proper snapshot/serializable consistency&lt;/a&gt; (David Alves)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/ARUP&quot;&gt;Improving re-replication of under-replicated tablets&lt;/a&gt; (Mike Percy)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://docs.google.com/document/d/1066W63e2YUTNnecmfRwgAHghBPnL1Pte_gJYAaZ_Bjo/edit&quot;&gt;Avoiding Raft election storms&lt;/a&gt; (Todd Lipcon)&lt;/li&gt;
-    &lt;/ul&gt;
-
-    &lt;p&gt;The development community has no particular rule that all work must be
-accompanied by such a document, but in the past they have proven useful
-for fleshing out ideas around a design before beginning implementation.
-As Kudu matures, we can probably expect to see more of this kind of planning
-and design discussion.&lt;/p&gt;
-
-    &lt;p&gt;If any of the above work areas sounds interesting to you, please take a
-look and leave your comments! Similarly, if you are interested in contributing
-in any of these areas, please feel free to volunteer on the mailing list.
-Help of all kinds (coding, documentation, testing, etc) is welcomed.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Adar Dembo spent a chunk of time re-working the &lt;code&gt;thirdparty&lt;/code&gt; directory
-that contains most of Kudu’s native dependencies. The major resulting
-changes are:
-    &lt;ul&gt;
-      &lt;li&gt;Build directories are now cleanly isolated from source directories,
-improving cleanliness of re-builds.&lt;/li&gt;
-      &lt;li&gt;ThreadSanitizer (TSAN) builds now use &lt;code&gt;libc++&lt;/code&gt; instead of &lt;code&gt;libstdcxx&lt;/code&gt;
-for C++ library support. The &lt;code&gt;libc++&lt;/code&gt; library has better support for
-sanitizers, is easier to build in isolation, and solves some compatibility
-issues that Adar was facing with GCC 5 on Ubuntu Xenial.&lt;/li&gt;
-      &lt;li&gt;All of the thirdparty dependencies now build with TSAN instrumentation,
-which improves our coverage of this very effective tooling.&lt;/li&gt;
-    &lt;/ul&gt;
-
-    &lt;p&gt;The impact to most developers is that, if you have an old source checkout,
-it’s highly likely you will need to clean and re-build the thirdparty
-directory.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Many contributors spent time in recent weeks trying to address the
-flakiness of various test cases. The Kudu project uses a
-&lt;a href=&quot;http://dist-test.cloudera.org:8080/&quot;&gt;dashboard&lt;/a&gt; to track the flakiness
-of each test case, and &lt;a href=&quot;http://dist-test.cloudera.org/&quot;&gt;distributed test infrastructure&lt;/a&gt;
-to facilitate reproducing test flakes.    &lt;!-- spaces cause line break --&gt;
-As might be expected, some of the flaky tests were due to bugs or
-timing assumptions in the tests themselves. However, this effort
-also identified several real bugs:
-    &lt;ul&gt;
-      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4570]&quot;&gt;tight retry loop&lt;/a&gt; in the
-Java client.&lt;/li&gt;
-      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4395&quot;&gt;memory leak&lt;/a&gt; due to circular
-references in the C++ client.&lt;/li&gt;
-      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4551&quot;&gt;crash&lt;/a&gt; which could affect
-tools used for problem diagnosis.&lt;/li&gt;
-      &lt;li&gt;A &lt;a href=&quot;http://gerrit.cloudera.org:8080/4409&quot;&gt;divergence bug&lt;/a&gt; in Raft consensus
-under particularly torturous scenarios.&lt;/li&gt;
-      &lt;li&gt;A potential &lt;a href=&quot;http://gerrit.cloudera.org:8080/4394&quot;&gt;crash during tablet server startup&lt;/a&gt;.&lt;/li&gt;
-      &lt;li&gt;A case in which &lt;a href=&quot;http://gerrit.cloudera.org:8080/4626&quot;&gt;thread startup could be delayed&lt;/a&gt;
-by built-in monitoring code.&lt;/li&gt;
-    &lt;/ul&gt;
-
-    &lt;p&gt;As a result of these efforts, the failure rate of these flaky tests has
-decreased significantly and the stability of Kudu releases continues
-to increase.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert picked up work originally started by Sameer Abhyankar on
-&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1363&quot;&gt;KUDU-1363&lt;/a&gt;, which adds
-support for adding &lt;code&gt;IN (...)&lt;/code&gt; predicates to scanners. Dan committed the
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/2986&quot;&gt;main patch&lt;/a&gt; as well as corresponding
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/4530&quot;&gt;support in the Java client&lt;/a&gt;.
-Jordan Birdsell quickly added corresponding support in &lt;a href=&quot;http://gerrit.cloudera.org:8080/4548&quot;&gt;Python&lt;/a&gt;.
-This new feature will be available in an upcoming release.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Work continues on the &lt;code&gt;kudu&lt;/code&gt; command line tool. Dinesh Bhat added
-the ability to ask a tablet’s leader to &lt;a href=&quot;http://gerrit.cloudera.org:8080/4533&quot;&gt;step down&lt;/a&gt;
-and Alexey Serbin added a &lt;a href=&quot;http://gerrit.cloudera.org:8080/4412&quot;&gt;tool to insert random data into a
-table&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Jordan Birdsell continues to be on a tear improving the Python client.
-The patches are too numerous to mention, but highlights include Python 3
-support as well as near feature parity with the C++ client.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon has been doing some refactoring and cleanup in the Raft
-consensus implementation. In addition to simplifying and removing code,
-he committed &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1567&quot;&gt;KUDU-1567&lt;/a&gt;,
-which improves write performance in many cases by a factor of three
-or more while also improving stability.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Brock Noland is working on support for &lt;a href=&quot;https://gerrit.cloudera.org/#/c/4491/&quot;&gt;INSERT IGNORE&lt;/a&gt;
-as a first-class part of the Kudu API. Of course this functionality
-can already be done by simply performing normal inserts and ignoring any
-resulting errors, but pushing it to the server prevents the server
-from counting such operations as errors.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Congratulations to Ninad Shringarpure for contributing his first patches
-to Kudu. Ninad contributed two documentation fixes and improved
-formatting on the Kudu web UI.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
-readers will notice that the weekly blog posts have been not-so-weekly
-of late – in fact, it has been nearly two months since the previous post
-as I and others have focused on releases, conferences, etc.
-
-So, rather than covering just this past week, this post will cover highlights
-of the progress since the 1.0 release in mid-September. If you’re interested
-in learning about progress prior to that release, check the
-release notes.</summary></entry></feed>
+covers ongoing development and news in the Apache Kudu project.</summary></entry></feed>
