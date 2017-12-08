@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-10-23T15:13:23-07:00</updated><id>/</id><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-12-07T22:42:21-08:00</updated><id>/</id><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
 a few common questions that kept coming up at every presentation:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -177,29 +177,29 @@ have increasing timestamps, depending on the user’s choices.&lt;/p&gt;
 &lt;p&gt;Row mutations performed by a single client &lt;em&gt;instance&lt;/em&gt; are guaranteed to have increasing timestamps
 thus reflecting their potential causal relationship. This property is always enforced. However
 there are two major &lt;em&gt;“knobs”&lt;/em&gt; that are available to the user to make performance trade-offs, the
-&lt;code&gt;Read&lt;/code&gt; mode, and the &lt;code&gt;External Consistency&lt;/code&gt; mode (see &lt;a href=&quot;https://kudu.apache.org/docs/transaction_semantics.html&quot;&gt;here&lt;/a&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Read&lt;/code&gt; mode, and the &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; mode (see &lt;a href=&quot;https://kudu.apache.org/docs/transaction_semantics.html&quot;&gt;here&lt;/a&gt;
 for more information on how to use the relevant APIs).&lt;/p&gt;
 
-&lt;p&gt;The first and most important knob, the &lt;code&gt;Read&lt;/code&gt; mode, pertains to what is the guaranteed recency of
+&lt;p&gt;The first and most important knob, the &lt;code class=&quot;highlighter-rouge&quot;&gt;Read&lt;/code&gt; mode, pertains to what is the guaranteed recency of
 data resulting from scans. Since Kudu uses replication for availability and fault-tolerance, there
 are always multiple replicas of any data item.
 Not all replicas must be up-to-date so if the user cares about recency, e.g. if the user requires
 that any data read includes all previously written data &lt;em&gt;from a single client instance&lt;/em&gt; then it must
-choose the &lt;code&gt;READ_AT_SNAPSHOT&lt;/code&gt; read mode. With this mode enabled the client is guaranteed to observe
+choose the &lt;code class=&quot;highlighter-rouge&quot;&gt;READ_AT_SNAPSHOT&lt;/code&gt; read mode. With this mode enabled the client is guaranteed to observe
  &lt;strong&gt;“READ YOUR OWN WRITES”&lt;/strong&gt; semantics, i.e. scans from a client will always include all previous mutations
 performed by that client. Note that this property is local to a single client instance, not a global
 property.&lt;/p&gt;
 
-&lt;p&gt;The second “knob”, the &lt;code&gt;External Consistency&lt;/code&gt; mode, defines the semantics of how reads and writes
-are performed across multiple client instances. By default, &lt;code&gt;External Consistency&lt;/code&gt; is set to
- &lt;code&gt;CLIENT_PROPAGATED&lt;/code&gt;, meaning it’s up to the user to coordinate a set of &lt;em&gt;timestamp tokens&lt;/em&gt; with clients (even
+&lt;p&gt;The second “knob”, the &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; mode, defines the semantics of how reads and writes
+are performed across multiple client instances. By default, &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; is set to
+ &lt;code class=&quot;highlighter-rouge&quot;&gt;CLIENT_PROPAGATED&lt;/code&gt;, meaning it’s up to the user to coordinate a set of &lt;em&gt;timestamp tokens&lt;/em&gt; with clients (even
 across different machines) if they are performing writes/reads that are somehow causally linked.
 If done correctly this enables &lt;strong&gt;STRICT SERIALIZABILITY&lt;/strong&gt;[5], i.e. &lt;strong&gt;LINEARIZABILITY&lt;/strong&gt;[6] and
 &lt;strong&gt;SERIALIZABILITY&lt;/strong&gt;[7] at the same time, at the cost of having the user coordinate the timestamp
 tokens across clients (a survey of the meaning of these, and other definitions can be found
 &lt;a href=&quot;http://www.ics.forth.gr/tech-reports/2013/2013.TR439_Survey_on_Consistency_Conditions.pdf&quot;&gt;here&lt;/a&gt;).
-The alternative setting for &lt;code&gt;External Consistency&lt;/code&gt; is to have it set to
-&lt;code&gt;COMMIT_WAIT&lt;/code&gt; (experimental), which guarantees the same properties through a different means, by
+The alternative setting for &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; is to have it set to
+&lt;code class=&quot;highlighter-rouge&quot;&gt;COMMIT_WAIT&lt;/code&gt; (experimental), which guarantees the same properties through a different means, by
 implementing Google Spanner’s &lt;em&gt;TrueTime&lt;/em&gt;. This comes at the cost of higher latency (depending on how
 tightly synchronized the system clocks of the various tablet servers are), but doesn’t require users
 to propagate timestamps programmatically.&lt;/p&gt;
@@ -255,9 +255,9 @@ scenarios&lt;/li&gt;
 additional reductions planned for the future&lt;/li&gt;
   &lt;li&gt;a new configuration dashboard on the web UI which provides a high-level
 summary of important configuration values&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu tablet move&lt;/code&gt; command which moves a tablet replica from one tablet
+  &lt;li&gt;a new &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu tablet move&lt;/code&gt; command which moves a tablet replica from one tablet
 server to another&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu local_replica data_size&lt;/code&gt; command which summarizes the space usage
+  &lt;li&gt;a new &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu local_replica data_size&lt;/code&gt; command which summarizes the space usage
 of a local tablet&lt;/li&gt;
   &lt;li&gt;all on-disk data is now checksummed by default, which provides error detection
 for improved confidence when running Kudu on unreliable hardware&lt;/li&gt;
@@ -292,7 +292,7 @@ improvements, optimizations, and bug fixes.&lt;/p&gt;
   &lt;li&gt;a new C++ client API to efficiently map primary keys to their associated partitions
 and hosts&lt;/li&gt;
   &lt;li&gt;support for long-running fault-tolerant scans in the Java client&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu fs check&lt;/code&gt; command which can perform offline consistency checks
+  &lt;li&gt;a new &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu fs check&lt;/code&gt; command which can perform offline consistency checks
 and repairs on the local on-disk storage of a Tablet Server or Master.&lt;/li&gt;
   &lt;li&gt;many optimizations to reduce disk space usage, improve write throughput,
 and improve throughput of background maintenance operations.&lt;/li&gt;
