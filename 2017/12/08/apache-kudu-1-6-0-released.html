@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu 0.10.0 released</title>
+    <title>Apache Kudu - Apache Kudu 1.6.0 released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,43 +108,66 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu 0.10.0 released</h1>
-    <p class="meta">Posted 23 Aug 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu 1.6.0 released</h1>
+    <p class="meta">Posted 08 Dec 2017 by Mike Percy</p>
   </header>
   <div class="entry-content">
-    <p>The Apache Kudu team is happy to announce the release of Kudu 0.10.0!</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.6.0!</p>
 
-<p>This latest version adds several new features, including:
-<!--more--></p>
+<p>Apache Kudu 1.6.0 is a minor release that offers new features, performance
+optimizations, incremental improvements, and bug fixes.</p>
 
-<ul>
-  <li>
-    <p>Users may now manually manage the partitioning of a range-partitioned table
-by adding or dropping range partitions after a table has been created. This
-can be particularly helpful for time-series workloads. Dan Burkert posted
-an <a href="/2016/08/23/new-range-partitioning-features.html">in-depth blog</a> today
-detailing the new feature.</p>
-  </li>
-  <li>
-    <p>Multi-master (HA) Kudu clusters are now significantly more stable.</p>
-  </li>
-  <li>
-    <p>Administrators may now reserve a certain amount of disk space on each of its
-configured data directories.</p>
-  </li>
-  <li>
-    <p>Kudu’s integration with Spark has been substantially improved and is much
-more flexible.</p>
-  </li>
-</ul>
+<p>Release highlights:</p>
 
-<p>This release also includes many bug fixes and other improvements, detailed in
-the release notes below.</p>
+<!--more-->
 
-<ul>
-  <li>Read the detailed <a href="http://kudu.apache.org/releases/0.10.0/docs/release_notes.html">Kudu 0.10.0 release notes</a></li>
-  <li>Download the <a href="http://kudu.apache.org/releases/0.9.0/">Kudu 0.10.0 source release</a></li>
-</ul>
+<ol>
+  <li>Kudu servers can now tolerate short interruptions in NTP clock
+synchronization. NTP synchronization is still required when any Kudu daemon
+starts up.</li>
+  <li>Tablet servers will no longer crash when a disk containing data blocks
+fails, unless that disk also stores WAL segments or tablet metadata. Instead
+of crashing, the tablet server will shut down any tablets that may have lost
+data locally and Kudu will re-replicate the affected tablets to another
+tablet server. More information can be found in the documentation under
+<a href="/releases/1.6.0/docs/administration.html#disk_failure_recovery">Recovering from Disk Failure</a>.</li>
+  <li>Tablet server startup time has been improved significantly on servers
+containing large numbers of blocks.</li>
+  <li>The Spark DataSource integration now can take advantage of scan locality for
+better scan performance. The scan will take place at the closest replica
+instead of going to the leader.</li>
+  <li>Support for Spark 1 has been removed in Kudu 1.6.0 and now only Spark 2 is
+supported. Spark 1 support was deprecated in Kudu 1.5.0.</li>
+  <li>HybridTime timestamp propagation now works in the Java client when using
+scan tokens.</li>
+  <li>Tablet servers now consider the health of all replicas of a tablet before
+deciding to evict one. This can improve the stability of the Kudu cluster
+when multiple servers temporarily go down at the same time.</li>
+  <li>A bug in the C++ client was fixed that could cause tablets to be erroneously
+pruned, or skipped, during certain scans, resulting in fewer results than
+expected being returned from queries. The bug only affected tables whose
+range partition columns are a proper prefix of the primary key.
+See <a href="https://issues.apache.org/jira/browse/KUDU-2173">KUDU-2173</a> for more
+information.</li>
+</ol>
+
+<p>For more details, and the complete list of changes in Kudu 1.6.0, please see
+the <a href="/releases/1.6.0/docs/release_notes.html">Kudu 1.6.0 release notes</a>.</p>
+
+<p>The Apache Kudu project only publishes source code releases. To build Kudu
+1.6.0, follow these steps:</p>
+
+<ol>
+  <li>Download the <a href="/releases/1.6.0/">Kudu 1.6.0 source release</a>.</li>
+  <li>Follow the instructions in the documentation to
+<a href="/releases/1.6.0/docs/installation.html#build_from_source">build Kudu 1.6.0 from source</a>.</li>
+</ol>
+
+<p>For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are
+<a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.6.0%22">now available</a>.</p>
+
 
   </div>
 </article>

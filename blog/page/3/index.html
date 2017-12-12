@@ -111,6 +111,27 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2016/10/20/weekly-update.html">Apache Kudu Weekly Update October 20th, 2016</a></h1>
+    <p class="meta">Posted 20 Oct 2016 by Todd Lipcon</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
+covers ongoing development and news in the Apache Kudu project.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/10/20/weekly-update.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2016/10/11/weekly-update.html">Apache Kudu Weekly Update October 11th, 2016</a></h1>
     <p class="meta">Posted 11 Oct 2016 by Todd Lipcon</p>
   </header>
@@ -203,323 +224,6 @@ scan path to speed up queries.</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/08/31/intro-flume-kudu-sink.html">An Introduction to the Flume Kudu Sink</a></h1>
-    <p class="meta">Posted 31 Aug 2016 by Ara Abrahamian</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>This post discusses the Kudu Flume Sink. First, I’ll give some background on why we considered
-using Kudu, what Flume does for us, and how Flume fits with Kudu in our project.</p>
-
-<h2 id="why-kudu">Why Kudu</h2>
-
-<p>Traditionally in the Hadoop ecosystem we’ve dealt with various <em>batch processing</em> technologies such
-as MapReduce and the many libraries and tools built on top of it in various languages (Apache Pig,
-Apache Hive, Apache Oozie and many others). The main problem with this approach is that it needs to
-process the whole data set in batches, again and again, as soon as new data gets added. Things get
-really complicated when a few such tasks need to get chained together, or when the same data set
-needs to be processed in various ways by different jobs, while all compete for the shared cluster
-resources.</p>
-
-<p>The opposite of this approach is <em>stream processing</em>: process the data as soon as it arrives, not
-in batches. Streaming systems such as Spark Streaming, Storm, Kafka Streams, and many others make
-this possible. But writing streaming services is not trivial. The streaming systems are becoming
-more and more capable and support more complex constructs, but they are not yet easy to use. All
-queries and processes need to be carefully planned and implemented.</p>
-
-<p>To summarize, <em>batch processing</em> is:</p>
-
-<ul>
-  <li>file-based</li>
-  <li>a paradigm that processes large chunks of data as a group</li>
-  <li>high latency and high throughput, both for ingest and query</li>
-  <li>typically easy to program, but hard to orchestrate</li>
-  <li>well suited for writing ad-hoc queries, although they are typically high latency</li>
-</ul>
-
-<p>While <em>stream processing</em> is:</p>
-
-<ul>
-  <li>a totally different paradigm, which involves single events and time windows instead of large groups of events</li>
-  <li>still file-based and not a long-term database</li>
-  <li>not batch-oriented, but incremental</li>
-  <li>ultra-fast ingest and ultra-fast query (query results basically pre-calculated)</li>
-  <li>not so easy to program, relatively easy to orchestrate</li>
-  <li>impossible to write ad-hoc queries</li>
-</ul>
-
-<p>And a Kudu-based <em>near real-time</em> approach is:</p>
-
-<ul>
-  <li>flexible and expressive, thanks to SQL support via Apache Impala (incubating)</li>
-  <li>a table-oriented, mutable data store that feels like a traditional relational database</li>
-  <li>very easy to program, you can even pretend it’s good old MySQL</li>
-  <li>low-latency and relatively high throughput, both for ingest and query</li>
-</ul>
-
-<p>At Argyle Data, we’re dealing with complex fraud detection scenarios. We need to ingest massive
-amounts of data, run machine learning algorithms and generate reports. When we created our current
-architecture two years ago we decided to opt for a database as the backbone of our system. That
-database is Apache Accumulo. It’s a key-value based database which runs on top of Hadoop HDFS,
-quite similar to HBase but with some important improvements such as cell level security and ease
-of deployment and management. To enable querying of this data for quite complex reporting and
-analytics, we used Presto, a distributed query engine with a pluggable architecture open-sourced
-by Facebook. We wrote a connector for it to let it run queries against the Accumulo database. This
-architecture has served us well, but there were a few problems:</p>
-
-<ul>
-  <li>we need to ingest even more massive volumes of data in real-time</li>
-  <li>we need to perform complex machine-learning calculations on even larger data-sets</li>
-  <li>we need to support ad-hoc queries, plus long-term data warehouse functionality</li>
-</ul>
-
-<p>So, we’ve started gradually moving the core machine-learning pipeline to a streaming based
-solution. This way we can ingest and process larger data-sets faster in the real-time. But then how
-would we take care of ad-hoc queries and long-term persistence? This is where Kudu comes in. While
-the machine learning pipeline ingests and processes real-time data, we store a copy of the same
-ingested data in Kudu for long-term access and ad-hoc queries. Kudu is our <em>data warehouse</em>. By
-using Kudu and Impala, we can retire our in-house Presto connector and rely on Impala’s
-super-fast query engine.</p>
-
-<p>But how would we make sure data is reliably ingested into the streaming pipeline <em>and</em> the
-Kudu-based data warehouse? This is where Apache Flume comes in.</p>
-
-<h2 id="why-flume">Why Flume</h2>
-
-<p>According to their <a href="http://flume.apache.org/">website</a> “Flume is a distributed, reliable, and
-available service for efficiently collecting, aggregating, and moving large amounts of log data.
-It has a simple and flexible architecture based on streaming data flows. It is robust and fault
-tolerant with tunable reliability mechanisms and many failover and recovery mechanisms.” As you
-can see, nowhere is Hadoop mentioned but Flume is typically used for ingesting data to Hadoop
-clusters.</p>
-
-<p><img src="https://blogs.apache.org/flume/mediaresource/ab0d50f6-a960-42cc-971e-3da38ba3adad" alt="png" /></p>
-
-<p>Flume has an extensible architecture. An instance of Flume, called an <em>agent</em>, can have multiple
-<em>channels</em>, with each having multiple <em>sources</em> and <em>sinks</em> of various types. Sources queue data
-in channels, which in turn write out data to sinks. Such <em>pipelines</em> can be chained together to
-create even more complex ones. There may be more than one agent and agents can be configured to
-support failover and recovery.</p>
-
-<p>Flume comes with a bunch of built-in types of channels, sources and sinks. Memory channel is the
-default (an in-memory queue with no persistence to disk), but other options such as Kafka- and
-File-based channels are also provided. As for the sources, Avro, JMS, Thrift, spooling directory
-source are some of the built-in ones. Flume also ships with many sinks, including sinks for writing
-data to HDFS, HBase, Hive, Kafka, as well as to other Flume agents.</p>
-
-<p>In the rest of this post I’ll go over the Kudu Flume sink and show you how to configure Flume to
-write ingested data to a Kudu table. The sink has been part of the Kudu distribution since the 0.8
-release and the source code can be found <a href="https://github.com/apache/kudu/tree/master/java/kudu-flume-sink">here</a>.</p>
-
-<h2 id="configuring-the-kudu-flume-sink">Configuring the Kudu Flume Sink</h2>
-
-<p>Here is a sample flume configuration file:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>agent1.sources  = source1
-agent1.channels = channel1
-agent1.sinks = sink1
-
-agent1.sources.source1.type = exec
-agent1.sources.source1.command = /usr/bin/vmstat 1
-agent1.sources.source1.channels = channel1
-
-agent1.channels.channel1.type = memory
-agent1.channels.channel1.capacity = 10000
-agent1.channels.channel1.transactionCapacity = 1000
-
-agent1.sinks.sink1.type = org.apache.flume.sink.kudu.KuduSink
-agent1.sinks.sink1.masterAddresses = localhost
-agent1.sinks.sink1.tableName = stats
-agent1.sinks.sink1.channel = channel1
-agent1.sinks.sink1.batchSize = 50
-agent1.sinks.sink1.producer = org.apache.kudu.flume.sink.SimpleKuduEventProducer
-</code></pre>
-</div>
-
-<p>We define a source called <code class="highlighter-rouge">source1</code> which simply executes a <code class="highlighter-rouge">vmstat</code> command to continuously generate
-virtual memory statistics for the machine and queue events into an in-memory <code class="highlighter-rouge">channel1</code> channel,
-which in turn is used for writing these events to a Kudu table called <code class="highlighter-rouge">stats</code>. We are using
-<code class="highlighter-rouge">org.apache.kudu.flume.sink.SimpleKuduEventProducer</code> as the producer. <code class="highlighter-rouge">SimpleKuduEventProducer</code> is
-the built-in and default producer, but it’s implemented as a showcase for how to write Flume
-events into Kudu tables. For any serious functionality we’d have to write a custom producer. We
-need to make this producer and the <code class="highlighter-rouge">KuduSink</code> class available to Flume. We can do that by simply
-copying the <code class="highlighter-rouge">kudu-flume-sink-&lt;VERSION&gt;.jar</code> jar file from the Kudu distribution to the
-<code class="highlighter-rouge">$FLUME_HOME/plugins.d/kudu-sink/lib</code> directory in the Flume installation. The jar file contains
-<code class="highlighter-rouge">KuduSink</code> and all of its dependencies (including Kudu java client classes).</p>
-
-<p>At a minimum, the Kudu Flume Sink needs to know where the Kudu masters are
-(<code class="highlighter-rouge">agent1.sinks.sink1.masterAddresses = localhost</code>) and which Kudu table should be used for writing
-Flume events to (<code class="highlighter-rouge">agent1.sinks.sink1.tableName = stats</code>). The Kudu Flume Sink doesn’t create this
-table, it has to be created before the Kudu Flume Sink is started.</p>
-
-<p>You may also notice the <code class="highlighter-rouge">batchSize</code> parameter. Batch size is used for batching up to that many
-Flume events and flushing the entire batch in one shot. Tuning batchSize properly can have a huge
-impact on ingest performance of the Kudu cluster.</p>
-
-<p>Here is a complete list of KuduSink parameters:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Parameter Name</th>
-      <th>Default</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>masterAddresses</td>
-      <td>N/A</td>
-      <td>Comma-separated list of “host:port” pairs of the masters (port optional)</td>
-    </tr>
-    <tr>
-      <td>tableName</td>
-      <td>N/A</td>
-      <td>The name of the table in Kudu to write to</td>
-    </tr>
-    <tr>
-      <td>producer</td>
-      <td>org.apache.kudu.flume.sink.SimpleKuduEventProducer</td>
-      <td>The fully qualified class name of the Kudu event producer the sink should use</td>
-    </tr>
-    <tr>
-      <td>batchSize</td>
-      <td>100</td>
-      <td>Maximum number of events the sink should take from the channel per transaction, if available</td>
-    </tr>
-    <tr>
-      <td>timeoutMillis</td>
-      <td>30000</td>
-      <td>Timeout period for Kudu operations, in milliseconds</td>
-    </tr>
-    <tr>
-      <td>ignoreDuplicateRows</td>
-      <td>true</td>
-      <td>Whether to ignore errors indicating that we attempted to insert duplicate rows into Kudu</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>Let’s take a look at the source code for the built-in producer class:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleKuduEventProducer</span> <span class="kd">implements</span> <span class="n">KuduEventProducer</span> <span class="o">{</span>
-  <span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">payload</span><span class="o">;</span>
-  <span class="kd">private</span> <span class="n">KuduTable</span> <span class="n">table</span><span class="o">;</span>
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">payloadColumn</span><span class="o">;</span>
-
-  <span class="kd">public</span> <span class="n">SimpleKuduEventProducer</span><span class="o">(){</span>
-  <span class="o">}</span>
-
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="n">configure</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">payloadColumn</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"payloadColumn"</span><span class="o">,</span><span class="s">"payload"</span><span class="o">);</span>
-  <span class="o">}</span>
-
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="n">configure</span><span class="o">(</span><span class="n">ComponentConfiguration</span> <span class="n">conf</span><span class="o">)</span> <span class="o">{</span>
-  <span class="o">}</span>
-
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="n">initialize</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">,</span> <span class="n">KuduTable</span> <span class="n">table</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">payload</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getBody</span><span class="o">();</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">table</span> <span class="o">=</span> <span class="n">table</span><span class="o">;</span>
-  <span class="o">}</span>
-
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Operation</span><span class="o">&gt;</span> <span class="n">getOperations</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">FlumeException</span> <span class="o">{</span>
-    <span class="k">try</span> <span class="o">{</span>
-      <span class="n">Insert</span> <span class="n">insert</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="na">newInsert</span><span class="o">();</span>
-      <span class="n">PartialRow</span> <span class="n">row</span> <span class="o">=</span> <span class="n">insert</span><span class="o">.</span><span class="na">getRow</span><span class="o">();</span>
-      <span class="n">row</span><span class="o">.</span><span class="na">addBinary</span><span class="o">(</span><span class="n">payloadColumn</span><span class="o">,</span> <span class="n">payload</span><span class="o">);</span>
-
-      <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">((</span><span class="n">Operation</span><span class="o">)</span> <span class="n">insert</span><span class="o">);</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">){</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="n">FlumeException</span><span class="o">(</span><span class="s">"Failed to create Kudu Insert object!"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="n">close</span><span class="o">()</span> <span class="o">{</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-</code></pre>
-</div>
-
-<p><code class="highlighter-rouge">SimpleKuduEventProducer</code> implements the <code class="highlighter-rouge">org.apache.kudu.flume.sink.KuduEventProducer</code> interface,
-which itself looks like this:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">KuduEventProducer</span> <span class="kd">extends</span> <span class="n">Configurable</span><span class="o">,</span> <span class="n">ConfigurableComponent</span> <span class="o">{</span>
-  <span class="cm">/**
-   * Initialize the event producer.
-   * @param event to be written to Kudu
-   * @param table the KuduTable object used for creating Kudu Operation objects
-   */</span>
-  <span class="kt">void</span> <span class="n">initialize</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">,</span> <span class="n">KuduTable</span> <span class="n">table</span><span class="o">);</span>
-
-  <span class="cm">/**
-   * Get the operations that should be written out to Kudu as a result of this
-   * event. This list is written to Kudu using the Kudu client API.
-   * @return List of {@link org.kududb.client.Operation} which
-   * are written as such to Kudu
-   */</span>
-  <span class="n">List</span><span class="o">&lt;</span><span class="n">Operation</span><span class="o">&gt;</span> <span class="n">getOperations</span><span class="o">();</span>
-
-  <span class="cm">/*
-   * Clean up any state. This will be called when the sink is being stopped.
-   */</span>
-  <span class="kt">void</span> <span class="n">close</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre>
-</div>
-
-<p><code class="highlighter-rouge">public void configure(Context context)</code> is called when an instance of our producer is instantiated
-by the KuduSink. SimpleKuduEventProducer’s implementation looks for a producer parameter named
-<code class="highlighter-rouge">payloadColumn</code> and uses its value (“payload” if not overridden in Flume configuration file) as the
-column which will hold the value of the Flume event payload. If you recall from above, we had
-configured the KuduSink to listen for events generated from the <code class="highlighter-rouge">vmstat</code> command. Each output row
-from that command will be stored as a new row containing a <code class="highlighter-rouge">payload</code> column in the <code class="highlighter-rouge">stats</code> table.
-<code class="highlighter-rouge">SimpleKuduEventProducer</code> does not have any configuration parameters, but if it had any we would
-define them by prefixing it with <code class="highlighter-rouge">producer.</code> (<code class="highlighter-rouge">agent1.sinks.sink1.producer.parameter1</code> for
-example).</p>
-
-<p>The main producer logic resides in the <code class="highlighter-rouge">public List&lt;Operation&gt; getOperations()</code> method. In
-SimpleKuduEventProducer’s implementation we simply insert the binary body of the Flume event into
-the Kudu table. Here we call Kudu’s <code class="highlighter-rouge">newInsert()</code> to initiate an insert, but could have used
-<code class="highlighter-rouge">Upsert</code> if updating an existing row was also an option, in fact there’s another producer
-implementation available for doing just that: <code class="highlighter-rouge">SimpleKeyedKuduEventProducer</code>. Most probably you
-will need to write your own custom producer in the real world, but you can base your implementation
-on the built-in ones.</p>
-
-<p>In the future, we plan to add more flexible event producer implementations so that creation of a
-custom event producer is not required to write data to Kudu. See
-<a href="https://gerrit.cloudera.org/#/c/4034/">here</a> for a work-in-progress generic event producer for
-Avro-encoded Events.</p>
-
-<h2 id="conclusion">Conclusion</h2>
-
-<p>Kudu is a scalable data store which lets us ingest insane amounts of data per second. Apache Flume
-helps us aggregate data from various sources, and the Kudu Flume Sink lets us easily store
-the aggregated Flume events into Kudu. Together they enable us to create a data warehouse out of
-disparate sources.</p>
-
-<p><em>Ara Abrahamian is a software engineer at Argyle Data building fraud detection systems using
-sophisticated machine learning methods. Ara is the original author of the Flume Kudu Sink that
-is included in the Kudu distribution. You can follow him on Twitter at
-<a href="https://twitter.com/ara_e">@ara_e</a>.</em></p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/08/31/intro-flume-kudu-sink.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -539,6 +243,8 @@ is included in the Kudu distribution. You can follow him on Twitter at
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2017/12/08/apache-kudu-1-6-0-released.html">Apache Kudu 1.6.0 released</a> </li>
     
       <li> <a href="/2017/10/23/nosql-kudu-spanner-slides.html">Slides: A brave new world in mutable big data: Relational storage</a> </li>
     
@@ -567,8 +273,6 @@ is included in the Kudu distribution. You can follow him on Twitter at
       <li> <a href="/2016/09/20/apache-kudu-1-0-0-released.html">Apache Kudu 1.0.0 released</a> </li>
     
       <li> <a href="/2016/09/16/predicate-pushdown.html">Pushing Down Predicate Evaluation in Apache Kudu</a> </li>
-    
-      <li> <a href="/2016/08/31/intro-flume-kudu-sink.html">An Introduction to the Flume Kudu Sink</a> </li>
     
     </ul>
   </div>

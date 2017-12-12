@@ -1,4 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-12-07T22:42:21-08:00</updated><id>/</id><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2017-12-12T09:49:42-08:00</updated><id>/</id><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00-08:00</published><updated>2017-12-08T00:00:00-08:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
+
+&lt;p&gt;Apache Kudu 1.6.0 is a minor release that offers new features, performance
+optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
+
+&lt;p&gt;Release highlights:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Kudu servers can now tolerate short interruptions in NTP clock
+synchronization. NTP synchronization is still required when any Kudu daemon
+starts up.&lt;/li&gt;
+  &lt;li&gt;Tablet servers will no longer crash when a disk containing data blocks
+fails, unless that disk also stores WAL segments or tablet metadata. Instead
+of crashing, the tablet server will shut down any tablets that may have lost
+data locally and Kudu will re-replicate the affected tablets to another
+tablet server. More information can be found in the documentation under
+&lt;a href=&quot;/releases/1.6.0/docs/administration.html#disk_failure_recovery&quot;&gt;Recovering from Disk Failure&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;Tablet server startup time has been improved significantly on servers
+containing large numbers of blocks.&lt;/li&gt;
+  &lt;li&gt;The Spark DataSource integration now can take advantage of scan locality for
+better scan performance. The scan will take place at the closest replica
+instead of going to the leader.&lt;/li&gt;
+  &lt;li&gt;Support for Spark 1 has been removed in Kudu 1.6.0 and now only Spark 2 is
+supported. Spark 1 support was deprecated in Kudu 1.5.0.&lt;/li&gt;
+  &lt;li&gt;HybridTime timestamp propagation now works in the Java client when using
+scan tokens.&lt;/li&gt;
+  &lt;li&gt;Tablet servers now consider the health of all replicas of a tablet before
+deciding to evict one. This can improve the stability of the Kudu cluster
+when multiple servers temporarily go down at the same time.&lt;/li&gt;
+  &lt;li&gt;A bug in the C++ client was fixed that could cause tablets to be erroneously
+pruned, or skipped, during certain scans, resulting in fewer results than
+expected being returned from queries. The bug only affected tables whose
+range partition columns are a proper prefix of the primary key.
+See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2173&quot;&gt;KUDU-2173&lt;/a&gt; for more
+information.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For more details, and the complete list of changes in Kudu 1.6.0, please see
+the &lt;a href=&quot;/releases/1.6.0/docs/release_notes.html&quot;&gt;Kudu 1.6.0 release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.6.0, follow these steps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.6.0/&quot;&gt;Kudu 1.6.0 source release&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to
+&lt;a href=&quot;/releases/1.6.0/docs/installation.html#build_from_source&quot;&gt;build Kudu 1.6.0 from source&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are
+&lt;a href=&quot;https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.6.0%22&quot;&gt;now available&lt;/a&gt;.&lt;/p&gt;</content><author><name>Mike Percy</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.6.0!
+
+Apache Kudu 1.6.0 is a minor release that offers new features, performance
+optimizations, incremental improvements, and bug fixes.
+
+Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
 a few common questions that kept coming up at every presentation:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -600,92 +659,4 @@ David’s patch series fixes this.&lt;/p&gt;
 tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</summary></entry><entry><title>Apache Kudu Weekly Update October 20th, 2016</title><link href="/2016/10/20/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update October 20th, 2016" /><published>2016-10-20T00:00:00-07:00</published><updated>2016-10-20T00:00:00-07:00</updated><id>/2016/10/20/weekly-update</id><content type="html" xml:base="/2016/10/20/weekly-update.html">&lt;p&gt;Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Kudu 1.0.1 was &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-user/201610.mbox/%3CCALo2W-UgTa%2BX15_q_9FQpRUPWN53eyqFS10C5MXK1KpsFgqcyQ%40mail.gmail.com%3E&quot;&gt;released&lt;/a&gt;
-on October 11th. This is a bug fix release which fixes several bugs found
-in 1.0.0. See the &lt;a href=&quot;http://kudu.apache.org/releases/1.0.1/docs/release_notes.html&quot;&gt;Kudu 1.0.1 release notes&lt;/a&gt;
-for more details.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon has proposed a &lt;a href=&quot;https://lists.apache.org/thread.html/4c94d313e28381bb107682ffaf43adfd38bd7fb3b03c98e3c86c52e2@%3Cdev.kudu.apache.org%3E&quot;&gt;release plan&lt;/a&gt;
-for the next few months. The proposal is to have a 1.1 release in mid-November and
-a 1.2 release in mid-January. These would be time-based releases rather than
-gated on any particular feature scope; however, it’s anticipated that several
-new features and improvements will be ready in time for these releases.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Happy fourth birthday to the Kudu project! The initial commit was made
-on October 11th, 2012! Since then we’ve had 4888 more commits by 60
-authors!&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;As mentioned last week, a lot of contributors have been collaborating on
-design documents for upcoming work. Here’s the complete list of in-flight
-documents, along with the primary authors of these docs:
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem&quot;&gt;Security features&lt;/a&gt; (Todd Lipcon)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://goo.gl/wP5BJb&quot;&gt;Improved disk-failure handling&lt;/a&gt; (Dinesh Bhat)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/7K48&quot;&gt;Tools for manual recovery from corruption&lt;/a&gt; (Mike Percy and Dinesh Bhat)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/uOOt&quot;&gt;Addressing issues seen with the LogBlockManager&lt;/a&gt; (Adar Dembo)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/7VCo&quot;&gt;Providing proper snapshot/serializable consistency&lt;/a&gt; (David Alves)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/ARUP&quot;&gt;Improving re-replication of under-replicated tablets&lt;/a&gt; (Mike Percy)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://docs.google.com/document/d/1066W63e2YUTNnecmfRwgAHghBPnL1Pte_gJYAaZ_Bjo/edit&quot;&gt;Avoiding Raft election storms&lt;/a&gt; (Todd Lipcon)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/kudu-backup-scope&quot;&gt;Backup and bulk load&lt;/a&gt; (Dan Burkert)&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://s.apache.org/SM6V&quot;&gt;Improving diagnosability of client errors&lt;/a&gt; (Alexey Serbin)&lt;/li&gt;
-    &lt;/ul&gt;
-
-    &lt;p&gt;In many cases, work is now progressing on implementation of these ideas,
-but these are considered living documents. It’s not too late to add your
-comments or volunteer to help out.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;JD Cryans has been working on cleaning up the Java client. Several complex pieces
-of code were completely removed, and other parts were refactored into new
-standalone classes for better modularity. Along the way, JD also
-&lt;a href=&quot;http://gerrit.cloudera.org:8080/4706&quot;&gt;reduced lock contention&lt;/a&gt; on a frequently-accessed
-data structure.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Todd Lipcon implemented and committed Raft “pre-elections” as described in the
-[election storm mitigation design document]((https://docs.google.com/document/d/1066W63e2YUTNnecmfRwgAHghBPnL1Pte_gJYAaZ_Bjo/edit).
-Initial experiments, detailed in the document, indicate that this will substantially
-improve leader stability on clusters with overloaded disks and lots of tablets.&lt;/p&gt;
-
-    &lt;p&gt;Following this patch, Todd worked on some cleanup and refactor of the Consensus
-implementation, removing a bunch of dead code and splitting some classes up
-into smaller pieces. This is preparing for some improvements in locking
-granularity also described in the same document.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Dan Burkert and Todd Lipcon have started submitting patches to integrate Kerberos
-authentication with Kudu’s RPC system. Dan posted a
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/4752/&quot;&gt;patch&lt;/a&gt; which adds “MiniKDC”, some test
-infrastructure for starting and stopping a standalone Kerberos service in
-the context of a test. Todd worked on adding
-&lt;a href=&quot;https://gerrit.cloudera.org/#/c/4763/&quot;&gt;support for Kerberos authentication&lt;/a&gt;
-during RPC negotiation.&lt;/p&gt;
-
-    &lt;p&gt;These patches are just the beginning of the security work, but form an important
-base to build on top of. The design uses Kerberos both as a mechanism to authenticate
-clients as well as a way to mutually authenticate tablet servers with the master.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
 covers ongoing development and news in the Apache Kudu project.</summary></entry></feed>
