@@ -52,9 +52,11 @@ footer {
 }
 
 #toc.affix {
-  top: 20px;
-  margin-top: 0;
   width: 262.5px;
+  top: 20px;
+  bottom: 20px;
+  margin: 0;
+  overflow-y: auto;
 }
 
 @media (max-width: 991px) {
