@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu 1.5.0 released</title>
+    <title>Apache Kudu - Apache Kudu 1.7.0 released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,47 +108,78 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu 1.5.0 released</h1>
-    <p class="meta">Posted 08 Sep 2017 by Dan Burkert</p>
+    <h1 class="entry-title">Apache Kudu 1.7.0 released</h1>
+    <p class="meta">Posted 23 Mar 2018 by Grant Henke</p>
   </header>
   <div class="entry-content">
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.5.0!</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.7.0!</p>
 
-<p>Apache Kudu 1.5.0 is a minor release which offers several new features,
-improvements, optimizations, and bug fixes.</p>
+<p>Apache Kudu 1.7.0 is a minor release that offers new features, performance
+optimizations, incremental improvements, and bug fixes.</p>
 
-<p>Highlights include:</p>
+<p>Release highlights:</p>
 
 <!--more-->
 
-<ul>
-  <li>optimizations to improve write throughput and failover recovery times</li>
-  <li>the Raft consensus implementation has been made more resilient and flexible
-through “tombstoned voting”, which allows Kudu to self-heal in more edge-case
-scenarios</li>
-  <li>the number of threads used by Kudu servers has been further reduced, with
-additional reductions planned for the future</li>
-  <li>a new configuration dashboard on the web UI which provides a high-level
-summary of important configuration values</li>
-  <li>a new <code class="highlighter-rouge">kudu tablet move</code> command which moves a tablet replica from one tablet
-server to another</li>
-  <li>a new <code class="highlighter-rouge">kudu local_replica data_size</code> command which summarizes the space usage
-of a local tablet</li>
-  <li>all on-disk data is now checksummed by default, which provides error detection
-for improved confidence when running Kudu on unreliable hardware</li>
-</ul>
+<ol>
+  <li>Kudu now supports the decimal column type. The decimal type is a numeric
+data type with fixed scale and precision suitable for financial and other
+arithmetic calculations where the imprecise representation and rounding
+behavior of float and double make those types impractical. The decimal type
+is also useful for integers larger than int64 and cases with fractional values
+in a primary key. See <a href="/releases/1.7.0/docs/schema_design.html#decimal">Decimal Type</a>
+for more details.</li>
+  <li>The strategy Kudu uses for automatically healing tablets which have lost a
+replica due to server or disk failures has been improved. The new re-replication
+strategy, or replica management scheme, first adds a replacement tablet replica
+before evicting the failed one.</li>
+  <li>A new scan read mode READ_YOUR_WRITES. Users can specify READ_YOUR_WRITES when
+creating a new scanner in C++, Java and Python clients. If this mode is used,
+the client will perform a read such that it follows all previously known writes
+and reads from this client. Reads in this mode ensure read-your-writes and
+read-your-reads session guarantees, while minimizing latency caused by waiting
+for outstanding write transactions to complete. Note that this is still an
+experimental feature which may be stabilized in future releases.</li>
+  <li>The tablet server web UI scans dashboard (/scans) has been improved with several
+new features, including: showing the most recently completed scans, a pseudo-SQL
+scan descriptor that concisely shows the selected columns and applied predicates,
+and more complete and better documented scan statistics.</li>
+  <li>Kudu daemons now expose a web page /stacks which dumps the current stack trace of
+every thread running in the server. This information can be helpful when diagnosing
+performance issues.</li>
+  <li>By default, each tablet replica will now stripe data blocks across 3 data directories
+instead of all data directories. This decreases the likelihood that any given tablet
+will be affected in the event of a single disk failure.</li>
+  <li>The Java client now uses a predefined prioritized list of TLS ciphers when
+establishing an encrypted connection to Kudu servers. This cipher list matches the
+list of ciphers preferred for server-to-server communication and ensures that the
+most efficient and secure ciphers are preferred. When the Kudu client is running on
+Java 8 or newer, this provides a substantial speed-up to read and write performance.</li>
+  <li>The performance of inserting rows containing many string or binary columns has been
+improved, especially in the case of highly concurrent write workloads.</li>
+  <li>The Java client will now automatically attempt to re-acquire Kerberos credentials
+from the ticket cache when the prior credentials are about to expire. This allows
+client instances to persist longer than the expiration time of a single Kerberos
+ticket so long as some other process renews the credentials in the ticket cache.</li>
+</ol>
 
-<p>The above list of changes is non-exhaustive. Please refer to the
-<a href="/releases/1.5.0/docs/release_notes.html">release notes</a>
-for an expanded list of important improvements, bug fixes, and
-incompatible changes before upgrading.</p>
+<p>For more details, and the complete list of changes in Kudu 1.7.0, please see
+the <a href="/releases/1.7.0/docs/release_notes.html">Kudu 1.7.0 release notes</a>.</p>
 
-<ul>
-  <li>Download the <a href="/releases/1.5.0/">Kudu 1.5.0 source release</a></li>
-  <li>Convenience binary artifacts for the Java client and various Java
-integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.</li>
-</ul>
+<p>The Apache Kudu project only publishes source code releases. To build Kudu
+1.7.0, follow these steps:</p>
+
+<ol>
+  <li>Download the <a href="/releases/1.7.0/">Kudu 1.7.0 source release</a>.</li>
+  <li>Follow the instructions in the documentation to
+<a href="/releases/1.7.0/docs/installation.html#build_from_source">build Kudu 1.7.0 from source</a>.</li>
+</ol>
+
+<p>For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are
+<a href="https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.7.0%22">now available</a>.</p>
+
 
   </div>
 </article>

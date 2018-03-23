@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu 1.5.0 released</title>
+    <title>Apache Kudu - Blog</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -106,52 +106,42 @@
 
 <div class="row-fluid">
   <div class="col-lg-9">
-    <article>
+    
+
+<!-- Articles -->
+<article>
   <header>
-    <h1 class="entry-title">Apache Kudu 1.5.0 released</h1>
-    <p class="meta">Posted 08 Sep 2017 by Dan Burkert</p>
+    <h1 class="entry-title"><a href="/2016/02/26/apache-kudu-0-7-0-released.html">Apache Kudu (incubating) 0.7.0 released</a></h1>
+    <p class="meta">Posted 26 Feb 2016 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.5.0!</p>
+    
+    <p>The Apache Kudu (incubating) team is happy to announce its first release as
+part of the ASF Incubator, version 0.7.0!</p>
 
-<p>Apache Kudu 1.5.0 is a minor release which offers several new features,
-improvements, optimizations, and bug fixes.</p>
+<p>This latest version has a number of improvements since 0.6.0:</p>
 
-<p>Highlights include:</p>
 
-<!--more-->
-
-<ul>
-  <li>optimizations to improve write throughput and failover recovery times</li>
-  <li>the Raft consensus implementation has been made more resilient and flexible
-through “tombstoned voting”, which allows Kudu to self-heal in more edge-case
-scenarios</li>
-  <li>the number of threads used by Kudu servers has been further reduced, with
-additional reductions planned for the future</li>
-  <li>a new configuration dashboard on the web UI which provides a high-level
-summary of important configuration values</li>
-  <li>a new <code class="highlighter-rouge">kudu tablet move</code> command which moves a tablet replica from one tablet
-server to another</li>
-  <li>a new <code class="highlighter-rouge">kudu local_replica data_size</code> command which summarizes the space usage
-of a local tablet</li>
-  <li>all on-disk data is now checksummed by default, which provides error detection
-for improved confidence when running Kudu on unreliable hardware</li>
-</ul>
-
-<p>The above list of changes is non-exhaustive. Please refer to the
-<a href="/releases/1.5.0/docs/release_notes.html">release notes</a>
-for an expanded list of important improvements, bug fixes, and
-incompatible changes before upgrading.</p>
-
-<ul>
-  <li>Download the <a href="/releases/1.5.0/">Kudu 1.5.0 source release</a></li>
-  <li>Convenience binary artifacts for the Java client and various Java
-integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.</li>
-</ul>
-
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/02/26/apache-kudu-0-7-0-released.html">Read full post...</a>
   </div>
 </article>
+
+
+
+<!-- Pagination links -->
+
+<nav>
+  <hr/>
+  <ul class="pager">
+  
+    <li class="previous"><a href="/blog/page/10"><span aria-hidden="true">&larr;</span> Newer posts</a></li>
+  
+  
+  </ul>
+</nav>
 
 
   </div>
