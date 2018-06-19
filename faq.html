@@ -339,8 +339,8 @@ enforcing “external consistency” in two different ways: one that optimizes f
 requires the user to perform additional work and another that requires no additional
 work but can result in some additional latency.</li>
   <li>Scans have “Read Committed” consistency by default. If the user requires strict-serializable
-scans it can choose the <code class="highlighter-rouge">READ_AT_SNAPSHOT</code> mode and, optionally, provide a timestamp. The default
-option is non-blocking but the <code class="highlighter-rouge">READ_AT_SNAPSHOT</code> option may block when reading from non-leader
+scans it can choose the <code>READ_AT_SNAPSHOT</code> mode and, optionally, provide a timestamp. The default
+option is non-blocking but the <code>READ_AT_SNAPSHOT</code> option may block when reading from non-leader
 replicas.</li>
 </ul>
 
@@ -363,7 +363,7 @@ further information and caveats.</p>
 
 <p>Kudu provides direct access via Java and C++ APIs. An experimental Python API is
 also available and is expected to be fully supported in the future. The easiest
-way to load data into Kudu is to use a <code class="highlighter-rouge">CREATE TABLE ... AS SELECT * FROM ...</code>
+way to load data into Kudu is to use a <code>CREATE TABLE ... AS SELECT * FROM ...</code>
 statement in Impala. Although Kudu has not been extensively tested to work with
 ingest tools such as Flume, Sqoop, or Kafka, several of these have been
 experimentally tested. Explicit support for these ingest tools is expected with
@@ -372,7 +372,7 @@ Kudu’s first generally available release.</p>
 <h4 id="whats-the-most-efficient-way-to-bulk-load-data-into-kudu">What’s the most efficient way to bulk load data into Kudu?</h4>
 
 <p>The easiest way to load data into Kudu is if the data is already managed by Impala.
-In this case, a simple <code class="highlighter-rouge">INSERT INTO TABLE some_kudu_table SELECT * FROM some_csv_table</code>
+In this case, a simple <code>INSERT INTO TABLE some_kudu_table SELECT * FROM some_csv_table</code>
 does the trick.</p>
 
 <p>You can also use Kudu’s MapReduce OutputFormat to load data from HDFS, HBase, or
@@ -524,9 +524,8 @@ features.</p>
 Impala can help if you have it available. You can use it to copy your data into
 Parquet format using a statement like:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>INSERT INTO TABLE some_parquet_table SELECT * FROM kudu_table
+<pre><code>INSERT INTO TABLE some_parquet_table SELECT * FROM kudu_table
 </code></pre>
-</div>
 
 <p>then use <a href="http://hadoop.apache.org/docs/r1.2.1/distcp2.html">distcp</a>
 to copy the Parquet data to another cluster.</p>
