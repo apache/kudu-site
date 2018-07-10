@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update April 4, 2016</title>
+    <title>Apache Kudu - Instrumentation in Apache Kudu</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -108,100 +108,38 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update April 4, 2016</h1>
-    <p class="meta">Posted 04 Apr 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Instrumentation in Apache Kudu</h1>
+    <p class="meta">Posted 10 Jul 2018 by Todd Lipcon</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Last week, the <a href="http://opentracing.io/">OpenTracing</a> community invited me to
+their monthly Google Hangout meetup to give an informal talk on tracing and
+instrumentation in Apache Kudu.</p>
 
+<p>While Kudu doesn’t currently support distributed tracing using OpenTracing,
+it does have quite a lot of other types of instrumentation, metrics, and
+diagnostics logging. The OpenTracing team was interested to hear about some of
+the approaches that Kudu has used, and so I gave a brief introduction to topics
+including:
 <!--more-->
+- The Kudu <a href="/docs/administration.html#_diagnostics_logging">diagnostics log</a>
+  which periodically logs metrics and stack traces.
+- The <a href="/docs/troubleshooting.html#kudu_tracing">process-wide tracing</a>
+  support based on the open source tracing framework implemented by Google Chrome.
+- The <a href="/docs/troubleshooting.html#kudu_tracing">stack watchdog</a>
+  which helps us find various latency outliers and issues in our libraries and
+  the Linux kernel.
+- <a href="/docs/troubleshooting.html#heap_sampling">Heap sampling</a> support
+  which helps us understand unexpected memory usage.</p>
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
+<p>If you’re interested in learning about these topics and more, check out the video recording
+below. My talk spans the first 34 minutes.</p>
 
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+<iframe width="800" height="500" src="https://www.youtube.com/embed/qBXwKU6Ubjo?end=2058&amp;start=23">
+</iframe>
 
-<ul>
-  <li>
-    <p>The 0.8.0 release train is progressing nicely. Jean-Daniel Cryans posted a first
-release candidate <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201604.mbox/%3CCAGpTDNfA-hsv6xkeNcvwBGarP1sri%2BvBYqYNt70YWeH44_QPSw%40mail.gmail.com%3E">VOTE thread</a>
-on the dev mailing list. Please download the release candidate and give it a try.</p>
-  </li>
-  <li>
-    <p>Ara Ebrahimi’s implementation of a <a href="https://github.com/apache/incubator-kudu/blob/master/java/kudu-flume-sink/">Kudu sink for Apache Flume</a>
-was completed this week. Mike Percy worked on some follow-up around documentation and a shaded
-<em>jar-with-dependencies</em> for easier consumption.</p>
-  </li>
-  <li>
-    <p>Mike also worked on and committed an <a href="http://gerrit.cloudera.org:8080/#/c/2640/">improvement to the Java API</a>
-so that error results for failed write operations are easier to handle. Previously,
-clients had to perform string comparisons to know whether an insert failed due
-to something like a duplicate key constraint rather than some other less expected
-error.</p>
-  </li>
-  <li>
-    <p>After some early cluster testing of the new implementation of scanner predicates,
-a few tricky bugs were discovered. The first was around proper handling of inequality
-predicates on floating point columns. The second involved handling predicates like
-‘my_int8_col &lt;= 127’: for non-nullable columns, this predicate is a tautology
-and can be eliminated. However, for nullable columns, such a predicate is equivalent
-to ‘my_int8_col IS NOT NULL’. In order to fix this, Dan Burkert added an internal
-<a href="http://gerrit.cloudera.org:8080/#/c/2671/">implementation of ‘IS NOT NULL’</a>.</p>
-
-    <p>These bugs also exposed a few gaps in test coverage around predicate handling. Dan
-added a couple thousand lines worth of new test coverage both from <a href="http://gerrit.cloudera.org:8080/2677">C++</a>
-and <a href="http://gerrit.cloudera.org:8080/#/c/2591/">Java</a>.</p>
-
-    <p>These exhaustive tests also identified a <a href="https://issues.apache.org/jira/browse/KUDU-1386">gap in Kudu’s handling of NaN
-float values</a>. The team
-elected to leave this as a known issue for now, since usage of NaN is relatively
-rare.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon fixed a <a href="http://gerrit.cloudera.org:8080/#/c/2483/">bug in Kudu’s implementation of Raft configuration
-change</a>.
-This bug could cause tablet replicas to become “stuck” after certain types of network
-partitions. The fix will be included in the upcoming 0.8 release.</p>
-  </li>
-  <li>
-    <p>Mike Percy has been working on a <a href="http://gerrit.cloudera.org:8080/#/c/2595/">bug</a>
-where tablet servers fail to start up after their write-ahead logs (WALs) have been
-truncated. This can happen on certain types of machine crashes, or if the disks
-fill up under a write workload.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon spent time this week testing Kudu on a small cluster with a 3TB
-TPC-H dataset. In particular, he was focusing on concurrent query workloads,
-including scenarios with multiple read-only users in addition to combining
-a query workload with a write workload. As a result, he identified a few
-issues around Kudu’s handling of RPCs in overload conditions.</p>
-
-    <p>In order to improve the behavior on the server side, Todd changed the RPC
-scheduling algorithm to use an <a href="https://en.wikipedia.org/wiki/Earliest_deadline_first_scheduling">earliest-deadline-first</a>
-policy. This has the effect of preventing query timeouts: a query which
-is closest to experiencing a timeout will be scheduled with higher priority
-over those which have plenty of time left.</p>
-
-    <p>In addition, this work identified a few bugs in the Kudu C++ client.
-In particular, in the case where the server was overloaded, the client
-would sometimes <a href="http://gerrit.cloudera.org:8080/#/c/2654/">incorrectly rewind to the start of the current
-tablet</a> resulting in incorrect
-results. In other cases, the client would end up in a <a href="http://gerrit.cloudera.org:8080/#/c/2709/">tight loop sending
-RPCs to the master</a>. Fixes
-for both of these issues will be in the upcoming 0.8 release.</p>
-  </li>
-</ul>
-
-<h2 id="upcoming-talks-and-meetups">Upcoming talks and meetups</h2>
-
-<ul>
-  <li>Todd Lipcon will be presenting an introductory Kudu talk at <a href="http://www.dataengconf.com/schedule/">DataEngConf</a>
-on Friday, April 8th.</li>
-</ul>
+<p>If you have any questions about this content or about Kudu in general,
+<a href="http://kudu.apache.org/community.html">join the community</a></p>
 
   </div>
 </article>

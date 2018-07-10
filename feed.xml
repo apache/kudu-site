@@ -1,4 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-06-19T08:34:08-07:00</updated><id>/</id><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-07:00</published><updated>2018-03-23T00:00:00-07:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-07-10T11:50:09-07:00</updated><id>/</id><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
+their monthly Google Hangout meetup to give an informal talk on tracing and
+instrumentation in Apache Kudu.&lt;/p&gt;
+
+&lt;p&gt;While Kudu doesn’t currently support distributed tracing using OpenTracing,
+it does have quite a lot of other types of instrumentation, metrics, and
+diagnostics logging. The OpenTracing team was interested to hear about some of
+the approaches that Kudu has used, and so I gave a brief introduction to topics
+including:
+&lt;!--more--&gt;
+- The Kudu &lt;a href=&quot;/docs/administration.html#_diagnostics_logging&quot;&gt;diagnostics log&lt;/a&gt;
+  which periodically logs metrics and stack traces.
+- The &lt;a href=&quot;/docs/troubleshooting.html#kudu_tracing&quot;&gt;process-wide tracing&lt;/a&gt;
+  support based on the open source tracing framework implemented by Google Chrome.
+- The &lt;a href=&quot;/docs/troubleshooting.html#kudu_tracing&quot;&gt;stack watchdog&lt;/a&gt;
+  which helps us find various latency outliers and issues in our libraries and
+  the Linux kernel.
+- &lt;a href=&quot;/docs/troubleshooting.html#heap_sampling&quot;&gt;Heap sampling&lt;/a&gt; support
+  which helps us understand unexpected memory usage.&lt;/p&gt;
+
+&lt;p&gt;If you’re interested in learning about these topics and more, check out the video recording
+below. My talk spans the first 34 minutes.&lt;/p&gt;
+
+&lt;iframe width=&quot;800&quot; height=&quot;500&quot; src=&quot;https://www.youtube.com/embed/qBXwKU6Ubjo?end=2058&amp;amp;start=23&quot;&gt;
+&lt;/iframe&gt;
+
+&lt;p&gt;If you have any questions about this content or about Kudu in general,
+&lt;a href=&quot;http://kudu.apache.org/community.html&quot;&gt;join the community&lt;/a&gt;&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Last week, the OpenTracing community invited me to
+their monthly Google Hangout meetup to give an informal talk on tracing and
+instrumentation in Apache Kudu.
+
+While Kudu doesn’t currently support distributed tracing using OpenTracing,
+it does have quite a lot of other types of instrumentation, metrics, and
+diagnostics logging. The OpenTracing team was interested to hear about some of
+the approaches that Kudu has used, and so I gave a brief introduction to topics
+including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-07:00</published><updated>2018-03-23T00:00:00-07:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -537,111 +572,4 @@ integrations (eg Spark, Flume) are also now available via the ASF Maven
 repository.&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.2.0!
 
-The new release adds several new features and improvements, including:</summary></entry><entry><title>Apache Kudu Weekly Update November 15th, 2016</title><link href="/2016/11/15/weekly-update.html" rel="alternate" type="text/html" title="Apache Kudu Weekly Update November 15th, 2016" /><published>2016-11-15T00:00:00-08:00</published><updated>2016-11-15T00:00:00-08:00</updated><id>/2016/11/15/weekly-update</id><content type="html" xml:base="/2016/11/15/weekly-update.html">&lt;p&gt;Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;project-news&quot;&gt;Project news&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;The first release candidate for Kudu 1.1.0 is &lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-dev/201611.mbox/%3CCADY20s7ZKZkPmUEcTexW%3D%2B_%2BLnDY2hABZg0-UZD3jvWAs9-pog%40mail.gmail.com%3E&quot;&gt;now available&lt;/a&gt;.&lt;/p&gt;
-
-    &lt;dl&gt;
-      &lt;dt&gt;Noteworthy new features/improvements:&lt;/dt&gt;
-      &lt;dd&gt;
-        &lt;ul&gt;
-          &lt;li&gt;The Python client has been brought to feature parity with the C++ and Java clients.&lt;/li&gt;
-          &lt;li&gt;IN LIST predicates.&lt;/li&gt;
-          &lt;li&gt;Java client now features client-side tracing.&lt;/li&gt;
-          &lt;li&gt;Kudu now publishes jar files for Spark 2.0 compiled with Scala 2.11.&lt;/li&gt;
-          &lt;li&gt;Kudu’s Raft implementation now features pre-elections. In our tests this has greatly improved stability.&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/dd&gt;
-    &lt;/dl&gt;
-
-    &lt;p&gt;Community developers and users are encouraged to download the source
-tarball and vote on the release.&lt;/p&gt;
-
-    &lt;p&gt;For more information on what’s new, check out the
-&lt;a href=&quot;https://github.com/apache/kudu/blob/branch-1.1.x/docs/release_notes.adoc&quot;&gt;release notes&lt;/a&gt;.
-&lt;em&gt;Note:&lt;/em&gt; some links from these in-progress release notes will not be live until the
-release itself is published.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;On November 7th, the Kudu PMC announced that Jordan Birdsell, from State Farm, had been voted
-in as a new committer and PMC member.&lt;/p&gt;
-
-    &lt;p&gt;Jordan’s contributions include extensive work on the python client, throwing it some much needed
-love, and bringing it to feature parity with the other clients.&lt;/p&gt;
-
-    &lt;p&gt;Besides his extensive code contributions Jordan has also been active in reviewing other
-developer’s patches and helping the community in general, on slack and other channels.&lt;/p&gt;
-
-    &lt;p&gt;Jordan has been doing great work and the Kudu PMC was pleased to recognize his contributions
-with committership.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Mike Percy will be presenting Kudu Wednesday 16th November at &lt;a href=&quot;https://apachebigdataeu2016.sched.org/&quot;&gt;Apache Big Data Europe, in Seville&lt;/a&gt;.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Congratulations to Haijie Hong for his &lt;a href=&quot;https://gerrit.cloudera.org/#/c/4822/&quot;&gt;first contribution to Kudu!&lt;/a&gt;.
-Haijie fixed some edge cases in BitWriter that were blocking RLE usage for 64 bit types.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Congratulations to Maxim Smyatkin for his &lt;a href=&quot;https://gerrit.cloudera.org/#/q/Maxim&quot;&gt;first contributions to Kudu!&lt;/a&gt;.
-Maxim has contributed several patches helping with debug and cleanup.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;development-discussions-and-code-in-progress&quot;&gt;Development discussions and code in progress&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;A lot of progress has been done towards the goals that were set in the scope docs introduced in
-the last couple of posts. Specifically:&lt;/p&gt;
-
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;p&gt;Dan Burkert, Todd Lipcon and Alexey Serbin have doubled down on the security effort. They have
-been working on enabling Kerberos authentication and rpc encryption. The &lt;a href=&quot;https://docs.google.com/document/d/1cPNDTpVkIUo676RlszpTF1gHZ8l0TdbB7zFBAuOuYUw/edit#heading=h.gsibhnd5dyem&quot;&gt;security scope doc&lt;/a&gt;
-has been updated with the latest plans for security and many patches have been merged already.&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;David Alves has continued the work on &lt;a href=&quot;https://s.apache.org/7VCo&quot;&gt;consistency&lt;/a&gt;. Up for review
-and partially pushed is a patch series to address row history loss if a row is deleted and then
-re-inserted. Also in progress is work to make sure that scans at a snapshot from followers
-always return same data as if they were executed on the leader. This helps with Read-Your-Writes
-when reading from lagging replicas.&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;Adar Dembo has been making good progress &lt;a href=&quot;https://s.apache.org/uOOt&quot;&gt;addressing issues seen with the LogBlockManager&lt;/a&gt;.
-A series of patches have been merged with various fixes to block managers in general and to the
-log block manager in particular.&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;Dinesh Bhat has been working on improving the manual recovery tools for Kudu. Namely, he has
-added a tool to force a remote replica copy to a destination server, and a tool to delete a
-local replica of a tablet. The latter is useful when a tablet cannot come up due to bad state.&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;Jean-Daniel Cryans has implemented RPC tracing for the java client, greatly improving
-debuggability. JD also has added ReplicaSelection to the java client, allowing to perform
-scans on replicas other than the leader, which should be of great help for load-balancing.&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;Besides the feature parity contributions, Jordan Birdsell has laid out a
-&lt;a href=&quot;http://mail-archives.apache.org/mod_mbox/kudu-dev/201611.mbox/%3CCAGaaj_VKfB4mhu6eExHCWo0%3D6Qd0HFWy7bg9e39JgOaFPGJ1nQ%40mail.gmail.com%3E&quot;&gt;roadmap for Python client work&lt;/a&gt;
-for the 1.2 release. Feedback from other Python client users is certainly appreciated.&lt;/p&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Want to learn more about a specific topic from this blog post? Shoot an email to the
-&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#117;&amp;#115;&amp;#101;&amp;#114;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;kudu-user mailing list&lt;/a&gt; or
-tweet at &lt;a href=&quot;https://twitter.com/ApacheKudu&quot;&gt;@ApacheKudu&lt;/a&gt;. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.&lt;/p&gt;</content><author><name>David Alves</name></author><summary>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</summary></entry></feed>
+The new release adds several new features and improvements, including:</summary></entry></feed>
