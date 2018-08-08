@@ -1,4 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-07-23T15:01:15-07:00</updated><id>/</id><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-08-08T09:15:27-07:00</updated><id>/</id><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00-07:00</published><updated>2018-08-06T00:00:00-07:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
+&lt;a href=&quot;https://www.phdata.io/getting-started-with-kudu/&quot;&gt;phData&lt;/a&gt;
+blog with their permission.&lt;/p&gt;
+
+&lt;p&gt;Five years ago, enabling Data Science and Advanced Analytics on the
+Hadoop platform was hard. Organizations required strong Software Engineering
+capabilities to successfully implement complex Lambda architectures or even
+simply implement continuous ingest. Updating or deleting data, were simplify
+nightmare. General Data Protection Regulation (GDPR) would have been an extreme
+challenge at that time.
+&lt;!--more--&gt;
+In that context, on October 11th 2012 Todd Lipcon perform Apache Kudu’s initial
+commit. The commit message was:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Code for writing cfiles seems to basically work
+Need to write code for reading cfiles, still
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And Kudu development was off and running. Around this same time Todd, on his
+internal Wiki page, started listing out the papers he was reading to develop
+the theoretical background for creating Kudu. I followed along, reading as many
+as I could, understanding little, because I knew Todd was up to something
+important. About a year after that initial commit, I got my
+&lt;a href=&quot;https://github.com/apache/kudu/commit/1d7e6864b4a31d3fe6897e4cb484dfcda6608d43&quot;&gt;Kudu first commit&lt;/a&gt;,
+documenting the upper bound of a library. This is a small contribution of which I am still
+proud.&lt;/p&gt;
+
+&lt;p&gt;In the meantime, I was lucky enough to be a founder of a Hadoop Managed Services
+and Consulting company known as &lt;a href=&quot;http://phdata.io/&quot;&gt;phData&lt;/a&gt;. We found that a majority
+of our customers had use cases which Kudu vastly simplified. Whether it’s Change Data
+Capture (CDC) from thousands of source tables to Internet of Things (IoT) ingest, Kudu
+makes life much easier as both an operator of a Hadoop cluster and a developer providing
+business value on the platform.&lt;/p&gt;
+
+&lt;p&gt;Through this work, I was lucky enough to be a co-author of
+&lt;a href=&quot;http://shop.oreilly.com/product/0636920065739.do&quot;&gt;Getting Started with Kudu&lt;/a&gt;.
+The book is a summation of mine and our co-authors, Jean-Marc Spaggiari, Mladen
+Kovacevic, and Ryan Bosshart,  learnings while cutting our teeth on early versions
+of Kudu. Specifically you will learn:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Theoretical understanding of Kudu concepts in simple plain spoken words and simple diagrams&lt;/li&gt;
+  &lt;li&gt;Why, for many use cases, using Kudu is so much easier than other ecosystem storage technologies&lt;/li&gt;
+  &lt;li&gt;How Kudu enables Hybrid Transactional/Analytical Processing (HTAP) use cases&lt;/li&gt;
+  &lt;li&gt;How to design IoT, Predictive Modeling, and Mixed Platform Solutions using Kudu&lt;/li&gt;
+  &lt;li&gt;How to design Kudu Schemas&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/2018-08-06-getting-started-with-kudu-an-oreilly-title.gif&quot; alt=&quot;Getting Started with Kudu Cover&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Looking forward, I am excited to see Kudu gain additional features and adoption
+and eventually the second revision of this title. In the meantime, if you have
+feedback or questions, please reach out on the &lt;code&gt;#getting-started-kudu&lt;/code&gt; channel of
+the &lt;a href=&quot;https://getkudu-slack.herokuapp.com/&quot;&gt;Kudu Slack&lt;/a&gt; or if you prefer non-real-time
+communication, please use the user@ mailing list!&lt;/p&gt;</content><author><name>Brock Noland</name></author><summary>The following article by Brock Noland was reposted from the
+phData
+blog with their permission.
+
+Five years ago, enabling Data Science and Advanced Analytics on the
+Hadoop platform was hard. Organizations required strong Software Engineering
+capabilities to successfully implement complex Lambda architectures or even
+simply implement continuous ingest. Updating or deleting data, were simplify
+nightmare. General Data Protection Regulation (GDPR) would have been an extreme
+challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
 their monthly Google Hangout meetup to give an informal talk on tracing and
 instrumentation in Apache Kudu.&lt;/p&gt;
 
@@ -539,37 +602,4 @@ repository.&lt;/li&gt;
 
 Apache Kudu 1.3 is a minor release which adds various new features,
 improvements, bug fixes, and optimizations on top of Kudu
-1.2. Highlights include:</summary></entry><entry><title>Apache Kudu 1.2.0 released</title><link href="/2017/01/20/apache-kudu-1-2-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.2.0 released" /><published>2017-01-20T00:00:00-08:00</published><updated>2017-01-20T00:00:00-08:00</updated><id>/2017/01/20/apache-kudu-1-2-0-released</id><content type="html" xml:base="/2017/01/20/apache-kudu-1-2-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.2.0!&lt;/p&gt;
-
-&lt;p&gt;The new release adds several new features and improvements, including:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;User data such as row contents is now redacted from logging statements.&lt;/li&gt;
-  &lt;li&gt;Kudu’s ability to provide strong consistency guarantees has been substantially improved.&lt;/li&gt;
-  &lt;li&gt;Various performance improvements in metadata management as well as optimizations for BITSHUFFLE encoding on AVX2-capable hosts.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Additionally, 1.2.0 fixes a number of important bugs, including:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Kudu now automatically limits its usage of file descriptors, preventing crashes due to ulimit exhaustion.&lt;/li&gt;
-  &lt;li&gt;Fixed a long-standing issue which could cause ext4 file system corruption on RHEL 6.&lt;/li&gt;
-  &lt;li&gt;Fixed a disk space leak.&lt;/li&gt;
-  &lt;li&gt;Several fixes for correctness in various edge cases.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The above list of changes is non-exhaustive. Please refer to the
-&lt;a href=&quot;/releases/1.2.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;
-for an expanded list of important improvements, bug fixes, and
-incompatible changes before upgrading.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.2.0/&quot;&gt;Kudu 1.2.0 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Convenience binary artifacts for the Java client and various Java
-integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.2.0!
-
-The new release adds several new features and improvements, including:</summary></entry></feed>
+1.2. Highlights include:</summary></entry></feed>
