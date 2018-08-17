@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-08-15T11:25:51-07:00</updated><id>/</id><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00-07:00</published><updated>2018-08-06T00:00:00-07:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-08-17T17:34:56+02:00</updated><id>/</id><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00+02:00</published><updated>2018-08-06T00:00:00+02:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
 &lt;a href=&quot;https://www.phdata.io/getting-started-with-kudu/&quot;&gt;phData&lt;/a&gt;
 blog with their permission.&lt;/p&gt;
 
@@ -61,7 +61,7 @@ Hadoop platform was hard. Organizations required strong Software Engineering
 capabilities to successfully implement complex Lambda architectures or even
 simply implement continuous ingest. Updating or deleting data, were simply a
 nightmare. General Data Protection Regulation (GDPR) would have been an extreme
-challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
+challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00+02:00</published><updated>2018-07-10T00:00:00+02:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
 their monthly Google Hangout meetup to give an informal talk on tracing and
 instrumentation in Apache Kudu.&lt;/p&gt;
 
@@ -96,7 +96,7 @@ While Kudu doesn’t currently support distributed tracing using OpenTracing,
 it does have quite a lot of other types of instrumentation, metrics, and
 diagnostics logging. The OpenTracing team was interested to hear about some of
 the approaches that Kudu has used, and so I gave a brief introduction to topics
-including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-07:00</published><updated>2018-03-23T00:00:00-07:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
+including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00+01:00</published><updated>2018-03-23T00:00:00+01:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -167,7 +167,7 @@ Maven repository and are
 Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00-08:00</published><updated>2017-12-08T00:00:00-08:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
+Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00+01:00</published><updated>2017-12-08T00:00:00+01:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -226,7 +226,7 @@ Maven repository and are
 Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
+Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00+02:00</published><updated>2017-10-23T00:00:00+02:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
 a few common questions that kept coming up at every presentation:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -286,7 +286,7 @@ a few common questions that kept coming up at every presentation:
 
   Is Kudu an open source version of Google’s Spanner system?
   Is Kudu NoSQL or SQL?
-  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00-07:00</published><updated>2017-09-18T00:00:00-07:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
+  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00+02:00</published><updated>2017-09-18T00:00:00+02:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
 its design and ultimate goals, current features, and next steps.
 On the way, we’ll shed some light on the more relevant components and how they
 fit together.&lt;/p&gt;
@@ -465,7 +465,7 @@ On the way, we’ll shed some light on the more relevant components and how they
 fit together.
 
 In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
-the current status.</summary></entry><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00-07:00</published><updated>2017-09-08T00:00:00-07:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
+the current status.</summary></entry><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00+02:00</published><updated>2017-09-08T00:00:00+02:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.5.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.&lt;/p&gt;
@@ -506,7 +506,7 @@ repository.&lt;/li&gt;
 Apache Kudu 1.5.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.
 
-Highlights include:</summary></entry><entry><title>Apache Kudu 1.4.0 released</title><link href="/2017/06/13/apache-kudu-1-4-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.4.0 released" /><published>2017-06-13T00:00:00-07:00</published><updated>2017-06-13T00:00:00-07:00</updated><id>/2017/06/13/apache-kudu-1-4-0-released</id><content type="html" xml:base="/2017/06/13/apache-kudu-1-4-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.4.0!&lt;/p&gt;
+Highlights include:</summary></entry><entry><title>Apache Kudu 1.4.0 released</title><link href="/2017/06/13/apache-kudu-1-4-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.4.0 released" /><published>2017-06-13T00:00:00+02:00</published><updated>2017-06-13T00:00:00+02:00</updated><id>/2017/06/13/apache-kudu-1-4-0-released</id><content type="html" xml:base="/2017/06/13/apache-kudu-1-4-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.4.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.4.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.&lt;/p&gt;
@@ -541,7 +541,7 @@ repository.&lt;/li&gt;
 Apache Kudu 1.4.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.
 
-Highlights include:</summary></entry><entry><title>Apache Kudu 1.3.1 released</title><link href="/2017/04/19/apache-kudu-1-3-1-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.1 released" /><published>2017-04-19T00:00:00-07:00</published><updated>2017-04-19T00:00:00-07:00</updated><id>/2017/04/19/apache-kudu-1-3-1-released</id><content type="html" xml:base="/2017/04/19/apache-kudu-1-3-1-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.1!&lt;/p&gt;
+Highlights include:</summary></entry><entry><title>Apache Kudu 1.3.1 released</title><link href="/2017/04/19/apache-kudu-1-3-1-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.1 released" /><published>2017-04-19T00:00:00+02:00</published><updated>2017-04-19T00:00:00+02:00</updated><id>/2017/04/19/apache-kudu-1-3-1-released</id><content type="html" xml:base="/2017/04/19/apache-kudu-1-3-1-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.1!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.3.1 is a bug fix release which fixes critical issues discovered
 in Apache Kudu 1.3.0. In particular, this fixes a bug in which data could be
@@ -568,7 +568,7 @@ Users of Kudu 1.3.0 are encouraged to upgrade to 1.3.1 immediately.
   Download the Kudu 1.3.1 source release
   Convenience binary artifacts for the Java client and various Java
 integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.</summary></entry><entry><title>Apache Kudu 1.3.0 released</title><link href="/2017/03/20/apache-kudu-1-3-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.0 released" /><published>2017-03-20T00:00:00-07:00</published><updated>2017-03-20T00:00:00-07:00</updated><id>/2017/03/20/apache-kudu-1-3-0-released</id><content type="html" xml:base="/2017/03/20/apache-kudu-1-3-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.0!&lt;/p&gt;
+repository.</summary></entry><entry><title>Apache Kudu 1.3.0 released</title><link href="/2017/03/20/apache-kudu-1-3-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.0 released" /><published>2017-03-20T00:00:00+01:00</published><updated>2017-03-20T00:00:00+01:00</updated><id>/2017/03/20/apache-kudu-1-3-0-released</id><content type="html" xml:base="/2017/03/20/apache-kudu-1-3-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.3 is a minor release which adds various new features,
 improvements, bug fixes, and optimizations on top of Kudu
