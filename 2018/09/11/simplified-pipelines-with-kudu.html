@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu Weekly Update August 8th, 2016</title>
+    <title>Apache Kudu - Simplified Data Pipelines with Kudu</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -114,77 +114,48 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu Weekly Update August 8th, 2016</h1>
-    <p class="meta">Posted 08 Aug 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Simplified Data Pipelines with Kudu</h1>
+    <p class="meta">Posted 11 Sep 2018 by Mac Noland</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the nineteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</p>
+    <p>I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
+across a lot of structured data use cases.  What we, at <a href="https://phdata.io/">phData</a>, have found is
+that end users are typically comfortable with tabular data and prefer to access their data in a
+structured manner using tables.
+<!--more--></p>
 
-<!--more-->
+<p>When working on new structured data projects, the first question we always get from non-Hadoop
+followers is, <em>“how do I update or delete a record?”</em>  The second question we get is, <em>“when adding
+records, why don’t they show up in Impala right away?”</em>  For those of us who have worked with HDFS
+and Impala on HDFS for years, these are simple questions to answer, but hard ones to explain.</p>
 
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+<p>The pre-Kudu years were filled with 100’s (or 1000’s) of self-join views (or materialization jobs)
+and compaction jobs, along with scheduled jobs to refresh Impala cache periodically so new records
+show up.  And while doable, for 10,000’s of tables, this basically became a distraction from solving
+real business problems.</p>
 
-<ul>
-  <li>
-    <p>After a couple months of work, Dan Burkert finished
-<a href="https://gerrit.cloudera.org/#/c/3648/">adding add/remove range partition support</a>
-in the C++ client and in the master.</p>
+<p>With the introduction of Kudu, mixing record level updates, deletes, and inserts, while supporting
+large scans, are now something we can sustainably manage at scale.  HBase is very good at record
+level updates, deletes and inserts, but doesn’t scale well for analytic use cases that often do full
+table scans. Moreover, for streaming use cases, changes are available in near real-time.  End users,
+accustomed to having to <em>”wait”</em> for their data, can now consume the data as it arrives in their
+table.</p>
 
-    <p>Dan also posted a patch for review which <a href="https://gerrit.cloudera.org/#/c/3854/">adds support for this
-feature</a> to the Java client. Dan is
-expecting that this will be finished in time for the upcoming Kudu 0.10.0
-release.</p>
+<p>A common data ingest pattern where Kudu becomes necessary is change data capture (CDC).  That is,
+capturing the inserts, updates, hard deletes, and streaming them into Kudu where they can be applied
+immediately.  Pre-Kudu this pipeline was very tedious to implement.  Now with tools like
+<a href="https://streamsets.com/">StreamSets</a>, you can get up and running in a few hours.</p>
 
-    <p>Misty Stanley-Jones started working on <a href="https://gerrit.cloudera.org/#/c/3796/">documentation for this
-feature</a>. Readers of this
-blog are encouraged to check out the docs and provide feedback!</p>
-  </li>
-  <li>
-    <p>Adar Dembo also completed fixing most of the issues related to high availability
-using multiple Kudu master processes. The upcoming Kudu 0.10.0 release will support
-running multiple masters and transparently handling a transient failure of any
-master process.</p>
+<p>A second common workflow is near real-time analytics.  We’ve streamed data off mining trucks,
+oil wells, manufacturing lines, and needed to make that data available to end users immediately.  No
+longer do we need to batch up writes, flush to HDFS and then refresh cache in Impala.  As mentioned
+before, with Kudu, the data are available as soon as it lands.  This has been a significant 
+enhancement for end users, who previously had to <em>”wait”</em> for data.</p>
 
-    <p>Although multi-master should now be stable, some work remains in this area. Namely,
-Adar is working on a <a href="https://gerrit.cloudera.org/#/c/3393/">design for handling permanent failure of a machine hosting
-a master</a>. In this case, the administrator
-will need to use some new tools to create a new master replica by copying data from
-an existing one.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon started a
-<a href="https://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201607.mbox/%3CCADY20s5WdR7KmB%3DEAHJwvzELhe9PXfnnGMLV%2B4t%3D%3Defw%3Dix8uw%40mail.gmail.com%3E">discussion</a>
-on the dev mailing list about renaming the Kudu feature which creates new
-replicas of tablets after they become under-replicated.  Since its initial
-introduction, this feature was called “remote bootstrap”, but Todd pointed out
-that this naming caused some confusion with the other “bootstrap” term used to
-describe the process by which a tablet loads itself at startup.</p>
-
-    <p>The discussion concluded with an agreement to rename the process to “Tablet Copy”.
-Todd provided patches to perform this rename, which were committed at the end of the
-week last week.</p>
-  </li>
-  <li>
-    <p>Congratulations to Attila Bukor for his first commit to Kudu! Attila
-<a href="https://gerrit.cloudera.org/#/c/3820/">fixed an error in the quick-start documentation</a>.</p>
-  </li>
-</ul>
-
-<h2 id="news-and-articles-from-around-the-web">News and articles from around the web</h2>
-
-<ul>
-  <li>The New Stack published an <a href="http://thenewstack.io/apache-kudu-fast-columnar-data-store-hadoop/">introductory article about Kudu</a>.
-The article was based on a recent interview with Todd Lipcon
-and covers topics such as the origin of the name “Kudu”, where Kudu fits into the
-Apache Hadoop ecosystem, and goals for the upcoming 1.0 release.</li>
-</ul>
-
-<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
+<p>In summary, Kudu has made a tremendous impact in removing the operational distractions of merging in
+changes, and refreshing the cache of downstream consumers.  This now allows data engineers
+and users to focus on solving business problems, rather than being bothered by the tediousness of
+the backend.</p>
 
   </div>
 </article>
