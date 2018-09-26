@@ -168,20 +168,20 @@ from a single-master configuration to a multi-master one. Along the way, he
 started building some common infrastructure for command-line tooling.</p>
 
     <p>Since Kudu’s initial release, it has included separate binaries for different
-administrative or operational tools (e.g. <code>kudu-ts-cli</code>, <code>kudu-ksck</code>, <code>kudu-fs_dump</code>,
-<code>log-dump</code>, etc). Despite having similar usage, these tools don’t share much code,
+administrative or operational tools (e.g. <code class="highlighter-rouge">kudu-ts-cli</code>, <code class="highlighter-rouge">kudu-ksck</code>, <code class="highlighter-rouge">kudu-fs_dump</code>,
+<code class="highlighter-rouge">log-dump</code>, etc). Despite having similar usage, these tools don’t share much code,
 and the separate statically linked binaries make the Kudu packages take more disk
 space than strictly necessary.</p>
 
-    <p>Adar’s work has introduced a new top-level <code>kudu</code> binary which exposes a set of subcommands,
-much like the <code>git</code> and <code>docker</code> binaries with which readers may be familiar.
+    <p>Adar’s work has introduced a new top-level <code class="highlighter-rouge">kudu</code> binary which exposes a set of subcommands,
+much like the <code class="highlighter-rouge">git</code> and <code class="highlighter-rouge">docker</code> binaries with which readers may be familiar.
 For example, a new tool he has built for dumping peer identifiers from a tablet’s
-consensus metadata is triggered using <code>kudu tablet cmeta print_replica_uuids</code>.</p>
+consensus metadata is triggered using <code class="highlighter-rouge">kudu tablet cmeta print_replica_uuids</code>.</p>
 
     <p>This new tool will be available in the upcoming 0.10.0 release; however, migration
 of the existing tools to the new infrastructure has not yet been completed. We
 expect that by Kudu 1.0, the old tools will be removed in favor of more subcommands
-of the <code>kudu</code> tool.</p>
+of the <code class="highlighter-rouge">kudu</code> tool.</p>
   </li>
   <li>
     <p>Todd Lipcon picked up the work started by David Alves in July to provide
@@ -205,7 +205,7 @@ was <a href="https://gerrit.cloudera.org/#/c/3840/">committed</a> this week. The
 docs will be published as part of the 0.10.0 release.</p>
   </li>
   <li>
-    <p>Alexey also continued work on implementing the <code>AUTO_FLUSH_BACKGROUND</code> write
+    <p>Alexey also continued work on implementing the <code class="highlighter-rouge">AUTO_FLUSH_BACKGROUND</code> write
 mode for the C++ client. This feature makes it easier to implement high-throughput
 ingest using the C++ API by automatically handling the batching and flushing of writes
 based on a configurable buffer size.</p>
@@ -245,6 +245,8 @@ a future post.</p>
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
+    
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
@@ -272,8 +274,6 @@ a future post.</p>
       <li> <a href="/2016/11/15/weekly-update.html">Apache Kudu Weekly Update November 15th, 2016</a> </li>
     
       <li> <a href="/2016/11/01/weekly-update.html">Apache Kudu Weekly Update November 1st, 2016</a> </li>
-    
-      <li> <a href="/2016/10/20/weekly-update.html">Apache Kudu Weekly Update October 20th, 2016</a> </li>
     
     </ul>
   </div>

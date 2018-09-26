@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) 0.9.0 released</title>
+    <title>Apache Kudu - Index Skip Scan Optimization in Kudu</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -114,22 +114,112 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) 0.9.0 released</h1>
-    <p class="meta">Posted 10 Jun 2016 by Jean-Daniel Cryans</p>
+    <h1 class="entry-title">Index Skip Scan Optimization in Kudu</h1>
+    <p class="meta">Posted 26 Sep 2018 by Anupama Gupta</p>
   </header>
   <div class="entry-content">
-    <p>The Apache Kudu (incubating) team is happy to announce the release of Kudu
-0.9.0!</p>
+    <p>This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+My project was to optimize the Kudu scan path by implementing a technique called
+index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
+my experience and the progress we’ve made so far on the approach.</p>
 
-<p>This latest version adds basic UPSERT functionality and an improved Apache Spark Data Source
-that doesn’t rely on the MapReduce I/O formats. It also improves Tablet Server
-restart time as well as write performance under high load. Finally, Kudu now enforces
-the specification of a partitioning scheme for new tables.</p>
+<!--more-->
+
+<p>Let’s begin with discussing the current query flow in Kudu.
+Consider the following table:</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">metrics</span> <span class="p">(</span>
+    <span class="k">host</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="n">tstamp</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="n">clusterid</span> <span class="nb">INT</span><span class="p">,</span>
+    <span class="k">role</span> <span class="n">STRING</span><span class="p">,</span>
+    <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="k">host</span><span class="p">,</span> <span class="n">tstamp</span><span class="p">,</span> <span class="n">clusterid</span><span class="p">)</span>
+<span class="p">);</span></code></pre></div>
+
+<p><img src="/img/index-skip-scan/example-table.png" alt="png" class="img-responsive" />
+<em>Sample rows of table <code class="highlighter-rouge">metrics</code> (sorted by key columns).</em></p>
+
+<p>In this case, by default, Kudu internally builds a primary key index (implemented as a
+<a href="https://en.wikipedia.org/wiki/B-tree">B-tree</a>) for the table <code class="highlighter-rouge">metrics</code>.
+As shown in the table above, the index data is sorted by the composite of all key columns.
+When the user query contains the first key column (<code class="highlighter-rouge">host</code>), Kudu uses the index (as the index data is
+primarily sorted on the first key column).</p>
+
+<p>Now, what if the user query does not contain the first key column and instead only contains the <code class="highlighter-rouge">tstamp</code> column?
+In the above case, the <code class="highlighter-rouge">tstamp</code> column values are sorted with respect to <code class="highlighter-rouge">host</code>,
+but are not globally sorted, and as such, it’s non-trivial to use the index to filter rows.
+Instead, a full tablet scan is done by default. Other databases may optimize such scans by building secondary indexes
+(though it might be redundant to build one on one of the primary keys). However, this isn’t an option for Kudu,
+given its lack of secondary index support.</p>
+
+<p>The question is, can Kudu do better than a full tablet scan here?</p>
+
+<p>The answer is yes! Let’s observe the column preceding the <code class="highlighter-rouge">tstamp</code> column. We will refer to it as the
+“prefix column” and its specific value as the “prefix key”. In this example, <code class="highlighter-rouge">host</code> is the prefix column.
+Note that the prefix keys are sorted in the index and that all rows of a given prefix key are also sorted by the
+remaining key columns. Therefore, we can use the index to skip to the rows that have distinct prefix keys,
+and also satisfy the predicate on the <code class="highlighter-rouge">tstamp</code> column.
+For example, consider the query:</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">clusterid</span> <span class="k">FROM</span> <span class="n">metrics</span> <span class="k">WHERE</span> <span class="n">tstamp</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span></code></pre></div>
+
+<p><img src="/img/index-skip-scan/skip-scan-example-table.png" alt="png" class="img-responsive" />
+<em>Skip scan flow illustration. The rows in green are scanned and the rest are skipped.</em></p>
+
+<p>The tablet server can use the index to <strong>skip</strong> to the first row with a distinct prefix key (<code class="highlighter-rouge">host = helium</code>) that
+matches the predicate (<code class="highlighter-rouge">tstamp = 100</code>) and then <strong>scan</strong> through the rows until the predicate no longer matches. At that
+point we would know that no more rows with <code class="highlighter-rouge">host = helium</code> will satisfy the predicate, and we can skip to the next
+prefix key. This holds true for all distinct keys of <code class="highlighter-rouge">host</code>. Hence, this method is popularly known as
+<strong>skip scan optimization</strong>[2, 3].</p>
+
+<h1 id="performance">Performance</h1>
+
+<p>This optimization can speed up queries significantly, depending on the cardinality (number of distinct values) of the
+prefix column. The lower the prefix column cardinality, the better the skip scan performance. In fact, when the
+prefix column cardinality is high, skip scan is not a viable approach. The performance graph (obtained using the example
+schema and query pattern mentioned earlier) is shown below.</p>
+
+<p>Based on our experiments, on up to 10 million rows per tablet (as shown below), we found that the skip scan performance
+begins to get worse with respect to the full tablet scan performance when the prefix column cardinality
+exceeds sqrt(number_of_rows_in_tablet).
+Therefore, in order to use skip scan performance benefits when possible and maintain a consistent performance in cases
+of large prefix column cardinality, we have tentatively chosen to dynamically disable skip scan when the number of skips for
+distinct prefix keys exceeds sqrt(number_of_rows_in_tablet).
+It will be an interesting project to further explore sophisticated heuristics to decide when
+to dynamically disable skip scan.</p>
+
+<p><img src="/img/index-skip-scan/skip-scan-performance-graph.png" alt="png" class="img-responsive" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Skip scan optimization in Kudu can lead to huge performance benefits that scale with the size of
+data in Kudu tablets. This is a work-in-progress <a href="https://gerrit.cloudera.org/#/c/10983/">patch</a>.
+The implementation in the patch works only for equality predicates on the non-first primary key
+columns. An important point to note is that although, in the above specific example, the number of prefix
+columns is one (<code class="highlighter-rouge">host</code>), this approach is generalized to work with any number of prefix columns.</p>
+
+<p>This work also lays the groundwork to leverage the skip scan approach and optimize query processing time in the
+following use cases:</p>
 
 <ul>
-  <li>Read the detailed <a href="http://kudu.apache.org/releases/0.9.0/docs/release_notes.html">Kudu 0.9.0 release notes</a></li>
-  <li>Download the <a href="http://kudu.apache.org/releases/0.9.0/">Kudu 0.9.0 source release</a></li>
+  <li>Range predicates</li>
+  <li>In-list predicates</li>
 </ul>
+
+<p>This was my first time working on an open source project. I thoroughly enjoyed working on this challenging problem,
+right from understanding the scan path in Kudu to working on a full-fledged implementation of
+the skip scan optimization. I am very grateful to the Kudu team for guiding and supporting me throughout the
+internship period.</p>
+
+<h1 id="references">References</h1>
+
+<p><a href="https://storage.googleapis.com/pub-tools-public-publication-data/pdf/42851.pdf">[1]</a>: Gupta, Ashish, et al. “Mesa:
+Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the VLDB Endowment 7.12 (2014): 1259-1270.</p>
+
+<p><a href="https://oracle-base.com/articles/9i/index-skip-scanning/">[2]</a>: Index Skip Scanning - Oracle Database</p>
+
+<p><a href="https://www.sqlite.org/optoverview.html#skipscan">[3]</a>: Skip Scan - SQLite</p>
+
 
   </div>
 </article>

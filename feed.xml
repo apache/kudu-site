@@ -1,4 +1,107 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-09-11T17:54:59+02:00</updated><id>/</id><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00+02:00</published><updated>2018-09-11T00:00:00+02:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-09-26T10:55:43-07:00</updated><id>/</id><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00-07:00</published><updated>2018-09-26T00:00:00-07:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+My project was to optimize the Kudu scan path by implementing a technique called
+index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
+my experience and the progress we’ve made so far on the approach.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Let’s begin with discussing the current query flow in Kudu.
+Consider the following table:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;metrics&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;host&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;tstamp&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;INT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;clusterid&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;INT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;role&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tstamp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clusterid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/example-table.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
+&lt;em&gt;Sample rows of table &lt;code class=&quot;highlighter-rouge&quot;&gt;metrics&lt;/code&gt; (sorted by key columns).&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;In this case, by default, Kudu internally builds a primary key index (implemented as a
+&lt;a href=&quot;https://en.wikipedia.org/wiki/B-tree&quot;&gt;B-tree&lt;/a&gt;) for the table &lt;code class=&quot;highlighter-rouge&quot;&gt;metrics&lt;/code&gt;.
+As shown in the table above, the index data is sorted by the composite of all key columns.
+When the user query contains the first key column (&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;), Kudu uses the index (as the index data is
+primarily sorted on the first key column).&lt;/p&gt;
+
+&lt;p&gt;Now, what if the user query does not contain the first key column and instead only contains the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column?
+In the above case, the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column values are sorted with respect to &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;,
+but are not globally sorted, and as such, it’s non-trivial to use the index to filter rows.
+Instead, a full tablet scan is done by default. Other databases may optimize such scans by building secondary indexes
+(though it might be redundant to build one on one of the primary keys). However, this isn’t an option for Kudu,
+given its lack of secondary index support.&lt;/p&gt;
+
+&lt;p&gt;The question is, can Kudu do better than a full tablet scan here?&lt;/p&gt;
+
+&lt;p&gt;The answer is yes! Let’s observe the column preceding the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column. We will refer to it as the
+“prefix column” and its specific value as the “prefix key”. In this example, &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt; is the prefix column.
+Note that the prefix keys are sorted in the index and that all rows of a given prefix key are also sorted by the
+remaining key columns. Therefore, we can use the index to skip to the rows that have distinct prefix keys,
+and also satisfy the predicate on the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column.
+For example, consider the query:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clusterid&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;metrics&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tstamp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/skip-scan-example-table.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
+&lt;em&gt;Skip scan flow illustration. The rows in green are scanned and the rest are skipped.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;The tablet server can use the index to &lt;strong&gt;skip&lt;/strong&gt; to the first row with a distinct prefix key (&lt;code class=&quot;highlighter-rouge&quot;&gt;host = helium&lt;/code&gt;) that
+matches the predicate (&lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp = 100&lt;/code&gt;) and then &lt;strong&gt;scan&lt;/strong&gt; through the rows until the predicate no longer matches. At that
+point we would know that no more rows with &lt;code class=&quot;highlighter-rouge&quot;&gt;host = helium&lt;/code&gt; will satisfy the predicate, and we can skip to the next
+prefix key. This holds true for all distinct keys of &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;. Hence, this method is popularly known as
+&lt;strong&gt;skip scan optimization&lt;/strong&gt;[2, 3].&lt;/p&gt;
+
+&lt;h1 id=&quot;performance&quot;&gt;Performance&lt;/h1&gt;
+
+&lt;p&gt;This optimization can speed up queries significantly, depending on the cardinality (number of distinct values) of the
+prefix column. The lower the prefix column cardinality, the better the skip scan performance. In fact, when the
+prefix column cardinality is high, skip scan is not a viable approach. The performance graph (obtained using the example
+schema and query pattern mentioned earlier) is shown below.&lt;/p&gt;
+
+&lt;p&gt;Based on our experiments, on up to 10 million rows per tablet (as shown below), we found that the skip scan performance
+begins to get worse with respect to the full tablet scan performance when the prefix column cardinality
+exceeds sqrt(number_of_rows_in_tablet).
+Therefore, in order to use skip scan performance benefits when possible and maintain a consistent performance in cases
+of large prefix column cardinality, we have tentatively chosen to dynamically disable skip scan when the number of skips for
+distinct prefix keys exceeds sqrt(number_of_rows_in_tablet).
+It will be an interesting project to further explore sophisticated heuristics to decide when
+to dynamically disable skip scan.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/skip-scan-performance-graph.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Skip scan optimization in Kudu can lead to huge performance benefits that scale with the size of
+data in Kudu tablets. This is a work-in-progress &lt;a href=&quot;https://gerrit.cloudera.org/#/c/10983/&quot;&gt;patch&lt;/a&gt;.
+The implementation in the patch works only for equality predicates on the non-first primary key
+columns. An important point to note is that although, in the above specific example, the number of prefix
+columns is one (&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;), this approach is generalized to work with any number of prefix columns.&lt;/p&gt;
+
+&lt;p&gt;This work also lays the groundwork to leverage the skip scan approach and optimize query processing time in the
+following use cases:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Range predicates&lt;/li&gt;
+  &lt;li&gt;In-list predicates&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This was my first time working on an open source project. I thoroughly enjoyed working on this challenging problem,
+right from understanding the scan path in Kudu to working on a full-fledged implementation of
+the skip scan optimization. I am very grateful to the Kudu team for guiding and supporting me throughout the
+internship period.&lt;/p&gt;
+
+&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://storage.googleapis.com/pub-tools-public-publication-data/pdf/42851.pdf&quot;&gt;[1]&lt;/a&gt;: Gupta, Ashish, et al. “Mesa:
+Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the VLDB Endowment 7.12 (2014): 1259-1270.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://oracle-base.com/articles/9i/index-skip-scanning/&quot;&gt;[2]&lt;/a&gt;: Index Skip Scanning - Oracle Database&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.sqlite.org/optoverview.html#skipscan&quot;&gt;[3]&lt;/a&gt;: Skip Scan - SQLite&lt;/p&gt;</content><author><name>Anupama Gupta</name></author><summary>This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+My project was to optimize the Kudu scan path by implementing a technique called
+index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
+my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00-07:00</published><updated>2018-09-11T00:00:00-07:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at &lt;a href=&quot;https://phdata.io/&quot;&gt;phData&lt;/a&gt;, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
 structured manner using tables.
@@ -38,7 +141,7 @@ and users to focus on solving business problems, rather than being bothered by t
 the backend.&lt;/p&gt;</content><author><name>Mac Noland</name></author><summary>I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at phData, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
-structured manner using tables.</summary></entry><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00+02:00</published><updated>2018-08-06T00:00:00+02:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
+structured manner using tables.</summary></entry><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00-07:00</published><updated>2018-08-06T00:00:00-07:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
 &lt;a href=&quot;https://www.phdata.io/getting-started-with-kudu/&quot;&gt;phData&lt;/a&gt;
 blog with their permission.&lt;/p&gt;
 
@@ -52,9 +155,9 @@ challenge at that time.
 In that context, on October 11th 2012 Todd Lipcon perform Apache Kudu’s initial
 commit. The commit message was:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;Code for writing cfiles seems to basically work
+&lt;div class=&quot;highlighter-rouge&quot;&gt;Code for writing cfiles seems to basically work
 Need to write code for reading cfiles, still
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;And Kudu development was off and running. Around this same time Todd, on his
 internal Wiki page, started listing out the papers he was reading to develop
@@ -90,7 +193,7 @@ of Kudu. Specifically you will learn:&lt;/p&gt;
 
 &lt;p&gt;Looking forward, I am excited to see Kudu gain additional features and adoption
 and eventually the second revision of this title. In the meantime, if you have
-feedback or questions, please reach out on the &lt;code&gt;#getting-started-kudu&lt;/code&gt; channel of
+feedback or questions, please reach out on the &lt;code class=&quot;highlighter-rouge&quot;&gt;#getting-started-kudu&lt;/code&gt; channel of
 the &lt;a href=&quot;https://getkudu-slack.herokuapp.com/&quot;&gt;Kudu Slack&lt;/a&gt; or if you prefer non-real-time
 communication, please use the user@ mailing list!&lt;/p&gt;</content><author><name>Brock Noland</name></author><summary>The following article by Brock Noland was reposted from the
 phData
@@ -101,7 +204,7 @@ Hadoop platform was hard. Organizations required strong Software Engineering
 capabilities to successfully implement complex Lambda architectures or even
 simply implement continuous ingest. Updating or deleting data, were simply a
 nightmare. General Data Protection Regulation (GDPR) would have been an extreme
-challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00+02:00</published><updated>2018-07-10T00:00:00+02:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
+challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
 their monthly Google Hangout meetup to give an informal talk on tracing and
 instrumentation in Apache Kudu.&lt;/p&gt;
 
@@ -136,7 +239,7 @@ While Kudu doesn’t currently support distributed tracing using OpenTracing,
 it does have quite a lot of other types of instrumentation, metrics, and
 diagnostics logging. The OpenTracing team was interested to hear about some of
 the approaches that Kudu has used, and so I gave a brief introduction to topics
-including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00+01:00</published><updated>2018-03-23T00:00:00+01:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
+including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-07:00</published><updated>2018-03-23T00:00:00-07:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -207,7 +310,7 @@ Maven repository and are
 Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00+01:00</published><updated>2017-12-08T00:00:00+01:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
+Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00-08:00</published><updated>2017-12-08T00:00:00-08:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -266,7 +369,7 @@ Maven repository and are
 Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00+02:00</published><updated>2017-10-23T00:00:00+02:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
+Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
 a few common questions that kept coming up at every presentation:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -326,7 +429,7 @@ a few common questions that kept coming up at every presentation:
 
   Is Kudu an open source version of Google’s Spanner system?
   Is Kudu NoSQL or SQL?
-  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00+02:00</published><updated>2017-09-18T00:00:00+02:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
+  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00-07:00</published><updated>2017-09-18T00:00:00-07:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
 its design and ultimate goals, current features, and next steps.
 On the way, we’ll shed some light on the more relevant components and how they
 fit together.&lt;/p&gt;
@@ -445,29 +548,29 @@ have increasing timestamps, depending on the user’s choices.&lt;/p&gt;
 &lt;p&gt;Row mutations performed by a single client &lt;em&gt;instance&lt;/em&gt; are guaranteed to have increasing timestamps
 thus reflecting their potential causal relationship. This property is always enforced. However
 there are two major &lt;em&gt;“knobs”&lt;/em&gt; that are available to the user to make performance trade-offs, the
-&lt;code&gt;Read&lt;/code&gt; mode, and the &lt;code&gt;External Consistency&lt;/code&gt; mode (see &lt;a href=&quot;https://kudu.apache.org/docs/transaction_semantics.html&quot;&gt;here&lt;/a&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Read&lt;/code&gt; mode, and the &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; mode (see &lt;a href=&quot;https://kudu.apache.org/docs/transaction_semantics.html&quot;&gt;here&lt;/a&gt;
 for more information on how to use the relevant APIs).&lt;/p&gt;
 
-&lt;p&gt;The first and most important knob, the &lt;code&gt;Read&lt;/code&gt; mode, pertains to what is the guaranteed recency of
+&lt;p&gt;The first and most important knob, the &lt;code class=&quot;highlighter-rouge&quot;&gt;Read&lt;/code&gt; mode, pertains to what is the guaranteed recency of
 data resulting from scans. Since Kudu uses replication for availability and fault-tolerance, there
 are always multiple replicas of any data item.
 Not all replicas must be up-to-date so if the user cares about recency, e.g. if the user requires
 that any data read includes all previously written data &lt;em&gt;from a single client instance&lt;/em&gt; then it must
-choose the &lt;code&gt;READ_AT_SNAPSHOT&lt;/code&gt; read mode. With this mode enabled the client is guaranteed to observe
+choose the &lt;code class=&quot;highlighter-rouge&quot;&gt;READ_AT_SNAPSHOT&lt;/code&gt; read mode. With this mode enabled the client is guaranteed to observe
  &lt;strong&gt;“READ YOUR OWN WRITES”&lt;/strong&gt; semantics, i.e. scans from a client will always include all previous mutations
 performed by that client. Note that this property is local to a single client instance, not a global
 property.&lt;/p&gt;
 
-&lt;p&gt;The second “knob”, the &lt;code&gt;External Consistency&lt;/code&gt; mode, defines the semantics of how reads and writes
-are performed across multiple client instances. By default, &lt;code&gt;External Consistency&lt;/code&gt; is set to
- &lt;code&gt;CLIENT_PROPAGATED&lt;/code&gt;, meaning it’s up to the user to coordinate a set of &lt;em&gt;timestamp tokens&lt;/em&gt; with clients (even
+&lt;p&gt;The second “knob”, the &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; mode, defines the semantics of how reads and writes
+are performed across multiple client instances. By default, &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; is set to
+ &lt;code class=&quot;highlighter-rouge&quot;&gt;CLIENT_PROPAGATED&lt;/code&gt;, meaning it’s up to the user to coordinate a set of &lt;em&gt;timestamp tokens&lt;/em&gt; with clients (even
 across different machines) if they are performing writes/reads that are somehow causally linked.
 If done correctly this enables &lt;strong&gt;STRICT SERIALIZABILITY&lt;/strong&gt;[5], i.e. &lt;strong&gt;LINEARIZABILITY&lt;/strong&gt;[6] and
 &lt;strong&gt;SERIALIZABILITY&lt;/strong&gt;[7] at the same time, at the cost of having the user coordinate the timestamp
 tokens across clients (a survey of the meaning of these, and other definitions can be found
 &lt;a href=&quot;http://www.ics.forth.gr/tech-reports/2013/2013.TR439_Survey_on_Consistency_Conditions.pdf&quot;&gt;here&lt;/a&gt;).
-The alternative setting for &lt;code&gt;External Consistency&lt;/code&gt; is to have it set to
-&lt;code&gt;COMMIT_WAIT&lt;/code&gt; (experimental), which guarantees the same properties through a different means, by
+The alternative setting for &lt;code class=&quot;highlighter-rouge&quot;&gt;External Consistency&lt;/code&gt; is to have it set to
+&lt;code class=&quot;highlighter-rouge&quot;&gt;COMMIT_WAIT&lt;/code&gt; (experimental), which guarantees the same properties through a different means, by
 implementing Google Spanner’s &lt;em&gt;TrueTime&lt;/em&gt;. This comes at the cost of higher latency (depending on how
 tightly synchronized the system clocks of the various tablet servers are), but doesn’t require users
 to propagate timestamps programmatically.&lt;/p&gt;
@@ -505,7 +608,7 @@ On the way, we’ll shed some light on the more relevant components and how they
 fit together.
 
 In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
-the current status.</summary></entry><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00+02:00</published><updated>2017-09-08T00:00:00+02:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
+the current status.</summary></entry><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00-07:00</published><updated>2017-09-08T00:00:00-07:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.5.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.&lt;/p&gt;
@@ -523,9 +626,9 @@ scenarios&lt;/li&gt;
 additional reductions planned for the future&lt;/li&gt;
   &lt;li&gt;a new configuration dashboard on the web UI which provides a high-level
 summary of important configuration values&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu tablet move&lt;/code&gt; command which moves a tablet replica from one tablet
+  &lt;li&gt;a new &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu tablet move&lt;/code&gt; command which moves a tablet replica from one tablet
 server to another&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu local_replica data_size&lt;/code&gt; command which summarizes the space usage
+  &lt;li&gt;a new &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu local_replica data_size&lt;/code&gt; command which summarizes the space usage
 of a local tablet&lt;/li&gt;
   &lt;li&gt;all on-disk data is now checksummed by default, which provides error detection
 for improved confidence when running Kudu on unreliable hardware&lt;/li&gt;
@@ -546,7 +649,7 @@ repository.&lt;/li&gt;
 Apache Kudu 1.5.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.
 
-Highlights include:</summary></entry><entry><title>Apache Kudu 1.4.0 released</title><link href="/2017/06/13/apache-kudu-1-4-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.4.0 released" /><published>2017-06-13T00:00:00+02:00</published><updated>2017-06-13T00:00:00+02:00</updated><id>/2017/06/13/apache-kudu-1-4-0-released</id><content type="html" xml:base="/2017/06/13/apache-kudu-1-4-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.4.0!&lt;/p&gt;
+Highlights include:</summary></entry><entry><title>Apache Kudu 1.4.0 released</title><link href="/2017/06/13/apache-kudu-1-4-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.4.0 released" /><published>2017-06-13T00:00:00-07:00</published><updated>2017-06-13T00:00:00-07:00</updated><id>/2017/06/13/apache-kudu-1-4-0-released</id><content type="html" xml:base="/2017/06/13/apache-kudu-1-4-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.4.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.4.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.&lt;/p&gt;
@@ -560,7 +663,7 @@ improvements, optimizations, and bug fixes.&lt;/p&gt;
   &lt;li&gt;a new C++ client API to efficiently map primary keys to their associated partitions
 and hosts&lt;/li&gt;
   &lt;li&gt;support for long-running fault-tolerant scans in the Java client&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu fs check&lt;/code&gt; command which can perform offline consistency checks
+  &lt;li&gt;a new &lt;code class=&quot;highlighter-rouge&quot;&gt;kudu fs check&lt;/code&gt; command which can perform offline consistency checks
 and repairs on the local on-disk storage of a Tablet Server or Master.&lt;/li&gt;
   &lt;li&gt;many optimizations to reduce disk space usage, improve write throughput,
 and improve throughput of background maintenance operations.&lt;/li&gt;
@@ -581,31 +684,4 @@ repository.&lt;/li&gt;
 Apache Kudu 1.4.0 is a minor release which offers several new features,
 improvements, optimizations, and bug fixes.
 
-Highlights include:</summary></entry><entry><title>Apache Kudu 1.3.1 released</title><link href="/2017/04/19/apache-kudu-1-3-1-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.3.1 released" /><published>2017-04-19T00:00:00+02:00</published><updated>2017-04-19T00:00:00+02:00</updated><id>/2017/04/19/apache-kudu-1-3-1-released</id><content type="html" xml:base="/2017/04/19/apache-kudu-1-3-1-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.3.1!&lt;/p&gt;
-
-&lt;p&gt;Apache Kudu 1.3.1 is a bug fix release which fixes critical issues discovered
-in Apache Kudu 1.3.0. In particular, this fixes a bug in which data could be
-incorrectly deleted after certain sequences of node failures. Several other
-bugs are also fixed. See the release notes for details.&lt;/p&gt;
-
-&lt;p&gt;Users of Kudu 1.3.0 are encouraged to upgrade to 1.3.1 immediately.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.3.1/&quot;&gt;Kudu 1.3.1 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Convenience binary artifacts for the Java client and various Java
-integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Todd Lipcon</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.3.1!
-
-Apache Kudu 1.3.1 is a bug fix release which fixes critical issues discovered
-in Apache Kudu 1.3.0. In particular, this fixes a bug in which data could be
-incorrectly deleted after certain sequences of node failures. Several other
-bugs are also fixed. See the release notes for details.
-
-Users of Kudu 1.3.0 are encouraged to upgrade to 1.3.1 immediately.
-
-
-  Download the Kudu 1.3.1 source release
-  Convenience binary artifacts for the Java client and various Java
-integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.</summary></entry></feed>
+Highlights include:</summary></entry></feed>

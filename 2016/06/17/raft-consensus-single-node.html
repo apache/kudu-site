@@ -143,13 +143,13 @@ implementation was complete.</p>
 <p>The Consensus API has the following main responsibilities:</p>
 
 <ol>
-  <li>Support acting as a Raft <code>LEADER</code> and replicate writes to a local
+  <li>Support acting as a Raft <code class="highlighter-rouge">LEADER</code> and replicate writes to a local
 write-ahead log (WAL) as well as followers in the Raft configuration. For
 each operation written to the leader, a Raft implementation must keep track
 of how many nodes have written a copy of the operation being replicated, and
 whether or not that constitutes a majority. Once a majority of the nodes
 have written a copy of the data, it is considered committed.</li>
-  <li>Support acting as a Raft <code>FOLLOWER</code> by accepting writes from the leader and
+  <li>Support acting as a Raft <code class="highlighter-rouge">FOLLOWER</code> by accepting writes from the leader and
 preparing them to be eventually committed.</li>
   <li>Support voting in and initiating leader elections.</li>
   <li>Support participating in and initiating configuration changes (such as going
@@ -215,6 +215,8 @@ dissertation, which you can find linked from the above web site.</p>
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
+    
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
@@ -242,8 +244,6 @@ dissertation, which you can find linked from the above web site.</p>
       <li> <a href="/2016/11/15/weekly-update.html">Apache Kudu Weekly Update November 15th, 2016</a> </li>
     
       <li> <a href="/2016/11/01/weekly-update.html">Apache Kudu Weekly Update November 1st, 2016</a> </li>
-    
-      <li> <a href="/2016/10/20/weekly-update.html">Apache Kudu Weekly Update October 20th, 2016</a> </li>
     
     </ul>
   </div>
