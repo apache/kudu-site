@@ -132,12 +132,29 @@ under the License.
 <p>Downloads of Kudu 1.8.0 are available in the following formats:</p>
 
 <ul>
-  <li><a href="https://archive.apache.org/dist/kudu/1.8.0/apache-kudu-1.8.0.tar.gz">Kudu 1.8.0 source tarball</a>
-(<a href="https://archive.apache.org/dist/kudu/1.8.0/apache-kudu-1.8.0.tar.gz.sha512">SHA512</a>,
-<a href="https://archive.apache.org/dist/kudu/1.8.0/apache-kudu-1.8.0.tar.gz.asc">Signature</a>)</li>
+  <li><a href="https://www.apache.org/closer.cgi?filename=kudu/1.8.0/apache-kudu-1.8.0.tar.gz&amp;action=download">Kudu 1.8.0 source tarball</a>
+(<a href="https://www.apache.org/dist/kudu/1.8.0/apache-kudu-1.8.0.tar.gz.sha512">SHA512</a>,
+<a href="https://www.apache.org/dist/kudu/1.8.0/apache-kudu-1.8.0.tar.gz.asc">Signature</a>)</li>
 </ul>
 
 <p>You can use the <a href="https://www.apache.org/dist/kudu/KEYS">KEYS file</a> to verify the included GPG signature.</p>
+
+<p>To verify the integrity of the release, you need to check the following:</p>
+
+<ul>
+  <li>Checksum by downloading the checksum file, then run the below command:
+    <ul>
+      <li>On Linux: <code>sha512sum -c apache-kudu-1.8.0.tar.gz.sha512</code></li>
+      <li>On MacOS: <code>shasum -a 512 -c apache-kudu-1.8.0.tar.gz.sha512</code></li>
+    </ul>
+  </li>
+  <li>Signature by downloading the signature and the KEYS file, then
+    <ul>
+      <li>Importing the KEYS file to the GPG keychain by running <code>gpg --import KEYS</code></li>
+      <li>Verifying the signature by running <code>gpg --verify apache-kudu-1.8.0.tar.gz.asc apache-kudu-1.8.0.tar.gz</code></li>
+    </ul>
+  </li>
+</ul>
 
 <p>Additional links:</p>
 
