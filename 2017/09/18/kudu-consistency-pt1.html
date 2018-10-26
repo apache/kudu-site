@@ -237,29 +237,29 @@ have increasing timestamps, depending on the user’s choices.</p>
 <p>Row mutations performed by a single client <em>instance</em> are guaranteed to have increasing timestamps
 thus reflecting their potential causal relationship. This property is always enforced. However
 there are two major <em>“knobs”</em> that are available to the user to make performance trade-offs, the
-<code class="highlighter-rouge">Read</code> mode, and the <code class="highlighter-rouge">External Consistency</code> mode (see <a href="https://kudu.apache.org/docs/transaction_semantics.html">here</a>
+<code>Read</code> mode, and the <code>External Consistency</code> mode (see <a href="https://kudu.apache.org/docs/transaction_semantics.html">here</a>
 for more information on how to use the relevant APIs).</p>
 
-<p>The first and most important knob, the <code class="highlighter-rouge">Read</code> mode, pertains to what is the guaranteed recency of
+<p>The first and most important knob, the <code>Read</code> mode, pertains to what is the guaranteed recency of
 data resulting from scans. Since Kudu uses replication for availability and fault-tolerance, there
 are always multiple replicas of any data item.
 Not all replicas must be up-to-date so if the user cares about recency, e.g. if the user requires
 that any data read includes all previously written data <em>from a single client instance</em> then it must
-choose the <code class="highlighter-rouge">READ_AT_SNAPSHOT</code> read mode. With this mode enabled the client is guaranteed to observe
+choose the <code>READ_AT_SNAPSHOT</code> read mode. With this mode enabled the client is guaranteed to observe
  <strong>“READ YOUR OWN WRITES”</strong> semantics, i.e. scans from a client will always include all previous mutations
 performed by that client. Note that this property is local to a single client instance, not a global
 property.</p>
 
-<p>The second “knob”, the <code class="highlighter-rouge">External Consistency</code> mode, defines the semantics of how reads and writes
-are performed across multiple client instances. By default, <code class="highlighter-rouge">External Consistency</code> is set to
- <code class="highlighter-rouge">CLIENT_PROPAGATED</code>, meaning it’s up to the user to coordinate a set of <em>timestamp tokens</em> with clients (even
+<p>The second “knob”, the <code>External Consistency</code> mode, defines the semantics of how reads and writes
+are performed across multiple client instances. By default, <code>External Consistency</code> is set to
+ <code>CLIENT_PROPAGATED</code>, meaning it’s up to the user to coordinate a set of <em>timestamp tokens</em> with clients (even
 across different machines) if they are performing writes/reads that are somehow causally linked.
 If done correctly this enables <strong>STRICT SERIALIZABILITY</strong>[5], i.e. <strong>LINEARIZABILITY</strong>[6] and
 <strong>SERIALIZABILITY</strong>[7] at the same time, at the cost of having the user coordinate the timestamp
 tokens across clients (a survey of the meaning of these, and other definitions can be found
 <a href="http://www.ics.forth.gr/tech-reports/2013/2013.TR439_Survey_on_Consistency_Conditions.pdf">here</a>).
-The alternative setting for <code class="highlighter-rouge">External Consistency</code> is to have it set to
-<code class="highlighter-rouge">COMMIT_WAIT</code> (experimental), which guarantees the same properties through a different means, by
+The alternative setting for <code>External Consistency</code> is to have it set to
+<code>COMMIT_WAIT</code> (experimental), which guarantees the same properties through a different means, by
 implementing Google Spanner’s <em>TrueTime</em>. This comes at the cost of higher latency (depending on how
 tightly synchronized the system clocks of the various tablet servers are), but doesn’t require users
 to propagate timestamps programmatically.</p>
@@ -302,6 +302,8 @@ to enable the consistency semantics introduced in the previous section, includin
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2018/10/26/apache-kudu-1-8-0-released.html">Apache Kudu 1.8.0 Released</a> </li>
+    
       <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
     
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
@@ -329,8 +331,6 @@ to enable the consistency semantics introduced in the previous section, includin
       <li> <a href="/2017/01/20/apache-kudu-1-2-0-released.html">Apache Kudu 1.2.0 released</a> </li>
     
       <li> <a href="/2016/11/15/weekly-update.html">Apache Kudu Weekly Update November 15th, 2016</a> </li>
-    
-      <li> <a href="/2016/11/01/weekly-update.html">Apache Kudu Weekly Update November 1st, 2016</a> </li>
     
     </ul>
   </div>

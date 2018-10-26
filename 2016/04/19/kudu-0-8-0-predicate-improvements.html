@@ -157,10 +157,10 @@ know on the <a href="https://issues.apache.org/jira/browse/KUDU-1065">JIRA issue
 <h2 id="redesigned-predicate-api-in-the-java-client">Redesigned Predicate API in the Java Client</h2>
 
 <p>The Java client has a new way to express scan predicates: the
-<a href="http://kudu.apache.org/apidocs/org/kududb/client/KuduPredicate.html"><code class="highlighter-rouge">KuduPredicate</code></a>.
+<a href="http://kudu.apache.org/apidocs/org/kududb/client/KuduPredicate.html"><code>KuduPredicate</code></a>.
 The API matches the corresponding C++ API more closely, and adds support for
 specifying exclusive, as well as inclusive, range predicates. The existing
-<a href="http://kudu.apache.org/apidocs/org/kududb/client/ColumnRangePredicate.html"><code class="highlighter-rouge">ColumnRangePredicate</code></a>
+<a href="http://kudu.apache.org/apidocs/org/kududb/client/ColumnRangePredicate.html"><code>ColumnRangePredicate</code></a>
 API has been deprecated, and will be removed soon. Example of transitioning from
 the old to new API:</p>
 
@@ -178,14 +178,14 @@ the old to new API:</p>
 
 <h2 id="under-the-covers-changes">Under the Covers Changes</h2>
 
-<p>The scan optimizations in the server and C++ client, and the new <code class="highlighter-rouge">KuduPredicate</code>
+<p>The scan optimizations in the server and C++ client, and the new <code>KuduPredicate</code>
 API in the Java client are made possible by an overhaul of how predicates are
 handled internally. A new protobuf message type,
-<a href="https://github.com/apache/incubator-kudu/blob/master/src/kudu/common/common.proto#L273"><code class="highlighter-rouge">ColumnPredicatePB</code></a>
+<a href="https://github.com/apache/incubator-kudu/blob/master/src/kudu/common/common.proto#L273"><code>ColumnPredicatePB</code></a>
 has been introduced, and will allow more column predicate types to be introduced
 in the future. If you are interested in contributing to Kudu but don’t know
-where to start, consider adding a new predicate type; for example the <code class="highlighter-rouge">IS NULL</code>,
-<code class="highlighter-rouge">IS NOT NULL</code>, <code class="highlighter-rouge">IN</code>, and <code class="highlighter-rouge">LIKE</code> predicates types are currently not implemented.</p>
+where to start, consider adding a new predicate type; for example the <code>IS NULL</code>,
+<code>IS NOT NULL</code>, <code>IN</code>, and <code>LIKE</code> predicates types are currently not implemented.</p>
 
   </div>
 </article>
@@ -195,6 +195,8 @@ where to start, consider adding a new predicate type; for example the <code clas
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2018/10/26/apache-kudu-1-8-0-released.html">Apache Kudu 1.8.0 Released</a> </li>
     
       <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
     
@@ -223,8 +225,6 @@ where to start, consider adding a new predicate type; for example the <code clas
       <li> <a href="/2017/01/20/apache-kudu-1-2-0-released.html">Apache Kudu 1.2.0 released</a> </li>
     
       <li> <a href="/2016/11/15/weekly-update.html">Apache Kudu Weekly Update November 15th, 2016</a> </li>
-    
-      <li> <a href="/2016/11/01/weekly-update.html">Apache Kudu Weekly Update November 1st, 2016</a> </li>
     
     </ul>
   </div>

@@ -145,12 +145,12 @@
 </ul>
 
 <h2 id="experimental-setup">Experimental setup</h2>
-<p>The single-node Kudu cluster was configured, started, and stopped by a Python script <code class="highlighter-rouge">run_experiments.py</code> which cycled through several different configurations, completely removing all data in between each iteration. For each Kudu configuration, YCSB was used to load 100M rows of data (each approximately 1KB). YCSB is configured with 16 client threads on the same node. For each configuration, the YCSB log as well as periodic dumps of Tablet Server metrics are captured for later analysis.</p>
+<p>The single-node Kudu cluster was configured, started, and stopped by a Python script <code>run_experiments.py</code> which cycled through several different configurations, completely removing all data in between each iteration. For each Kudu configuration, YCSB was used to load 100M rows of data (each approximately 1KB). YCSB is configured with 16 client threads on the same node. For each configuration, the YCSB log as well as periodic dumps of Tablet Server metrics are captured for later analysis.</p>
 
 <p>Note that in many cases, the 16 client threads were not enough to max out the full performance of the machine. These experiments should not be taken to determine the maximum throughput of Kudu – instead, we are looking at comparing the <em>relative</em> performance of different configuration options.</p>
 
 <h1 id="benchmarking-synchronous-insert-operations">Benchmarking Synchronous Insert Operations</h1>
-<p>The first set of experiments runs the YCSB load with the <code class="highlighter-rouge">sync_ops=true</code> configuration option. This option means that each client thread will insert one row at a time and synchronously wait for the response before inserting the next row. The lack of batching makes this a good stress test for Kudu’s RPC performance and other fixed per-request costs.</p>
+<p>The first set of experiments runs the YCSB load with the <code>sync_ops=true</code> configuration option. This option means that each client thread will insert one row at a time and synchronously wait for the response before inserting the next row. The lack of batching makes this a good stress test for Kudu’s RPC performance and other fixed per-request costs.</p>
 
 <p>The fact that the requests are synchronous also makes it easy to measure the <em>latency</em> of the write requests. With request batching enabled, latency would be irrelevant.</p>
 
@@ -170,25 +170,25 @@
 
 <p><img src="/img/YCSB_files/YCSB_3_0.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 31163 ops/sec
-</div>
+<pre><code>Average throughput: 31163 ops/sec
+</code></pre>
 
 <p>The results here are interesting: the throughput starts out around 70K rows/second, but then collapses to nearly zero. After staying near zero for a while, it shoots back up to the original performance, and the pattern repeats many times.</p>
 
 <p>Also note that the 99th percentile latency seems to alternate between close to zero and a value near 500ms. This bimodal distribution led me to grep in the Java source for the magic number 500. Sure enough, I found:</p>
 
-<div class="highlighter-rouge"><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">SLEEP_TIME</span> <span class="o">=</span> <span class="mi">500</span><span class="o">;</span>
-</div>
+<pre><code class="language-java">public static final int SLEEP_TIME = 500;
+</code></pre>
 
 <p>Used in this backoff calculation method (slightly paraphrased here):</p>
 
-<div class="highlighter-rouge">  <span class="kt">long</span> <span class="nf">getSleepTimeForRpc</span><span class="o">(</span><span class="n">KuduRpc</span><span class="o">&lt;?&gt;</span> <span class="n">rpc</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// TODO backoffs? Sleep in increments of 500 ms, plus some random time up to 50</span>
-    <span class="k">return</span> <span class="o">(</span><span class="n">attemptCount</span> <span class="o">*</span> <span class="n">SLEEP_TIME</span><span class="o">)</span> <span class="o">+</span> <span class="n">sleepRandomizer</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">50</span><span class="o">);</span>
-  <span class="o">}</span>
-</div>
+<pre><code class="language-java">  long getSleepTimeForRpc(KuduRpc&lt;?&gt; rpc) {
+    // TODO backoffs? Sleep in increments of 500 ms, plus some random time up to 50
+    return (attemptCount * SLEEP_TIME) + sleepRandomizer.nextInt(50);
+  }
+</code></pre>
 
-<p>One reason that a client will back off and retry is a <code class="highlighter-rouge">SERVER_TOO_BUSY</code> response from the server. This response is used in a number of overload situations. In a write-mostly workload, the most likely situation is that the server is low on memory and thus asking clients to back off while it flushes. Sure enough, when we graph the heap usage over time, as well as the rate of writes rejected due to low-memory, we see that this is the case:</p>
+<p>One reason that a client will back off and retry is a <code>SERVER_TOO_BUSY</code> response from the server. This response is used in a number of overload situations. In a write-mostly workload, the most likely situation is that the server is low on memory and thus asking clients to back off while it flushes. Sure enough, when we graph the heap usage over time, as well as the rate of writes rejected due to low-memory, we see that this is the case:</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">plot_ts_metric</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">],</span> <span class="s">&quot;heap_allocated&quot;</span><span class="p">,</span> <span class="s">&quot;Heap usage (GB)&quot;</span><span class="p">,</span> <span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">)</span>
 <span class="n">plot_ts_metric</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">],</span> <span class="s">&quot;mem_rejections&quot;</span><span class="p">,</span> <span class="s">&quot;Rejected writes</span><span class="se">\n</span><span class="s">per sec&quot;</span><span class="p">)</span></code></pre></div>
@@ -205,24 +205,24 @@
 
 <p><img src="/img/YCSB_files/YCSB_7_0.png" alt="png" class="img-responsive" /></p>
 
-<p>I then re-ran the workload while watching <code class="highlighter-rouge">iostat -dxm 1</code> to see the write rates across all of the disks. I could see that each of the disks was busy in turn, rather than busy in parallel.</p>
+<p>I then re-ran the workload while watching <code>iostat -dxm 1</code> to see the write rates across all of the disks. I could see that each of the disks was busy in turn, rather than busy in parallel.</p>
 
 <p>This reminded me that the default way in which Kudu flushes data is as follows:</p>
 
-<div class="highlighter-rouge">for each column:
+<pre><code>for each column:
   open a new block on disk to write that column, round-robining across disks
 iterate over data:
   append data to the already-open blocks
 for each column:
   fsync() the block of data
   close the block
-</div>
+</code></pre>
 
-<p>Because Kudu uses buffered writes, the actual appending of data to the open blocks does not generate immediate IO. Instead, it only dirties pages in the Linux page cache. The actual IO is performed with the <code class="highlighter-rouge">fsync</code> call at the end. Because Kudu defaults to fsyncing each file in turn from a single thread, this was causing the slow performance identified above.</p>
+<p>Because Kudu uses buffered writes, the actual appending of data to the open blocks does not generate immediate IO. Instead, it only dirties pages in the Linux page cache. The actual IO is performed with the <code>fsync</code> call at the end. Because Kudu defaults to fsyncing each file in turn from a single thread, this was causing the slow performance identified above.</p>
 
-<p>At this point, I consulted with Adar Dembo, who designed much of this code path. He reminded me that we actually have a configuration flag <code class="highlighter-rouge">cfile_do_on_finish=flush</code> which changes the code to something resembling the following:</p>
+<p>At this point, I consulted with Adar Dembo, who designed much of this code path. He reminded me that we actually have a configuration flag <code>cfile_do_on_finish=flush</code> which changes the code to something resembling the following:</p>
 
-<div class="highlighter-rouge">for each column:
+<pre><code>for each column:
   open a new block on disk to write that column, round-robining across disks
 iterate over data:
   append data to the already-open blocks
@@ -231,16 +231,16 @@ for each column:
 for each column:
   fsync the block
   close the block
-</div>
+</code></pre>
 
-<p>The <code class="highlighter-rouge">sync_file_range</code> call here asynchronously enqueues the dirty pages to be written back to the disks, and then the following <code class="highlighter-rouge">fsync</code> actually waits for the writeback to be complete. I ran the benchmark for a new configuration with this flag enabled, and plotted the results:</p>
+<p>The <code>sync_file_range</code> call here asynchronously enqueues the dirty pages to be written back to the disks, and then the following <code>fsync</code> actually waits for the writeback to be complete. I ran the benchmark for a new configuration with this flag enabled, and plotted the results:</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">plot_throughput_latency</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;finish=flush&#39;</span><span class="p">])</span></code></pre></div>
 
 <p><img src="/img/YCSB_files/YCSB_9_0.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 52457 ops/sec
-</div>
+<pre><code>Average throughput: 52457 ops/sec
+</code></pre>
 
 <p>This is already a substantial improvement from the default settings. The overall throughput has increased from 31K ops/second to 52K ops/second (<strong>67%</strong>), and we no longer see any dramatic drops in performance or increases in 99th percentile. In fact, the 99th percentile stays comfortably below 1ms for the entire test.</p>
 
@@ -282,14 +282,14 @@ for each column:
 
 <p>Writing a lot of small flushes compared to a small number of large flushes means that the on-disk data is not as well sorted in the optimized workload. An individual write may need to consult up to 20 bloom filters corresponding to previously flushed pieces of data in order to ensure that it is not an insert with a duplicate primary key.</p>
 
-<p>So, how can we address this issue? It turns out that the flush threshold is actually configurable with the <code class="highlighter-rouge">flush_threshold_mb</code> flag. I re-ran the workload yet another time with the flush threshold set to 20GB.</p>
+<p>So, how can we address this issue? It turns out that the flush threshold is actually configurable with the <code>flush_threshold_mb</code> flag. I re-ran the workload yet another time with the flush threshold set to 20GB.</p>
 
 <div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">plot_throughput_latency</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;finish=flush+20GB-threshold&#39;</span><span class="p">])</span></code></pre></div>
 
 <p><img src="/img/YCSB_files/YCSB_17_0.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 67123 ops/sec
-</div>
+<pre><code>Average throughput: 67123 ops/sec
+</code></pre>
 
 <p>This gets us another 28% improvement from 52K ops/second up to 67K ops/second (<strong>+116%</strong> from the default), and we no longer see the troubling downward slope on the throughput graph. Let’s check on the memory and bloom filter metrics again.</p>
 
@@ -318,13 +318,13 @@ for each column:
 
 <h1 id="tests-with-batched-writes">Tests with Batched Writes</h1>
 
-<p>The above tests were done with the <code class="highlighter-rouge">sync_ops=true</code> YCSB configuration option. However, we expect that for many heavy write situations, the writers would batch many rows together into larger write operations for better throughput.</p>
+<p>The above tests were done with the <code>sync_ops=true</code> YCSB configuration option. However, we expect that for many heavy write situations, the writers would batch many rows together into larger write operations for better throughput.</p>
 
-<p>I wanted to ensure that the recommended configuration changes above also improved performance for this workload. So, I re-ran the same experiments, but with YCSB configured to send batches of 100 insert operations to the tablet server using the Kudu client’s <code class="highlighter-rouge">AUTO_FLUSH_BACKGROUND</code> write mode.</p>
+<p>I wanted to ensure that the recommended configuration changes above also improved performance for this workload. So, I re-ran the same experiments, but with YCSB configured to send batches of 100 insert operations to the tablet server using the Kudu client’s <code>AUTO_FLUSH_BACKGROUND</code> write mode.</p>
 
 <p>This time, I compared four configurations:
 - the Kudu default settings
-- the defaults, but configured with <code class="highlighter-rouge">cfile_do_on_finish=flush</code> to increase flush IO performance
+- the defaults, but configured with <code>cfile_do_on_finish=flush</code> to increase flush IO performance
 - the above, but with the flush thresholds configured to 1G and 10G</p>
 
 <p>For these experiments, we don’t plot latencies, since write latencies are meaningless with batching enabled.</p>
@@ -341,8 +341,8 @@ for each column:
 
 <p><img src="/img/YCSB_files/YCSB_23_1.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 33319 ops/sec
-</div>
+<pre><code>Average throughput: 33319 ops/sec
+</code></pre>
 
 <p><img src="/img/YCSB_files/YCSB_23_3.png" alt="png" class="img-responsive" /></p>
 
@@ -351,8 +351,8 @@ for each column:
 
 <p><img src="/img/YCSB_files/YCSB_23_5.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 80068 ops/sec
-</div>
+<pre><code>Average throughput: 80068 ops/sec
+</code></pre>
 
 <p><img src="/img/YCSB_files/YCSB_23_7.png" alt="png" class="img-responsive" /></p>
 
@@ -361,8 +361,8 @@ for each column:
 
 <p><img src="/img/YCSB_files/YCSB_23_9.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 78040 ops/sec
-</div>
+<pre><code>Average throughput: 78040 ops/sec
+</code></pre>
 
 <p><img src="/img/YCSB_files/YCSB_23_11.png" alt="png" class="img-responsive" /></p>
 
@@ -371,8 +371,8 @@ for each column:
 
 <p><img src="/img/YCSB_files/YCSB_23_13.png" alt="png" class="img-responsive" /></p>
 
-<div class="highlighter-rouge">Average throughput: 82005 ops/sec
-</div>
+<pre><code>Average throughput: 82005 ops/sec
+</code></pre>
 
 <p><img src="/img/YCSB_files/YCSB_23_15.png" alt="png" class="img-responsive" /></p>
 
@@ -393,8 +393,8 @@ for each column:
 <p>We will likely make these changes in the next Kudu release. In the meantime, users can experiment by adding the following flags to their tablet server configuration:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">--cfile_do_on_finish=flush</code></li>
-  <li><code class="highlighter-rouge">--flush_threshold_mb=10000</code></li>
+  <li><code>--cfile_do_on_finish=flush</code></li>
+  <li><code>--flush_threshold_mb=10000</code></li>
 </ul>
 
 <p>Note that, even if the server hosts many tablets or has less memory than the one used in this test, flushes will still be triggered if the <em>overall</em> memory consumption of the process crosses the configured soft limit. So, configuring a 10GB threshold does not increase the risk of out-of-memory errors.</p>
@@ -417,6 +417,8 @@ for each column:
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2018/10/26/apache-kudu-1-8-0-released.html">Apache Kudu 1.8.0 Released</a> </li>
     
       <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
     
@@ -445,8 +447,6 @@ for each column:
       <li> <a href="/2017/01/20/apache-kudu-1-2-0-released.html">Apache Kudu 1.2.0 released</a> </li>
     
       <li> <a href="/2016/11/15/weekly-update.html">Apache Kudu Weekly Update November 15th, 2016</a> </li>
-    
-      <li> <a href="/2016/11/01/weekly-update.html">Apache Kudu Weekly Update November 1st, 2016</a> </li>
     
     </ul>
   </div>
