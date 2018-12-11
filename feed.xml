@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-10-26T23:58:10+02:00</updated><id>/</id><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00+02:00</published><updated>2018-10-26T00:00:00+02:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-12-11T23:30:31+01:00</updated><id>/</id><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00+01:00</published><updated>2018-12-11T00:00:00+01:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
+committers and are either technical or news-like in nature. We’d like to hear
+how you’re using Kudu in production, in testing, or in your hobby project and
+we’d like to share it with the world!&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;If you’d like to tell the world about how you are using Kudu in your project,
+now is the time.&lt;/p&gt;
+
+&lt;p&gt;To learn how to submit posts, read our &lt;a href=&quot;/docs/contributing.html#_blog_posts&quot;&gt;contributing
+documentation&lt;/a&gt;. Alternatively, you can
+draft your post to Google Docs and share it with us on
+&lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#100;&amp;#101;&amp;#118;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&quot;&gt;&amp;#100;&amp;#101;&amp;#118;&amp;#064;&amp;#107;&amp;#117;&amp;#100;&amp;#117;&amp;#046;&amp;#097;&amp;#112;&amp;#097;&amp;#099;&amp;#104;&amp;#101;&amp;#046;&amp;#111;&amp;#114;&amp;#103;&lt;/a&gt; and we’re happy to review it
+and post it to the blog for you.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>Most of the posts in the Kudu blog have been written by the project’s
+committers and are either technical or news-like in nature. We’d like to hear
+how you’re using Kudu in production, in testing, or in your hobby project and
+we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00+02:00</published><updated>2018-10-26T00:00:00+02:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -647,45 +664,4 @@ On the way, we’ll shed some light on the more relevant components and how they
 fit together.
 
 In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
-the current status.</summary></entry><entry><title>Apache Kudu 1.5.0 released</title><link href="/2017/09/08/apache-kudu-1-5-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.5.0 released" /><published>2017-09-08T00:00:00+02:00</published><updated>2017-09-08T00:00:00+02:00</updated><id>/2017/09/08/apache-kudu-1-5-0-released</id><content type="html" xml:base="/2017/09/08/apache-kudu-1-5-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.5.0!&lt;/p&gt;
-
-&lt;p&gt;Apache Kudu 1.5.0 is a minor release which offers several new features,
-improvements, optimizations, and bug fixes.&lt;/p&gt;
-
-&lt;p&gt;Highlights include:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;optimizations to improve write throughput and failover recovery times&lt;/li&gt;
-  &lt;li&gt;the Raft consensus implementation has been made more resilient and flexible
-through “tombstoned voting”, which allows Kudu to self-heal in more edge-case
-scenarios&lt;/li&gt;
-  &lt;li&gt;the number of threads used by Kudu servers has been further reduced, with
-additional reductions planned for the future&lt;/li&gt;
-  &lt;li&gt;a new configuration dashboard on the web UI which provides a high-level
-summary of important configuration values&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu tablet move&lt;/code&gt; command which moves a tablet replica from one tablet
-server to another&lt;/li&gt;
-  &lt;li&gt;a new &lt;code&gt;kudu local_replica data_size&lt;/code&gt; command which summarizes the space usage
-of a local tablet&lt;/li&gt;
-  &lt;li&gt;all on-disk data is now checksummed by default, which provides error detection
-for improved confidence when running Kudu on unreliable hardware&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The above list of changes is non-exhaustive. Please refer to the
-&lt;a href=&quot;/releases/1.5.0/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;
-for an expanded list of important improvements, bug fixes, and
-incompatible changes before upgrading.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.5.0/&quot;&gt;Kudu 1.5.0 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Convenience binary artifacts for the Java client and various Java
-integrations (eg Spark, Flume) are also now available via the ASF Maven
-repository.&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Dan Burkert</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.5.0!
-
-Apache Kudu 1.5.0 is a minor release which offers several new features,
-improvements, optimizations, and bug fixes.
-
-Highlights include:</summary></entry></feed>
+the current status.</summary></entry></feed>
