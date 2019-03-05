@@ -144,9 +144,9 @@ can be safely enabled in production clusters.</p>
 
 <p>To use replicated masters, a Kudu operator must deploy some number of Kudu
 masters, providing the hostname and port number of each master in the group via
-the <code>--master_address</code> command line option. For example, each master in a
+the <code class="highlighter-rouge">--master_address</code> command line option. For example, each master in a
 three-node deployment should be started with
-<code>--master_address=&lt;host1:port1&gt;,&lt;host2:port2&gt;&lt;host3:port3&gt;</code>. In Raft parlance,
+<code class="highlighter-rouge">--master_address=&lt;host1:port1&gt;,&lt;host2:port2&gt;&lt;host3:port3&gt;</code>. In Raft parlance,
 this group of masters is known as a <em>Raft configuration</em>.</p>
 
 <p>At startup, a Raft configuration of masters will hold a leader election and
@@ -191,7 +191,7 @@ clients are also configured with the locations of all masters. Unlike tablet
 servers, they always communicate with the leader master as follower masters will
 reject client requests. To do this, clients must determine which master is the
 leader before sending the first request as well as whenever any request fails
-with a <code>NOT_THE_LEADER</code> error.</p>
+with a <code class="highlighter-rouge">NOT_THE_LEADER</code> error.</p>
 
 <h1 id="remaining-work-for-kudu-10">Remaining work for Kudu 1.0</h1>
 
@@ -228,6 +228,8 @@ nothing has been implemented yet. Stay tuned!</p>
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">Transparent Hierarchical Storage Management with Apache Kudu and Impala</a> </li>
+    
       <li> <a href="/2018/12/11/call-for-posts.html">Call for Posts</a> </li>
     
       <li> <a href="/2018/10/26/apache-kudu-1-8-0-released.html">Apache Kudu 1.8.0 Released</a> </li>
@@ -255,8 +257,6 @@ nothing has been implemented yet. Stay tuned!</p>
       <li> <a href="/2017/04/19/apache-kudu-1-3-1-released.html">Apache Kudu 1.3.1 released</a> </li>
     
       <li> <a href="/2017/03/20/apache-kudu-1-3-0-released.html">Apache Kudu 1.3.0 released</a> </li>
-    
-      <li> <a href="/2017/01/20/apache-kudu-1-2-0-released.html">Apache Kudu 1.2.0 released</a> </li>
     
     </ul>
   </div>

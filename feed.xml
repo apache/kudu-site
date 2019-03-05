@@ -1,4 +1,413 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2018-12-11T23:30:31+01:00</updated><id>/</id><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00+01:00</published><updated>2018-12-11T00:00:00+01:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-05T15:49:04-08:00</updated><id>/</id><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+&lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/&quot;&gt;Transparent Hierarchical Storage Management with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;When picking a storage option for an application it is common to pick a single
+storage option which has the most applicable features to your use case. For mutability
+and real-time analytics workloads you may want to use Apache Kudu, but for massive
+scalability at a low cost you may want to use HDFS. For that reason, there is a need
+for a solution that allows you to leverage the best features of multiple storage
+options. This post describes the sliding window pattern using Apache Impala with data
+stored in Apache Kudu and Apache HDFS. With this pattern you get all of the benefits
+of multiple storage layers in a way that is transparent to users.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Apache Kudu is designed for fast analytics on rapidly changing data. Kudu provides a
+combination of fast inserts/updates and efficient columnar scans to enable multiple
+real-time analytic workloads across a single storage layer. For that reason, Kudu fits
+well into a data pipeline as the place to store real-time data that needs to be
+queryable immediately. Additionally, Kudu supports updating and deleting rows in
+real-time allowing support for late arriving data and data correction.&lt;/p&gt;
+
+&lt;p&gt;Apache HDFS is designed to allow for limitless scalability at a low cost. It is
+optimized for batch oriented use cases where data is immutable. When paired with the
+Apache Parquet file format, structured data can be accessed with extremely high
+throughput and efficiency.&lt;/p&gt;
+
+&lt;p&gt;For situations in which the data is small and ever-changing, like dimension tables,
+it is common to keep all of the data in Kudu. It is even common to keep large tables
+in Kudu when the data fits within Kudu’s
+&lt;a href=&quot;https://kudu.apache.org/docs/known_issues.html#_scale&quot;&gt;scaling limits&lt;/a&gt; and can benefit
+from Kudu’s unique features. In cases where the data is massive, batch oriented, and
+unlikely to change, storing the data in HDFS using the Parquet format is preferred.
+When you need the benefits of both storage layers, the sliding window pattern is a
+useful solution.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-sliding-window-pattern&quot;&gt;The Sliding Window Pattern&lt;/h2&gt;
+
+&lt;p&gt;In this pattern, matching Kudu and Parquet formatted HDFS tables are created in Impala.
+These tables are partitioned by a unit of time based on how frequently the data is
+moved between the Kudu and HDFS table. It is common to use daily, monthly, or yearly
+partitions. A unified view is created and a &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clause is used to define a boundary
+that separates which data is read from the Kudu table and which is read from the HDFS
+table. The defined boundary is important so that you can move data between Kudu and
+HDFS without exposing duplicate records to the view. Once the data is moved, an atomic
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ALTER VIEW&lt;/code&gt; statement can be used to move the boundary forward.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/sliding-window-pattern.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Note: This pattern works best with somewhat sequential data organized into range
+partitions, because having a sliding window of time and dropping partitions is very
+efficient.&lt;/p&gt;
+
+&lt;p&gt;This pattern results in a sliding window of time where mutable data is stored in Kudu
+and immutable data is stored in the Parquet format on HDFS. Leveraging both Kudu and
+HDFS via Impala provides the benefits of both storage systems:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Streaming data is immediately queryable&lt;/li&gt;
+  &lt;li&gt;Updates for late arriving data or manual corrections can be made&lt;/li&gt;
+  &lt;li&gt;Data stored in HDFS is optimally sized increasing performance and preventing small files&lt;/li&gt;
+  &lt;li&gt;Reduced cost&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Impala also supports cloud storage options such as
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_s3.html&quot;&gt;S3&lt;/a&gt; and
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_adls.html&quot;&gt;ADLS&lt;/a&gt;.
+This capability allows convenient access to a storage system that is remotely managed,
+accessible from anywhere, and integrated with various cloud-based services. Because
+this data is remote, queries against S3 data are less performant, making S3 suitable
+for holding “cold” data that is only queried occasionally. This pattern can be
+extended to use cloud storage for cold data by creating a third matching table and
+adding another boundary to the unified view.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/sliding-window-pattern-cold.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Note: For simplicity only Kudu and HDFS are illustrated in the examples below.&lt;/p&gt;
+
+&lt;p&gt;The process for moving data from Kudu to HDFS is broken into two phases. The first
+phase is the data migration, and the second phase is the metadata change. These
+ongoing steps should be scheduled to run automatically on a regular basis.&lt;/p&gt;
+
+&lt;p&gt;In the first phase, the now immutable data is copied from Kudu to HDFS. Even though
+data is duplicated from Kudu into HDFS, the boundary defined in the view will prevent
+duplicate data from being shown to users. This step can include any validation and
+retries as needed to ensure the data offload is successful.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/phase-1.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the second phase, now that the data is safely copied to HDFS, the metadata is
+changed to adjust how the offloaded partition is exposed. This includes shifting
+the boundary forward, adding a new Kudu partition for the next period, and dropping
+the old Kudu partition.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/phase-2.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;building-blocks&quot;&gt;Building Blocks&lt;/h2&gt;
+
+&lt;p&gt;In order to implement the sliding window pattern, a few Impala fundamentals are
+required. Below each fundamental building block of the sliding window pattern is
+described.&lt;/p&gt;
+
+&lt;h3 id=&quot;moving-data&quot;&gt;Moving Data&lt;/h3&gt;
+
+&lt;p&gt;Moving data among storage systems via Impala is straightforward provided you have
+matching tables defined using each of the storage formats. In order to keep this post
+brief, all of the options available when creating an Impala table are not described.
+However, Impala’s
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_create_table.html&quot;&gt;CREATE TABLE documentation&lt;/a&gt;
+can be referenced to find the correct syntax for Kudu, HDFS, and cloud storage tables.
+A few examples are shown further below where the sliding window pattern is illustrated.&lt;/p&gt;
+
+&lt;p&gt;Once the tables are created, moving the data is as simple as an
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_insert.html&quot;&gt;INSERT…SELECT&lt;/a&gt; statement:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_foo&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;All of the features of the
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_select.html&quot;&gt;SELECT&lt;/a&gt;
+statement can be used to select the specific data you would like to move.&lt;/p&gt;
+
+&lt;p&gt;Note: If moving data to Kudu, an &lt;code class=&quot;highlighter-rouge&quot;&gt;UPSERT INTO&lt;/code&gt; statement can be used to handle
+duplicate keys.&lt;/p&gt;
+
+&lt;h3 id=&quot;unified-querying&quot;&gt;Unified Querying&lt;/h3&gt;
+
+&lt;p&gt;Querying data from multiple tables and data sources in Impala is also straightforward.
+For the sake of brevity, all of the options available when creating an Impala view are
+not described. However, see Impala’s
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_create_view.html&quot;&gt;CREATE VIEW documentation&lt;/a&gt;
+for more in-depth details.&lt;/p&gt;
+
+&lt;p&gt;Creating a view for unified querying is as simple as a &lt;code class=&quot;highlighter-rouge&quot;&gt;CREATE VIEW&lt;/code&gt; statement using
+two &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT&lt;/code&gt; clauses combined with a &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION ALL&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VIEW&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo_view&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col3&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo_parquet&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;UNION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col3&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo_kudu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;WARNING: Be sure to use &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION ALL&lt;/code&gt; and not &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt;. The &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt; keyword by itself
+is the same as &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION DISTINCT&lt;/code&gt; and can have significant performance impact.
+More information can be found in the Impala
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_union.html&quot;&gt;UNION documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;All of the features of the
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_select.html&quot;&gt;SELECT&lt;/a&gt;
+statement can be used to expose the correct data and columns from each of the
+underlying tables. It is important to use the &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clause to pass through and
+pushdown any predicates that need special handling or transformations. More examples
+will follow below in the discussion of the sliding window pattern.&lt;/p&gt;
+
+&lt;p&gt;Additionally, views can be altered via the
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_alter_view.html&quot;&gt;ALTER VIEW&lt;/a&gt;
+statement. This is useful when combined with the &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT&lt;/code&gt; statement because it can be
+used to atomically update what data is being accessed by the view.&lt;/p&gt;
+
+&lt;h2 id=&quot;an-example-implementation&quot;&gt;An Example Implementation&lt;/h2&gt;
+
+&lt;p&gt;Below are sample steps to implement the sliding window pattern using a monthly period
+with three months of active mutable data. Data older than three months will be
+offloaded to HDFS using the Parquet format.&lt;/p&gt;
+
+&lt;h3 id=&quot;create-the-kudu-table&quot;&gt;Create the Kudu Table&lt;/h3&gt;
+
+&lt;p&gt;First, create a Kudu table which will hold three months of active mutable data.
+The table is range partitioned by the time column with each range containing one
+period of data. It is important to have partitions that match the period because
+dropping Kudu partitions is much more efficient than removing the data via the
+&lt;code class=&quot;highlighter-rouge&quot;&gt;DELETE&lt;/code&gt; clause. The table is also hash partitioned by the other key column to ensure
+that all of the data is not written to a single partition.&lt;/p&gt;
+
+&lt;p&gt;Note: Your schema design should vary based on your data and read/write performance
+considerations. This example schema is intended for demonstration purposes and not as
+an “optimal” schema. See the
+&lt;a href=&quot;https://kudu.apache.org/docs/schema_design.html&quot;&gt;Kudu schema design documentation&lt;/a&gt;
+for more guidance on choosing your schema. For example, you may not need any hash
+partitioning if your
+data input rate is low. Alternatively, you may need more hash buckets if your data
+input rate is very high.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TIMESTAMP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;HASH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITIONS&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;RANGE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-01-01&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-02-01&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;--January&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-02-01&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-03-01&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;--February&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-03-01&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-04-01&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;--March&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-04-01&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-05-01&amp;#39;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;--April&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KUDU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note: There is an extra month partition to provide a buffer of time for the data to
+be moved into the immutable table.&lt;/p&gt;
+
+&lt;h3 id=&quot;create-the-hdfs-table&quot;&gt;Create the HDFS Table&lt;/h3&gt;
+
+&lt;p&gt;Create the matching Parquet formatted HDFS table which will hold the older immutable
+data. This table is partitioned by year, month, and day for efficient access even
+though you can’t partition by the time column itself. This is addressed further in
+the view step below. See Impala’s
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_partitioning.html&quot;&gt;partitioning documentation&lt;/a&gt;
+for more details.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_parquet&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TIMESTAMP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;PARTITIONED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;year&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARQUET&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;create-the-unified-view&quot;&gt;Create the Unified View&lt;/h3&gt;
+
+&lt;p&gt;Now create the unified view which will be used to query all of the data seamlessly:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VIEW&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;2018-01-01&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;UNION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_parquet&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;2018-01-01&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;year&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Each &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT&lt;/code&gt; clause explicitly lists all of the columns to expose. This ensures that
+the year, month, and day columns that are unique to the Parquet table are not exposed.
+If needed, it also allows any necessary column or type mapping to be handled.&lt;/p&gt;
+
+&lt;p&gt;The initial &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clauses applied to both my_table_kudu and my_table_parquet define
+the boundary between Kudu and HDFS to ensure duplicate data is not read while in the
+process of offloading data.&lt;/p&gt;
+
+&lt;p&gt;The additional &lt;code class=&quot;highlighter-rouge&quot;&gt;AND&lt;/code&gt; clauses applied to my_table_parquet are used to ensure good
+predicate pushdown on the individual year, month, and day columns.&lt;/p&gt;
+
+&lt;p&gt;WARNING: As stated earlier, be sure to use &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION ALL&lt;/code&gt; and not &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt;. The &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt;
+keyword by itself is the same as &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION DISTINCT&lt;/code&gt; and can have significant performance
+impact. More information can be found in the Impala
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_union.html&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt; documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;ongoing-steps&quot;&gt;Ongoing Steps&lt;/h3&gt;
+
+&lt;p&gt;Now that the base tables and view are created, prepare the ongoing steps to maintain
+the sliding window. Because these ongoing steps should be scheduled to run on a
+regular basis, the examples below are shown using &lt;code class=&quot;highlighter-rouge&quot;&gt;.sql&lt;/code&gt; files that take variables
+which can be passed from your scripts and scheduling tool of choice.&lt;/p&gt;
+
+&lt;p&gt;Create the &lt;code class=&quot;highlighter-rouge&quot;&gt;window_data_move.sql&lt;/code&gt; file to move the data from the oldest partition to HDFS:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;add_months&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;COMPUTE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;INCREMENTAL&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STATS&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note: The
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_compute_stats.html&quot;&gt;COMPUTE INCREMENTAL STATS&lt;/a&gt;
+clause is not required but helps Impala to optimize queries.&lt;/p&gt;
+
+&lt;p&gt;To run the SQL statement, use the Impala shell and pass the required variables.
+Below is an example:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;impala-shell -i &amp;lt;impalad:port&amp;gt; -f window_data_move.sql
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_kudu
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_parquet
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note: You can adjust the &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clause to match the given period and cadence of your
+offload. Here the add_months function is used with an argument of -1 to move one month
+of data in the past from the new boundary time.&lt;/p&gt;
+
+&lt;p&gt;Create the &lt;code class=&quot;highlighter-rouge&quot;&gt;window_view_alter.sql&lt;/code&gt; file to shift the time boundary forward by altering
+the unified view:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VIEW&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;view_name&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;UNION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;year&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To run the SQL statement, use the Impala shell and pass the required variables.
+Below is an example:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;impala-shell -i &amp;lt;impalad:port&amp;gt; -f window_view_alter.sql
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;view_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_view
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_kudu
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_parquet
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Create the &lt;code class=&quot;highlighter-rouge&quot;&gt;window_partition_shift.sql&lt;/code&gt; file to shift the Kudu partitions forward:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;ADD&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RANGE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;add_months&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;window_length&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;add_months&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;window_length&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;DROP&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RANGE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;add_months&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;${var:new_boundary_time}&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To run the SQL statement, use the Impala shell and pass the required variables.
+Below is an example:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;impala-shell -i &amp;lt;impalad:port&amp;gt; -f window_partition_shift.sql
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_kudu
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;window_length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note: You should periodically run
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_compute_stats.html&quot;&gt;COMPUTE STATS&lt;/a&gt;
+on your Kudu table to ensure Impala’s query performance is optimal.&lt;/p&gt;
+
+&lt;h3 id=&quot;experimentation&quot;&gt;Experimentation&lt;/h3&gt;
+
+&lt;p&gt;Now that you have created the tables, view, and scripts to leverage the sliding
+window pattern, you can experiment with them by inserting data for different time
+ranges and running the scripts to move the window forward through time.&lt;/p&gt;
+
+&lt;p&gt;Insert some sample values into the Kudu table:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VALUES&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;joey&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-01-01&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;hello&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;ross&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-02-01&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;goodbye&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;rachel&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;2018-03-01&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;hi&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Show the data in each table/view:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_parquet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Move the January data into HDFS:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;impala-shell -i &amp;lt;impalad:port&amp;gt; -f window_data_move.sql
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_kudu
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_parquet
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Confirm the data is in both places, but not duplicated in the view:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_parquet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Alter the view to shift the time boundary forward to February:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;impala-shell -i &amp;lt;impalad:port&amp;gt; -f window_view_alter.sql
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;view_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_view
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_kudu
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_parquet
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Confirm the data is still in both places, but not duplicated in the view:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_parquet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Shift the Kudu partitions forward:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;impala-shell -i &amp;lt;impalad:port&amp;gt; -f window_partition_shift.sql
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_kudu
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;
+--var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;window_length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Confirm the January data is now only in HDFS:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_kudu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_parquet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Confirm predicate push down with Impala’s EXPLAIN statement:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;EXPLAIN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;EXPLAIN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;EXPLAIN&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_table_view&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the explain output you should see “kudu predicates” which include the time column
+filters in the “SCAN KUDU” section and “predicates” which include the time, day, month,
+and year columns in the “SCAN HDFS” section.&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary>Note: This is a cross-post from the Cloudera Engineering Blog
+Transparent Hierarchical Storage Management with Apache Kudu and Impala
+
+When picking a storage option for an application it is common to pick a single
+storage option which has the most applicable features to your use case. For mutability
+and real-time analytics workloads you may want to use Apache Kudu, but for massive
+scalability at a low cost you may want to use HDFS. For that reason, there is a need
+for a solution that allows you to leverage the best features of multiple storage
+options. This post describes the sliding window pattern using Apache Impala with data
+stored in Apache Kudu and Apache HDFS. With this pattern you get all of the benefits
+of multiple storage layers in a way that is transparent to users.</summary></entry><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00-08:00</published><updated>2018-12-11T00:00:00-08:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
 we’d like to share it with the world!&lt;/p&gt;
@@ -15,7 +424,7 @@ draft your post to Google Docs and share it with us on
 and post it to the blog for you.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
-we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00+02:00</published><updated>2018-10-26T00:00:00+02:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
+we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00-07:00</published><updated>2018-10-26T00:00:00-07:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -25,7 +434,7 @@ following:&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Introduced manual data rebalancer tool which can be used to redistribute
 table replicas among tablet servers&lt;/li&gt;
-  &lt;li&gt;Added support for &lt;code&gt;IS NULL&lt;/code&gt; and &lt;code&gt;IS NOT NULL&lt;/code&gt; predicates to the Kudu Python
+  &lt;li&gt;Added support for &lt;code class=&quot;highlighter-rouge&quot;&gt;IS NULL&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;IS NOT NULL&lt;/code&gt; predicates to the Kudu Python
 client&lt;/li&gt;
   &lt;li&gt;Multiple tooling improvements make diagnostics and troubleshooting simpler&lt;/li&gt;
   &lt;li&gt;The Kudu Spark connector now supports Spark Streaming DataFrames&lt;/li&gt;
@@ -54,7 +463,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.8.0!
 
 The new release adds several new features and improvements, including the
-following:</summary></entry><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00+02:00</published><updated>2018-09-26T00:00:00+02:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+following:</summary></entry><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00-07:00</published><updated>2018-09-26T00:00:00-07:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
 My project was to optimize the Kudu scan path by implementing a technique called
 index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
 my experience and the progress we’ve made so far on the approach.&lt;/p&gt;
@@ -73,16 +482,16 @@ Consider the following table:&lt;/p&gt;
 &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/example-table.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
-&lt;em&gt;Sample rows of table &lt;code&gt;metrics&lt;/code&gt; (sorted by key columns).&lt;/em&gt;&lt;/p&gt;
+&lt;em&gt;Sample rows of table &lt;code class=&quot;highlighter-rouge&quot;&gt;metrics&lt;/code&gt; (sorted by key columns).&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;In this case, by default, Kudu internally builds a primary key index (implemented as a
-&lt;a href=&quot;https://en.wikipedia.org/wiki/B-tree&quot;&gt;B-tree&lt;/a&gt;) for the table &lt;code&gt;metrics&lt;/code&gt;.
+&lt;a href=&quot;https://en.wikipedia.org/wiki/B-tree&quot;&gt;B-tree&lt;/a&gt;) for the table &lt;code class=&quot;highlighter-rouge&quot;&gt;metrics&lt;/code&gt;.
 As shown in the table above, the index data is sorted by the composite of all key columns.
-When the user query contains the first key column (&lt;code&gt;host&lt;/code&gt;), Kudu uses the index (as the index data is
+When the user query contains the first key column (&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;), Kudu uses the index (as the index data is
 primarily sorted on the first key column).&lt;/p&gt;
 
-&lt;p&gt;Now, what if the user query does not contain the first key column and instead only contains the &lt;code&gt;tstamp&lt;/code&gt; column?
-In the above case, the &lt;code&gt;tstamp&lt;/code&gt; column values are sorted with respect to &lt;code&gt;host&lt;/code&gt;,
+&lt;p&gt;Now, what if the user query does not contain the first key column and instead only contains the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column?
+In the above case, the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column values are sorted with respect to &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;,
 but are not globally sorted, and as such, it’s non-trivial to use the index to filter rows.
 Instead, a full tablet scan is done by default. Other databases may optimize such scans by building secondary indexes
 (though it might be redundant to build one on one of the primary keys). However, this isn’t an option for Kudu,
@@ -90,11 +499,11 @@ given its lack of secondary index support.&lt;/p&gt;
 
 &lt;p&gt;The question is, can Kudu do better than a full tablet scan here?&lt;/p&gt;
 
-&lt;p&gt;The answer is yes! Let’s observe the column preceding the &lt;code&gt;tstamp&lt;/code&gt; column. We will refer to it as the
-“prefix column” and its specific value as the “prefix key”. In this example, &lt;code&gt;host&lt;/code&gt; is the prefix column.
+&lt;p&gt;The answer is yes! Let’s observe the column preceding the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column. We will refer to it as the
+“prefix column” and its specific value as the “prefix key”. In this example, &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt; is the prefix column.
 Note that the prefix keys are sorted in the index and that all rows of a given prefix key are also sorted by the
 remaining key columns. Therefore, we can use the index to skip to the rows that have distinct prefix keys,
-and also satisfy the predicate on the &lt;code&gt;tstamp&lt;/code&gt; column.
+and also satisfy the predicate on the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column.
 For example, consider the query:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clusterid&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;metrics&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tstamp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -102,10 +511,10 @@ For example, consider the query:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/skip-scan-example-table.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
 &lt;em&gt;Skip scan flow illustration. The rows in green are scanned and the rest are skipped.&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;The tablet server can use the index to &lt;strong&gt;skip&lt;/strong&gt; to the first row with a distinct prefix key (&lt;code&gt;host = helium&lt;/code&gt;) that
-matches the predicate (&lt;code&gt;tstamp = 100&lt;/code&gt;) and then &lt;strong&gt;scan&lt;/strong&gt; through the rows until the predicate no longer matches. At that
-point we would know that no more rows with &lt;code&gt;host = helium&lt;/code&gt; will satisfy the predicate, and we can skip to the next
-prefix key. This holds true for all distinct keys of &lt;code&gt;host&lt;/code&gt;. Hence, this method is popularly known as
+&lt;p&gt;The tablet server can use the index to &lt;strong&gt;skip&lt;/strong&gt; to the first row with a distinct prefix key (&lt;code class=&quot;highlighter-rouge&quot;&gt;host = helium&lt;/code&gt;) that
+matches the predicate (&lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp = 100&lt;/code&gt;) and then &lt;strong&gt;scan&lt;/strong&gt; through the rows until the predicate no longer matches. At that
+point we would know that no more rows with &lt;code class=&quot;highlighter-rouge&quot;&gt;host = helium&lt;/code&gt; will satisfy the predicate, and we can skip to the next
+prefix key. This holds true for all distinct keys of &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;. Hence, this method is popularly known as
 &lt;strong&gt;skip scan optimization&lt;/strong&gt;[2, 3].&lt;/p&gt;
 
 &lt;h1 id=&quot;performance&quot;&gt;Performance&lt;/h1&gt;
@@ -132,7 +541,7 @@ to dynamically disable skip scan.&lt;/p&gt;
 data in Kudu tablets. This is a work-in-progress &lt;a href=&quot;https://gerrit.cloudera.org/#/c/10983/&quot;&gt;patch&lt;/a&gt;.
 The implementation in the patch works only for equality predicates on the non-first primary key
 columns. An important point to note is that although, in the above specific example, the number of prefix
-columns is one (&lt;code&gt;host&lt;/code&gt;), this approach is generalized to work with any number of prefix columns.&lt;/p&gt;
+columns is one (&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;), this approach is generalized to work with any number of prefix columns.&lt;/p&gt;
 
 &lt;p&gt;This work also lays the groundwork to leverage the skip scan approach and optimize query processing time in the
 following use cases:&lt;/p&gt;
@@ -157,7 +566,7 @@ Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the
 &lt;p&gt;&lt;a href=&quot;https://www.sqlite.org/optoverview.html#skipscan&quot;&gt;[3]&lt;/a&gt;: Skip Scan - SQLite&lt;/p&gt;</content><author><name>Anupama Gupta</name></author><summary>This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
 My project was to optimize the Kudu scan path by implementing a technique called
 index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
-my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00+02:00</published><updated>2018-09-11T00:00:00+02:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
+my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00-07:00</published><updated>2018-09-11T00:00:00-07:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at &lt;a href=&quot;https://phdata.io/&quot;&gt;phData&lt;/a&gt;, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
 structured manner using tables.
@@ -197,7 +606,7 @@ and users to focus on solving business problems, rather than being bothered by t
 the backend.&lt;/p&gt;</content><author><name>Mac Noland</name></author><summary>I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at phData, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
-structured manner using tables.</summary></entry><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00+02:00</published><updated>2018-08-06T00:00:00+02:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
+structured manner using tables.</summary></entry><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00-07:00</published><updated>2018-08-06T00:00:00-07:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
 &lt;a href=&quot;https://www.phdata.io/getting-started-with-kudu/&quot;&gt;phData&lt;/a&gt;
 blog with their permission.&lt;/p&gt;
 
@@ -211,9 +620,9 @@ challenge at that time.
 In that context, on October 11th 2012 Todd Lipcon perform Apache Kudu’s initial
 commit. The commit message was:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;Code for writing cfiles seems to basically work
+&lt;div class=&quot;highlighter-rouge&quot;&gt;Code for writing cfiles seems to basically work
 Need to write code for reading cfiles, still
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;And Kudu development was off and running. Around this same time Todd, on his
 internal Wiki page, started listing out the papers he was reading to develop
@@ -249,7 +658,7 @@ of Kudu. Specifically you will learn:&lt;/p&gt;
 
 &lt;p&gt;Looking forward, I am excited to see Kudu gain additional features and adoption
 and eventually the second revision of this title. In the meantime, if you have
-feedback or questions, please reach out on the &lt;code&gt;#getting-started-kudu&lt;/code&gt; channel of
+feedback or questions, please reach out on the &lt;code class=&quot;highlighter-rouge&quot;&gt;#getting-started-kudu&lt;/code&gt; channel of
 the &lt;a href=&quot;https://getkudu-slack.herokuapp.com/&quot;&gt;Kudu Slack&lt;/a&gt; or if you prefer non-real-time
 communication, please use the user@ mailing list!&lt;/p&gt;</content><author><name>Brock Noland</name></author><summary>The following article by Brock Noland was reposted from the
 phData
@@ -260,7 +669,7 @@ Hadoop platform was hard. Organizations required strong Software Engineering
 capabilities to successfully implement complex Lambda architectures or even
 simply implement continuous ingest. Updating or deleting data, were simply a
 nightmare. General Data Protection Regulation (GDPR) would have been an extreme
-challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00+02:00</published><updated>2018-07-10T00:00:00+02:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
+challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
 their monthly Google Hangout meetup to give an informal talk on tracing and
 instrumentation in Apache Kudu.&lt;/p&gt;
 
@@ -295,7 +704,7 @@ While Kudu doesn’t currently support distributed tracing using OpenTracing,
 it does have quite a lot of other types of instrumentation, metrics, and
 diagnostics logging. The OpenTracing team was interested to hear about some of
 the approaches that Kudu has used, and so I gave a brief introduction to topics
-including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00+01:00</published><updated>2018-03-23T00:00:00+01:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
+including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-07:00</published><updated>2018-03-23T00:00:00-07:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -366,7 +775,7 @@ Maven repository and are
 Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00+01:00</published><updated>2017-12-08T00:00:00+01:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
+Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00-08:00</published><updated>2017-12-08T00:00:00-08:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -425,7 +834,7 @@ Maven repository and are
 Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00+02:00</published><updated>2017-10-23T00:00:00+02:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
+Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
 a few common questions that kept coming up at every presentation:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -485,183 +894,4 @@ a few common questions that kept coming up at every presentation:
 
   Is Kudu an open source version of Google’s Spanner system?
   Is Kudu NoSQL or SQL?
-  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry><entry><title>Consistency in Apache Kudu, Part 1</title><link href="/2017/09/18/kudu-consistency-pt1.html" rel="alternate" type="text/html" title="Consistency in Apache Kudu, Part 1" /><published>2017-09-18T00:00:00+02:00</published><updated>2017-09-18T00:00:00+02:00</updated><id>/2017/09/18/kudu-consistency-pt1</id><content type="html" xml:base="/2017/09/18/kudu-consistency-pt1.html">&lt;p&gt;In this series of short blog posts we will introduce Kudu’s consistency model,
-its design and ultimate goals, current features, and next steps.
-On the way, we’ll shed some light on the more relevant components and how they
-fit together.&lt;/p&gt;
-
-&lt;p&gt;In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
-the current status.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;what-is-consistency-and-why-is-it-relevant&quot;&gt;What is “consistency” and why is it relevant?&lt;/h2&gt;
-
-&lt;p&gt;In order to cope with ever increasing data volumes, modern storage systems like Kudu have to support
-many concurrent users while coordinating requests across many machines, each with many threads executing
-work at the same time. However, application developers shouldn’t have to understand the internal
-details of how these systems implement this parallel, distributed, execution in order to write
-correct applications. &lt;em&gt;Consistency in the context of parallel, distributed systems roughly
-refers to how the system behaves in comparison to a single-machine, single-thread system&lt;/em&gt;. In a
-single-threaded, single-machine storage system operations happen one-at-a-time, in a clearly
-defined order, making correct applications easy to code and reason about. A developer writing an
-application against such a system doesn’t have to care about how simultaneous operations interact
-or about ordering anomalies, so the code is simpler, but more importantly, cognitive load is greatly
-reduced, freeing focus for the application logic itself.&lt;/p&gt;
-
-&lt;p&gt;While such a simple system is definitely possible to build, it wouldn’t be able to cope with very
-large amounts of data. In order to deal with big data volumes and write throughputs modern storage
-systems like Kudu are designed to be distributed, storing and processing data across many machines
-and cores. This means that many things happen simultaneously in the same and different machines,
-that there are more moving parts and thus more oportunity for mis-orderings and for components
-to fail. How far systems like Kudu go (or don’t go) in emulating the simple single-threaded, single-machine
-system a distributed, parallel setting where failures are common is roughly what is referred to
-as how &lt;em&gt;“consistent”&lt;/em&gt; the system is.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Consistency&lt;/em&gt; as a term is somewhat overloaded in the distributed systems and database communities,
-there are many different models, properties, different names for the same concept, and often
-different concepts under the same name. This post is not meant to introduce these concepts
-as there are excellent references already available elsewhere (we recommend Kyle Kinsbury’s excellent
-series of blog posts on the matter, like &lt;a href=&quot;https://aphyr.com/posts/313-strong-consistency-models&quot;&gt;this one&lt;/a&gt;).
-Throughout this and follow-up posts we’ll refer to consistency loosely as the &lt;strong&gt;C&lt;/strong&gt; in &lt;strong&gt;CAP&lt;/strong&gt;[1]
-in some cases and as the &lt;strong&gt;I&lt;/strong&gt; in &lt;strong&gt;ACID&lt;/strong&gt;[2] in others; we’ll try to be specific when relevant.&lt;/p&gt;
-
-&lt;h2 id=&quot;design-decisions-trade-offs-and-motivation&quot;&gt;Design decisions, trade-offs and motivation&lt;/h2&gt;
-
-&lt;p&gt;Consistency is essentially about ordering and ordering usually has a cost. Distributed storage
-system design must choose to prioritize some properties over others according to the target use
-cases. That is, trade-offs must be made or, borrowing a term from economics, there is
-“no free lunch”. Different systems choose different trade-off points; for instance, systems inspired by &lt;em&gt;Dynamo&lt;/em&gt;[3], usually favor availability in the consistency/availability
-trade-off: by allowing a write to a data item to succeed even when a majority (or even all) of the
-replicas serving that data item are unreachable, Dynamo’s design is minimizing insertion errors and
-insert latency (related to availability) at the cost having to perform extra work for value
-reconciliation on reads and possibly returning stale or disordered values (related to consistency).
-On the other end of the spectrum, traditional DBMS design is often driven by the need to support
-transactions of arbitrary complexity while providing the users stronger, predictable, semantics,
-favoring consistency at the cost of scalability and availability.&lt;/p&gt;
-
-&lt;p&gt;Kudu’s overarching goal is to enable &lt;em&gt;fast analytic workloads over large amounts of mutable&lt;/em&gt; data,
- meaning it was designed to perform fast scans over large volumes of data stored in many servers.
-In practical terms this means that, when given a choice, more often than not, we opted for the
-design that would enable Kudu to have faster scan performance (i.e. favoring reads even if it meant pushing
-a bit more work to the path that mutates data, i.e. writes). This does not mean that the write path
-was not a concern altogether. In fact, modern storage systems like &lt;em&gt;Google’s Spanner&lt;/em&gt;[4]
-global-scale database demonstrate that, with the right set of trade-offs, it is possible to have strong
-consistency semantics with write latencies and overall availability that are adequate for most use
-cases (e.g. Spanner achieves 5 9’s of availability). For the write path, we often made similar choices in Kudu.&lt;/p&gt;
-
-&lt;p&gt;Another important aspect that directed our design decisions is the type of &lt;em&gt;write workload&lt;/em&gt; we targeted.
-Traditionally, analytical storage systems target periodic bulk write workloads and a continuous
-stream of analytical scans. This design is often problematic in that it forces users to have to
-build complex pipelines where data is accumulated in one place for later loading into the storage
- system. Moreover, beyond the architectural complexity, this kind of design usually also
-means that the data that is available for analytics is not the most recent. In Kudu we aimed for
-enabling continuous ingest, i.e. having a continuous stream of small writes, obviating the need to
-assemble a pipeline for data accumulation/loading and allowing analytical scans to have access to
-the most recent data. Another important aspect of the write workloads that we targeted in Kudu is
-that they are append-mostly, i.e. most insert new values into the table, with a smaller percentage
-updating currently existing values. Both the average write size and the data distribution influence
-the design of the write path, as we’ll see in the following sections.&lt;/p&gt;
-
-&lt;p&gt;One last concern we had in mind is that different users have different needs when it comes to
-consistency semantics, particularly as it applies to an analytical storage system like Kudu. For
-some users consistency isn’t a primary concern, they just want fast scans, and the ability to
-update/insert/delete values without needing to build a complex pipeline. For example, many machine
-learning models are mostly insensitive to data recency or ordering so, when using Kudu to store data that
-will be used to train such a model, consistency is often not as primary a concern as read/write performance is.
- In other cases consistency is a much higher priority. For example, when using Kudu to
-store transaction data for fraud analysis it might be important to capture if events are causally
-related. Fraudulent transactions might be characterized by a specific sequence of events and when
-retrieving that data it might be important for the scan result to reflect that sequence. Kudu’s
-design allows users to make a trade-off between consistency and performance at scan time. That is,
-users can choose to have stronger consistency semantics for scans at the penalty of latency and
-throughput or they can choose to weaken the consistency semantics for an extra performance boost.&lt;/p&gt;
-
-&lt;h3 id=&quot;note&quot;&gt;Note&lt;/h3&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Kudu currently lacks support for atomic multi-row mutation operations (i.e. mutation
-operations to more than one row in the same or different tablets, planned as a future feature).
-So, when discussing writes, we’ll be talking about the consistency semantics of single row mutations.
-In this context we’ll discuss Kudu’s properties more from a key/value store standpoint. On the
-other hand Kudu is an analytical storage engine so, for the read path, we’ll also discuss the
-semantics of large (multi-row) scans. This moves the discussion more into the field of traditional
-DBMSs. These ingredients make for a non-traditional discussion that is not exactly apples-to-apples
-with what the reader might be familiar with, but our hope is that it still provides valuable, or
-at least interesting, insight.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;consistency-options-in-kudu&quot;&gt;Consistency options in Kudu&lt;/h2&gt;
-
-&lt;p&gt;Consistency, as well as other properties, are underpinned in Kudu by the concept of a &lt;em&gt;timestamp&lt;/em&gt;.
-In follow-up posts we’ll look into detail how these are assigned and how they are assembled. For now
-it’s sufficient to know that a timestamp is a single, usually large, number that has some mapping
-to wall time. Each mutation of a Kudu row is tagged with one such timestamp. Globally, these timestamps
-form a partial order over all the rows with the particularity that causally related mutations (e.g.
-a write mutation that is the result of the value obtained from a previous read) may be required to
-have increasing timestamps, depending on the user’s choices.&lt;/p&gt;
-
-&lt;p&gt;Row mutations performed by a single client &lt;em&gt;instance&lt;/em&gt; are guaranteed to have increasing timestamps
-thus reflecting their potential causal relationship. This property is always enforced. However
-there are two major &lt;em&gt;“knobs”&lt;/em&gt; that are available to the user to make performance trade-offs, the
-&lt;code&gt;Read&lt;/code&gt; mode, and the &lt;code&gt;External Consistency&lt;/code&gt; mode (see &lt;a href=&quot;https://kudu.apache.org/docs/transaction_semantics.html&quot;&gt;here&lt;/a&gt;
-for more information on how to use the relevant APIs).&lt;/p&gt;
-
-&lt;p&gt;The first and most important knob, the &lt;code&gt;Read&lt;/code&gt; mode, pertains to what is the guaranteed recency of
-data resulting from scans. Since Kudu uses replication for availability and fault-tolerance, there
-are always multiple replicas of any data item.
-Not all replicas must be up-to-date so if the user cares about recency, e.g. if the user requires
-that any data read includes all previously written data &lt;em&gt;from a single client instance&lt;/em&gt; then it must
-choose the &lt;code&gt;READ_AT_SNAPSHOT&lt;/code&gt; read mode. With this mode enabled the client is guaranteed to observe
- &lt;strong&gt;“READ YOUR OWN WRITES”&lt;/strong&gt; semantics, i.e. scans from a client will always include all previous mutations
-performed by that client. Note that this property is local to a single client instance, not a global
-property.&lt;/p&gt;
-
-&lt;p&gt;The second “knob”, the &lt;code&gt;External Consistency&lt;/code&gt; mode, defines the semantics of how reads and writes
-are performed across multiple client instances. By default, &lt;code&gt;External Consistency&lt;/code&gt; is set to
- &lt;code&gt;CLIENT_PROPAGATED&lt;/code&gt;, meaning it’s up to the user to coordinate a set of &lt;em&gt;timestamp tokens&lt;/em&gt; with clients (even
-across different machines) if they are performing writes/reads that are somehow causally linked.
-If done correctly this enables &lt;strong&gt;STRICT SERIALIZABILITY&lt;/strong&gt;[5], i.e. &lt;strong&gt;LINEARIZABILITY&lt;/strong&gt;[6] and
-&lt;strong&gt;SERIALIZABILITY&lt;/strong&gt;[7] at the same time, at the cost of having the user coordinate the timestamp
-tokens across clients (a survey of the meaning of these, and other definitions can be found
-&lt;a href=&quot;http://www.ics.forth.gr/tech-reports/2013/2013.TR439_Survey_on_Consistency_Conditions.pdf&quot;&gt;here&lt;/a&gt;).
-The alternative setting for &lt;code&gt;External Consistency&lt;/code&gt; is to have it set to
-&lt;code&gt;COMMIT_WAIT&lt;/code&gt; (experimental), which guarantees the same properties through a different means, by
-implementing Google Spanner’s &lt;em&gt;TrueTime&lt;/em&gt;. This comes at the cost of higher latency (depending on how
-tightly synchronized the system clocks of the various tablet servers are), but doesn’t require users
-to propagate timestamps programmatically.&lt;/p&gt;
-
-&lt;h2 id=&quot;next-up&quot;&gt;Next up&lt;/h2&gt;
-
-&lt;p&gt;In following posts we’ll look into the several components of Kudu’s architecture that come together
-to enable the consistency semantics introduced in the previous section, including:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Transactions and the Transaction Driver&lt;/li&gt;
-  &lt;li&gt;Concurrent execution with Multi-Version Concurrency Control&lt;/li&gt;
-  &lt;li&gt;Exactly-Once semantics with Replay Cache&lt;/li&gt;
-  &lt;li&gt;Replication, Crash Recovery with Consensus and the Write-Ahead-Log&lt;/li&gt;
-  &lt;li&gt;Time keeping and timestamp assignment&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.24.3690&amp;amp;rep=rep1&amp;amp;type=pdf&quot;&gt;[1]&lt;/a&gt;: Armando Fox and Eric A. Brewer. 1999. Harvest, Yield, and Scalable Tolerant Systems. In Proceedings of the The Seventh Workshop on Hot Topics in Operating Systems (HOTOS ‘99). IEEE Computer Society, Washington, DC, USA.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/ACID&quot;&gt;[2]&lt;/a&gt;: ACID - Wikipedia entry&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf&quot;&gt;[3]&lt;/a&gt;: Giuseppe DeCandia, Deniz Hastorun, Madan Jampani, Gunavardhan Kakulapati, Avinash Lakshman, Alex Pilchin, Swaminathan Sivasubramanian, Peter Vosshall, and Werner Vogels. 2007. Dynamo: amazon’s highly available key-value store. In Proceedings of twenty-first ACM SIGOPS symposium on Operating systems principles (SOSP ‘07). ACM, New York, NY, USA.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://research.google.com/archive/spanner-osdi2012.pdf&quot;&gt;[4]&lt;/a&gt;: James C. Corbett, Jeffrey Dean, Michael Epstein, Andrew Fikes, Christopher Frost, J. J. Furman, Sanjay Ghemawat, Andrey Gubarev, Christopher Heiser, Peter Hochschild, Wilson Hsieh, Sebastian Kanthak, Eugene Kogan, Hongyi Li, Alexander Lloyd, Sergey Melnik, David Mwaura, David Nagle, Sean Quinlan, Rajesh Rao, Lindsay Rolig, Yasushi Saito, Michal Szymaniak, Christopher Taylor, Ruth Wang, and Dale Woodford. 2012. Spanner: Google’s globally-distributed database. In Proceedings of the 10th USENIX conference on Operating Systems Design and Implementation (OSDI’12). USENIX Association, Berkeley, CA, USA.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://pdfs.semanticscholar.org/fafa/ebf830bc900bccc5e4fd508fd592f5581cbe.pdf&quot;&gt;[5]&lt;/a&gt;: Gifford, David K. Information storage in a decentralized computer system. Diss. Stanford University, 1981.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.doc.ic.ac.uk/~gbd10/aw590/Linearizability%20-%20A%20Correctness%20Condition%20for%20Concurrent%20Objects.pdf&quot;&gt;[6]&lt;/a&gt;: Herlihy, Maurice P., and Jeannette M. Wing. “Linearizability: A correctness condition for concurrent objects.” ACM Transactions on Programming Languages and Systems (TOPLAS) 12.3 (1990): 463-492.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.dtic.mil/get-tr-doc/pdf?AD=ADA078414&quot;&gt;[7]&lt;/a&gt;: Papadimitriou, Christos H. “The serializability of concurrent database updates.” Journal of the ACM (JACM) 26.4 (1979): 631-653.&lt;/p&gt;</content><author><name>David Alves</name></author><summary>In this series of short blog posts we will introduce Kudu’s consistency model,
-its design and ultimate goals, current features, and next steps.
-On the way, we’ll shed some light on the more relevant components and how they
-fit together.
-
-In Part 1 of the series (this one), we’ll cover motivation and design trade-offs, the end goals and
-the current status.</summary></entry></feed>
+  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry></feed>

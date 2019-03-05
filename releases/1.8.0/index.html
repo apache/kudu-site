@@ -144,14 +144,14 @@ under the License.
 <ul>
   <li>Checksum by downloading the checksum file, then run the below command:
     <ul>
-      <li>On Linux: <code>sha512sum -c apache-kudu-1.8.0.tar.gz.sha512</code></li>
-      <li>On MacOS: <code>shasum -a 512 -c apache-kudu-1.8.0.tar.gz.sha512</code></li>
+      <li>On Linux: <code class="highlighter-rouge">sha512sum -c apache-kudu-1.8.0.tar.gz.sha512</code></li>
+      <li>On MacOS: <code class="highlighter-rouge">shasum -a 512 -c apache-kudu-1.8.0.tar.gz.sha512</code></li>
     </ul>
   </li>
   <li>Signature by downloading the signature and the KEYS file, then
     <ul>
-      <li>Importing the KEYS file to the GPG keychain by running <code>gpg --import KEYS</code></li>
-      <li>Verifying the signature by running <code>gpg --verify apache-kudu-1.8.0.tar.gz.asc apache-kudu-1.8.0.tar.gz</code></li>
+      <li>Importing the KEYS file to the GPG keychain by running <code class="highlighter-rouge">gpg --import KEYS</code></li>
+      <li>Verifying the signature by running <code class="highlighter-rouge">gpg --verify apache-kudu-1.8.0.tar.gz.asc apache-kudu-1.8.0.tar.gz</code></li>
     </ul>
   </li>
 </ul>
