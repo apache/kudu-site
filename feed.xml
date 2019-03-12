@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-05T15:49:04-08:00</updated><id>/</id><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-12T01:23:22-07:00</updated><id>/</id><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/&quot;&gt;Transparent Hierarchical Storage Management with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;When picking a storage option for an application it is common to pick a single
@@ -38,11 +38,11 @@ useful solution.&lt;/p&gt;
 &lt;p&gt;In this pattern, matching Kudu and Parquet formatted HDFS tables are created in Impala.
 These tables are partitioned by a unit of time based on how frequently the data is
 moved between the Kudu and HDFS table. It is common to use daily, monthly, or yearly
-partitions. A unified view is created and a &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clause is used to define a boundary
+partitions. A unified view is created and a &lt;code&gt;WHERE&lt;/code&gt; clause is used to define a boundary
 that separates which data is read from the Kudu table and which is read from the HDFS
 table. The defined boundary is important so that you can move data between Kudu and
 HDFS without exposing duplicate records to the view. Once the data is moved, an atomic
-&lt;code class=&quot;highlighter-rouge&quot;&gt;ALTER VIEW&lt;/code&gt; statement can be used to move the boundary forward.&lt;/p&gt;
+&lt;code&gt;ALTER VIEW&lt;/code&gt; statement can be used to move the boundary forward.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/sliding-window-pattern.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
 
@@ -119,7 +119,7 @@ A few examples are shown further below where the sliding window pattern is illus
 &lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_select.html&quot;&gt;SELECT&lt;/a&gt;
 statement can be used to select the specific data you would like to move.&lt;/p&gt;
 
-&lt;p&gt;Note: If moving data to Kudu, an &lt;code class=&quot;highlighter-rouge&quot;&gt;UPSERT INTO&lt;/code&gt; statement can be used to handle
+&lt;p&gt;Note: If moving data to Kudu, an &lt;code&gt;UPSERT INTO&lt;/code&gt; statement can be used to handle
 duplicate keys.&lt;/p&gt;
 
 &lt;h3 id=&quot;unified-querying&quot;&gt;Unified Querying&lt;/h3&gt;
@@ -130,29 +130,29 @@ not described. However, see Impala’s
 &lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_create_view.html&quot;&gt;CREATE VIEW documentation&lt;/a&gt;
 for more in-depth details.&lt;/p&gt;
 
-&lt;p&gt;Creating a view for unified querying is as simple as a &lt;code class=&quot;highlighter-rouge&quot;&gt;CREATE VIEW&lt;/code&gt; statement using
-two &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT&lt;/code&gt; clauses combined with a &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION ALL&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Creating a view for unified querying is as simple as a &lt;code&gt;CREATE VIEW&lt;/code&gt; statement using
+two &lt;code&gt;SELECT&lt;/code&gt; clauses combined with a &lt;code&gt;UNION ALL&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VIEW&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo_view&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col3&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo_parquet&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;UNION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col3&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foo_kudu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;WARNING: Be sure to use &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION ALL&lt;/code&gt; and not &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt;. The &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt; keyword by itself
-is the same as &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION DISTINCT&lt;/code&gt; and can have significant performance impact.
+&lt;p&gt;WARNING: Be sure to use &lt;code&gt;UNION ALL&lt;/code&gt; and not &lt;code&gt;UNION&lt;/code&gt;. The &lt;code&gt;UNION&lt;/code&gt; keyword by itself
+is the same as &lt;code&gt;UNION DISTINCT&lt;/code&gt; and can have significant performance impact.
 More information can be found in the Impala
 &lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_union.html&quot;&gt;UNION documentation&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;All of the features of the
 &lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_select.html&quot;&gt;SELECT&lt;/a&gt;
 statement can be used to expose the correct data and columns from each of the
-underlying tables. It is important to use the &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clause to pass through and
+underlying tables. It is important to use the &lt;code&gt;WHERE&lt;/code&gt; clause to pass through and
 pushdown any predicates that need special handling or transformations. More examples
 will follow below in the discussion of the sliding window pattern.&lt;/p&gt;
 
 &lt;p&gt;Additionally, views can be altered via the
 &lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_alter_view.html&quot;&gt;ALTER VIEW&lt;/a&gt;
-statement. This is useful when combined with the &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT&lt;/code&gt; statement because it can be
+statement. This is useful when combined with the &lt;code&gt;SELECT&lt;/code&gt; statement because it can be
 used to atomically update what data is being accessed by the view.&lt;/p&gt;
 
 &lt;h2 id=&quot;an-example-implementation&quot;&gt;An Example Implementation&lt;/h2&gt;
@@ -167,7 +167,7 @@ offloaded to HDFS using the Parquet format.&lt;/p&gt;
 The table is range partitioned by the time column with each range containing one
 period of data. It is important to have partitions that match the period because
 dropping Kudu partitions is much more efficient than removing the data via the
-&lt;code class=&quot;highlighter-rouge&quot;&gt;DELETE&lt;/code&gt; clause. The table is also hash partitioned by the other key column to ensure
+&lt;code&gt;DELETE&lt;/code&gt; clause. The table is also hash partitioned by the other key column to ensure
 that all of the data is not written to a single partition.&lt;/p&gt;
 
 &lt;p&gt;Note: Your schema design should vary based on your data and read/write performance
@@ -233,30 +233,30 @@ for more details.&lt;/p&gt;
 &lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;AND&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Each &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT&lt;/code&gt; clause explicitly lists all of the columns to expose. This ensures that
+&lt;p&gt;Each &lt;code&gt;SELECT&lt;/code&gt; clause explicitly lists all of the columns to expose. This ensures that
 the year, month, and day columns that are unique to the Parquet table are not exposed.
 If needed, it also allows any necessary column or type mapping to be handled.&lt;/p&gt;
 
-&lt;p&gt;The initial &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clauses applied to both my_table_kudu and my_table_parquet define
+&lt;p&gt;The initial &lt;code&gt;WHERE&lt;/code&gt; clauses applied to both my_table_kudu and my_table_parquet define
 the boundary between Kudu and HDFS to ensure duplicate data is not read while in the
 process of offloading data.&lt;/p&gt;
 
-&lt;p&gt;The additional &lt;code class=&quot;highlighter-rouge&quot;&gt;AND&lt;/code&gt; clauses applied to my_table_parquet are used to ensure good
+&lt;p&gt;The additional &lt;code&gt;AND&lt;/code&gt; clauses applied to my_table_parquet are used to ensure good
 predicate pushdown on the individual year, month, and day columns.&lt;/p&gt;
 
-&lt;p&gt;WARNING: As stated earlier, be sure to use &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION ALL&lt;/code&gt; and not &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt;. The &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt;
-keyword by itself is the same as &lt;code class=&quot;highlighter-rouge&quot;&gt;UNION DISTINCT&lt;/code&gt; and can have significant performance
+&lt;p&gt;WARNING: As stated earlier, be sure to use &lt;code&gt;UNION ALL&lt;/code&gt; and not &lt;code&gt;UNION&lt;/code&gt;. The &lt;code&gt;UNION&lt;/code&gt;
+keyword by itself is the same as &lt;code&gt;UNION DISTINCT&lt;/code&gt; and can have significant performance
 impact. More information can be found in the Impala
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_union.html&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;UNION&lt;/code&gt; documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_union.html&quot;&gt;&lt;code&gt;UNION&lt;/code&gt; documentation&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h3 id=&quot;ongoing-steps&quot;&gt;Ongoing Steps&lt;/h3&gt;
 
 &lt;p&gt;Now that the base tables and view are created, prepare the ongoing steps to maintain
 the sliding window. Because these ongoing steps should be scheduled to run on a
-regular basis, the examples below are shown using &lt;code class=&quot;highlighter-rouge&quot;&gt;.sql&lt;/code&gt; files that take variables
+regular basis, the examples below are shown using &lt;code&gt;.sql&lt;/code&gt; files that take variables
 which can be passed from your scripts and scheduling tool of choice.&lt;/p&gt;
 
-&lt;p&gt;Create the &lt;code class=&quot;highlighter-rouge&quot;&gt;window_data_move.sql&lt;/code&gt; file to move the data from the oldest partition to HDFS:&lt;/p&gt;
+&lt;p&gt;Create the &lt;code&gt;window_data_move.sql&lt;/code&gt; file to move the data from the oldest partition to HDFS:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;INTO&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;year&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;month&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;day&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -277,11 +277,11 @@ Below is an example:&lt;/p&gt;
 --var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_parquet
 --var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Note: You can adjust the &lt;code class=&quot;highlighter-rouge&quot;&gt;WHERE&lt;/code&gt; clause to match the given period and cadence of your
+&lt;p&gt;Note: You can adjust the &lt;code&gt;WHERE&lt;/code&gt; clause to match the given period and cadence of your
 offload. Here the add_months function is used with an argument of -1 to move one month
 of data in the past from the new boundary time.&lt;/p&gt;
 
-&lt;p&gt;Create the &lt;code class=&quot;highlighter-rouge&quot;&gt;window_view_alter.sql&lt;/code&gt; file to shift the time boundary forward by altering
+&lt;p&gt;Create the &lt;code&gt;window_view_alter.sql&lt;/code&gt; file to shift the time boundary forward by altering
 the unified view:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;VIEW&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;view_name&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt;
@@ -305,7 +305,7 @@ Below is an example:&lt;/p&gt;
 --var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;hdfs_table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;my_table_parquet
 --var&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;new_boundary_time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;2018-02-01&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Create the &lt;code class=&quot;highlighter-rouge&quot;&gt;window_partition_shift.sql&lt;/code&gt; file to shift the Kudu partitions forward:&lt;/p&gt;
+&lt;p&gt;Create the &lt;code&gt;window_partition_shift.sql&lt;/code&gt; file to shift the Kudu partitions forward:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;ALTER&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kudu_table&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;}&lt;/span&gt;
 
@@ -434,7 +434,7 @@ following:&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Introduced manual data rebalancer tool which can be used to redistribute
 table replicas among tablet servers&lt;/li&gt;
-  &lt;li&gt;Added support for &lt;code class=&quot;highlighter-rouge&quot;&gt;IS NULL&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;IS NOT NULL&lt;/code&gt; predicates to the Kudu Python
+  &lt;li&gt;Added support for &lt;code&gt;IS NULL&lt;/code&gt; and &lt;code&gt;IS NOT NULL&lt;/code&gt; predicates to the Kudu Python
 client&lt;/li&gt;
   &lt;li&gt;Multiple tooling improvements make diagnostics and troubleshooting simpler&lt;/li&gt;
   &lt;li&gt;The Kudu Spark connector now supports Spark Streaming DataFrames&lt;/li&gt;
@@ -482,16 +482,16 @@ Consider the following table:&lt;/p&gt;
 &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/example-table.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
-&lt;em&gt;Sample rows of table &lt;code class=&quot;highlighter-rouge&quot;&gt;metrics&lt;/code&gt; (sorted by key columns).&lt;/em&gt;&lt;/p&gt;
+&lt;em&gt;Sample rows of table &lt;code&gt;metrics&lt;/code&gt; (sorted by key columns).&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;In this case, by default, Kudu internally builds a primary key index (implemented as a
-&lt;a href=&quot;https://en.wikipedia.org/wiki/B-tree&quot;&gt;B-tree&lt;/a&gt;) for the table &lt;code class=&quot;highlighter-rouge&quot;&gt;metrics&lt;/code&gt;.
+&lt;a href=&quot;https://en.wikipedia.org/wiki/B-tree&quot;&gt;B-tree&lt;/a&gt;) for the table &lt;code&gt;metrics&lt;/code&gt;.
 As shown in the table above, the index data is sorted by the composite of all key columns.
-When the user query contains the first key column (&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;), Kudu uses the index (as the index data is
+When the user query contains the first key column (&lt;code&gt;host&lt;/code&gt;), Kudu uses the index (as the index data is
 primarily sorted on the first key column).&lt;/p&gt;
 
-&lt;p&gt;Now, what if the user query does not contain the first key column and instead only contains the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column?
-In the above case, the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column values are sorted with respect to &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;,
+&lt;p&gt;Now, what if the user query does not contain the first key column and instead only contains the &lt;code&gt;tstamp&lt;/code&gt; column?
+In the above case, the &lt;code&gt;tstamp&lt;/code&gt; column values are sorted with respect to &lt;code&gt;host&lt;/code&gt;,
 but are not globally sorted, and as such, it’s non-trivial to use the index to filter rows.
 Instead, a full tablet scan is done by default. Other databases may optimize such scans by building secondary indexes
 (though it might be redundant to build one on one of the primary keys). However, this isn’t an option for Kudu,
@@ -499,11 +499,11 @@ given its lack of secondary index support.&lt;/p&gt;
 
 &lt;p&gt;The question is, can Kudu do better than a full tablet scan here?&lt;/p&gt;
 
-&lt;p&gt;The answer is yes! Let’s observe the column preceding the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column. We will refer to it as the
-“prefix column” and its specific value as the “prefix key”. In this example, &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt; is the prefix column.
+&lt;p&gt;The answer is yes! Let’s observe the column preceding the &lt;code&gt;tstamp&lt;/code&gt; column. We will refer to it as the
+“prefix column” and its specific value as the “prefix key”. In this example, &lt;code&gt;host&lt;/code&gt; is the prefix column.
 Note that the prefix keys are sorted in the index and that all rows of a given prefix key are also sorted by the
 remaining key columns. Therefore, we can use the index to skip to the rows that have distinct prefix keys,
-and also satisfy the predicate on the &lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp&lt;/code&gt; column.
+and also satisfy the predicate on the &lt;code&gt;tstamp&lt;/code&gt; column.
 For example, consider the query:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;SELECT&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clusterid&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;FROM&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;metrics&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WHERE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tstamp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -511,10 +511,10 @@ For example, consider the query:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/img/index-skip-scan/skip-scan-example-table.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;
 &lt;em&gt;Skip scan flow illustration. The rows in green are scanned and the rest are skipped.&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;The tablet server can use the index to &lt;strong&gt;skip&lt;/strong&gt; to the first row with a distinct prefix key (&lt;code class=&quot;highlighter-rouge&quot;&gt;host = helium&lt;/code&gt;) that
-matches the predicate (&lt;code class=&quot;highlighter-rouge&quot;&gt;tstamp = 100&lt;/code&gt;) and then &lt;strong&gt;scan&lt;/strong&gt; through the rows until the predicate no longer matches. At that
-point we would know that no more rows with &lt;code class=&quot;highlighter-rouge&quot;&gt;host = helium&lt;/code&gt; will satisfy the predicate, and we can skip to the next
-prefix key. This holds true for all distinct keys of &lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;. Hence, this method is popularly known as
+&lt;p&gt;The tablet server can use the index to &lt;strong&gt;skip&lt;/strong&gt; to the first row with a distinct prefix key (&lt;code&gt;host = helium&lt;/code&gt;) that
+matches the predicate (&lt;code&gt;tstamp = 100&lt;/code&gt;) and then &lt;strong&gt;scan&lt;/strong&gt; through the rows until the predicate no longer matches. At that
+point we would know that no more rows with &lt;code&gt;host = helium&lt;/code&gt; will satisfy the predicate, and we can skip to the next
+prefix key. This holds true for all distinct keys of &lt;code&gt;host&lt;/code&gt;. Hence, this method is popularly known as
 &lt;strong&gt;skip scan optimization&lt;/strong&gt;[2, 3].&lt;/p&gt;
 
 &lt;h1 id=&quot;performance&quot;&gt;Performance&lt;/h1&gt;
@@ -541,7 +541,7 @@ to dynamically disable skip scan.&lt;/p&gt;
 data in Kudu tablets. This is a work-in-progress &lt;a href=&quot;https://gerrit.cloudera.org/#/c/10983/&quot;&gt;patch&lt;/a&gt;.
 The implementation in the patch works only for equality predicates on the non-first primary key
 columns. An important point to note is that although, in the above specific example, the number of prefix
-columns is one (&lt;code class=&quot;highlighter-rouge&quot;&gt;host&lt;/code&gt;), this approach is generalized to work with any number of prefix columns.&lt;/p&gt;
+columns is one (&lt;code&gt;host&lt;/code&gt;), this approach is generalized to work with any number of prefix columns.&lt;/p&gt;
 
 &lt;p&gt;This work also lays the groundwork to leverage the skip scan approach and optimize query processing time in the
 following use cases:&lt;/p&gt;
@@ -620,9 +620,9 @@ challenge at that time.
 In that context, on October 11th 2012 Todd Lipcon perform Apache Kudu’s initial
 commit. The commit message was:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;Code for writing cfiles seems to basically work
+&lt;pre&gt;&lt;code&gt;Code for writing cfiles seems to basically work
 Need to write code for reading cfiles, still
-&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;And Kudu development was off and running. Around this same time Todd, on his
 internal Wiki page, started listing out the papers he was reading to develop
@@ -658,7 +658,7 @@ of Kudu. Specifically you will learn:&lt;/p&gt;
 
 &lt;p&gt;Looking forward, I am excited to see Kudu gain additional features and adoption
 and eventually the second revision of this title. In the meantime, if you have
-feedback or questions, please reach out on the &lt;code class=&quot;highlighter-rouge&quot;&gt;#getting-started-kudu&lt;/code&gt; channel of
+feedback or questions, please reach out on the &lt;code&gt;#getting-started-kudu&lt;/code&gt; channel of
 the &lt;a href=&quot;https://getkudu-slack.herokuapp.com/&quot;&gt;Kudu Slack&lt;/a&gt; or if you prefer non-real-time
 communication, please use the user@ mailing list!&lt;/p&gt;</content><author><name>Brock Noland</name></author><summary>The following article by Brock Noland was reposted from the
 phData

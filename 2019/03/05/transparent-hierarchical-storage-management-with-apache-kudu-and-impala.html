@@ -158,11 +158,11 @@ useful solution.</p>
 <p>In this pattern, matching Kudu and Parquet formatted HDFS tables are created in Impala.
 These tables are partitioned by a unit of time based on how frequently the data is
 moved between the Kudu and HDFS table. It is common to use daily, monthly, or yearly
-partitions. A unified view is created and a <code class="highlighter-rouge">WHERE</code> clause is used to define a boundary
+partitions. A unified view is created and a <code>WHERE</code> clause is used to define a boundary
 that separates which data is read from the Kudu table and which is read from the HDFS
 table. The defined boundary is important so that you can move data between Kudu and
 HDFS without exposing duplicate records to the view. Once the data is moved, an atomic
-<code class="highlighter-rouge">ALTER VIEW</code> statement can be used to move the boundary forward.</p>
+<code>ALTER VIEW</code> statement can be used to move the boundary forward.</p>
 
 <p><img src="/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/sliding-window-pattern.png" alt="png" class="img-responsive" /></p>
 
@@ -239,7 +239,7 @@ A few examples are shown further below where the sliding window pattern is illus
 <a href="https://impala.apache.org/docs/build/html/topics/impala_select.html">SELECT</a>
 statement can be used to select the specific data you would like to move.</p>
 
-<p>Note: If moving data to Kudu, an <code class="highlighter-rouge">UPSERT INTO</code> statement can be used to handle
+<p>Note: If moving data to Kudu, an <code>UPSERT INTO</code> statement can be used to handle
 duplicate keys.</p>
 
 <h3 id="unified-querying">Unified Querying</h3>
@@ -250,29 +250,29 @@ not described. However, see Impala’s
 <a href="https://impala.apache.org/docs/build/html/topics/impala_create_view.html">CREATE VIEW documentation</a>
 for more in-depth details.</p>
 
-<p>Creating a view for unified querying is as simple as a <code class="highlighter-rouge">CREATE VIEW</code> statement using
-two <code class="highlighter-rouge">SELECT</code> clauses combined with a <code class="highlighter-rouge">UNION ALL</code>:</p>
+<p>Creating a view for unified querying is as simple as a <code>CREATE VIEW</code> statement using
+two <code>SELECT</code> clauses combined with a <code>UNION ALL</code>:</p>
 
 <div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">foo_view</span> <span class="k">AS</span>
 <span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="k">FROM</span> <span class="n">foo_parquet</span>
 <span class="k">UNION</span> <span class="k">ALL</span>
 <span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="k">FROM</span> <span class="n">foo_kudu</span><span class="p">;</span></code></pre></div>
 
-<p>WARNING: Be sure to use <code class="highlighter-rouge">UNION ALL</code> and not <code class="highlighter-rouge">UNION</code>. The <code class="highlighter-rouge">UNION</code> keyword by itself
-is the same as <code class="highlighter-rouge">UNION DISTINCT</code> and can have significant performance impact.
+<p>WARNING: Be sure to use <code>UNION ALL</code> and not <code>UNION</code>. The <code>UNION</code> keyword by itself
+is the same as <code>UNION DISTINCT</code> and can have significant performance impact.
 More information can be found in the Impala
 <a href="https://impala.apache.org/docs/build/html/topics/impala_union.html">UNION documentation</a>.</p>
 
 <p>All of the features of the
 <a href="https://impala.apache.org/docs/build/html/topics/impala_select.html">SELECT</a>
 statement can be used to expose the correct data and columns from each of the
-underlying tables. It is important to use the <code class="highlighter-rouge">WHERE</code> clause to pass through and
+underlying tables. It is important to use the <code>WHERE</code> clause to pass through and
 pushdown any predicates that need special handling or transformations. More examples
 will follow below in the discussion of the sliding window pattern.</p>
 
 <p>Additionally, views can be altered via the
 <a href="https://impala.apache.org/docs/build/html/topics/impala_alter_view.html">ALTER VIEW</a>
-statement. This is useful when combined with the <code class="highlighter-rouge">SELECT</code> statement because it can be
+statement. This is useful when combined with the <code>SELECT</code> statement because it can be
 used to atomically update what data is being accessed by the view.</p>
 
 <h2 id="an-example-implementation">An Example Implementation</h2>
@@ -287,7 +287,7 @@ offloaded to HDFS using the Parquet format.</p>
 The table is range partitioned by the time column with each range containing one
 period of data. It is important to have partitions that match the period because
 dropping Kudu partitions is much more efficient than removing the data via the
-<code class="highlighter-rouge">DELETE</code> clause. The table is also hash partitioned by the other key column to ensure
+<code>DELETE</code> clause. The table is also hash partitioned by the other key column to ensure
 that all of the data is not written to a single partition.</p>
 
 <p>Note: Your schema design should vary based on your data and read/write performance
@@ -353,30 +353,30 @@ for more details.</p>
 <span class="k">AND</span> <span class="k">month</span> <span class="o">=</span> <span class="k">month</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
 <span class="k">AND</span> <span class="k">day</span> <span class="o">=</span> <span class="k">day</span><span class="p">(</span><span class="n">time</span><span class="p">);</span></code></pre></div>
 
-<p>Each <code class="highlighter-rouge">SELECT</code> clause explicitly lists all of the columns to expose. This ensures that
+<p>Each <code>SELECT</code> clause explicitly lists all of the columns to expose. This ensures that
 the year, month, and day columns that are unique to the Parquet table are not exposed.
 If needed, it also allows any necessary column or type mapping to be handled.</p>
 
-<p>The initial <code class="highlighter-rouge">WHERE</code> clauses applied to both my_table_kudu and my_table_parquet define
+<p>The initial <code>WHERE</code> clauses applied to both my_table_kudu and my_table_parquet define
 the boundary between Kudu and HDFS to ensure duplicate data is not read while in the
 process of offloading data.</p>
 
-<p>The additional <code class="highlighter-rouge">AND</code> clauses applied to my_table_parquet are used to ensure good
+<p>The additional <code>AND</code> clauses applied to my_table_parquet are used to ensure good
 predicate pushdown on the individual year, month, and day columns.</p>
 
-<p>WARNING: As stated earlier, be sure to use <code class="highlighter-rouge">UNION ALL</code> and not <code class="highlighter-rouge">UNION</code>. The <code class="highlighter-rouge">UNION</code>
-keyword by itself is the same as <code class="highlighter-rouge">UNION DISTINCT</code> and can have significant performance
+<p>WARNING: As stated earlier, be sure to use <code>UNION ALL</code> and not <code>UNION</code>. The <code>UNION</code>
+keyword by itself is the same as <code>UNION DISTINCT</code> and can have significant performance
 impact. More information can be found in the Impala
-<a href="https://impala.apache.org/docs/build/html/topics/impala_union.html"><code class="highlighter-rouge">UNION</code> documentation</a>.</p>
+<a href="https://impala.apache.org/docs/build/html/topics/impala_union.html"><code>UNION</code> documentation</a>.</p>
 
 <h3 id="ongoing-steps">Ongoing Steps</h3>
 
 <p>Now that the base tables and view are created, prepare the ongoing steps to maintain
 the sliding window. Because these ongoing steps should be scheduled to run on a
-regular basis, the examples below are shown using <code class="highlighter-rouge">.sql</code> files that take variables
+regular basis, the examples below are shown using <code>.sql</code> files that take variables
 which can be passed from your scripts and scheduling tool of choice.</p>
 
-<p>Create the <code class="highlighter-rouge">window_data_move.sql</code> file to move the data from the oldest partition to HDFS:</p>
+<p>Create the <code>window_data_move.sql</code> file to move the data from the oldest partition to HDFS:</p>
 
 <div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">hdfs_table</span><span class="err">}</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="k">year</span><span class="p">,</span> <span class="k">month</span><span class="p">,</span> <span class="k">day</span><span class="p">)</span>
 <span class="k">SELECT</span> <span class="o">*</span><span class="p">,</span> <span class="k">year</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="k">month</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="k">day</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
@@ -397,11 +397,11 @@ Below is an example:</p>
 --var<span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
 --var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span></code></pre></div>
 
-<p>Note: You can adjust the <code class="highlighter-rouge">WHERE</code> clause to match the given period and cadence of your
+<p>Note: You can adjust the <code>WHERE</code> clause to match the given period and cadence of your
 offload. Here the add_months function is used with an argument of -1 to move one month
 of data in the past from the new boundary time.</p>
 
-<p>Create the <code class="highlighter-rouge">window_view_alter.sql</code> file to shift the time boundary forward by altering
+<p>Create the <code>window_view_alter.sql</code> file to shift the time boundary forward by altering
 the unified view:</p>
 
 <div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">VIEW</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">view_name</span><span class="err">}</span> <span class="k">AS</span>
@@ -425,7 +425,7 @@ Below is an example:</p>
 --var<span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
 --var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span></code></pre></div>
 
-<p>Create the <code class="highlighter-rouge">window_partition_shift.sql</code> file to shift the Kudu partitions forward:</p>
+<p>Create the <code>window_partition_shift.sql</code> file to shift the Kudu partitions forward:</p>
 
 <div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">kudu_table</span><span class="err">}</span>
 
