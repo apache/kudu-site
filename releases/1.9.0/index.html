@@ -132,26 +132,28 @@ under the License.
 <p>Downloads of Kudu 1.9.0 are available in the following formats:</p>
 
 <ul>
-  <li><a href="http://www.apache.org/closer.cgi?filename=kudu/1.9.0/apache-kudu-1.9.0.tar.gz&amp;action=download">Kudu 1.9.0 source tarball</a>
+  <li><a href="http://www.apache.org/closer.cgi?filename=kudu/1.9.0/apache-kudu-1.9.0.tar.gz">Kudu 1.9.0 source tarball</a>
 (<a href="https://www.apache.org/dist/kudu/1.9.0/apache-kudu-1.9.0.tar.gz.sha512">SHA512</a>,
 <a href="https://www.apache.org/dist/kudu/1.9.0/apache-kudu-1.9.0.tar.gz.asc">Signature</a>)</li>
 </ul>
 
 <p>You can use the <a href="https://www.apache.org/dist/kudu/KEYS">KEYS file</a> to verify the included GPG signature.</p>
 
-<p>To verify the integrity of the release, you need to check the following:</p>
+<p>To verify the integrity of the release, check the following:</p>
 
 <ul>
-  <li>Checksum by downloading the checksum file, then run the below command:
+  <li>Verify the checksum by downloading the release and the <code>.sha512</code> file, and
+running the following command:
     <ul>
       <li>On Linux: <code>sha512sum -c apache-kudu-1.9.0.tar.gz.sha512</code></li>
       <li>On MacOS: <code>shasum -a 512 -c apache-kudu-1.9.0.tar.gz.sha512</code></li>
     </ul>
   </li>
-  <li>Signature by downloading the signature and the KEYS file, then
+  <li>Verify the signature by downloading the release and the <code>.asc</code> file, and
+doing the following:
     <ul>
-      <li>Importing the KEYS file to the GPG keychain by running <code>gpg --import KEYS</code></li>
-      <li>Verifying the signature by running <code>gpg --verify apache-kudu-1.9.0.tar.gz.asc apache-kudu-1.9.0.tar.gz</code></li>
+      <li>Import the KEYS file to the GPG keychain by running <code>gpg --import KEYS</code></li>
+      <li>Run <code>gpg --verify apache-kudu-1.9.0.tar.gz.asc apache-kudu-1.9.0.tar.gz</code></li>
     </ul>
   </li>
 </ul>
@@ -162,6 +164,13 @@ under the License.
   <li><a href="docs/">Kudu 1.9.0 Documentation</a></li>
   <li><a href="apidocs/">Kudu 1.9.0 Java API docs</a></li>
   <li><a href="cpp-client-api/">Kudu 1.9.0 C++ API docs</a></li>
+</ul>
+
+<p>Previous releases:</p>
+
+<ul>
+  <li><a href="/releases/1.8.0/">Kudu 1.8.0 Release</a></li>
+  <li><a href="/releases/1.7.1/">Kudu 1.7.1 Release</a></li>
 </ul>
 
 
