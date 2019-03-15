@@ -1,4 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-15T10:35:54-07:00</updated><id>/</id><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-15T11:32:17-07:00</updated><id>/</id><entry><title>Apache Kudu 1.9.0 Released</title><link href="/2019/03/15/apache-kudu-1-9-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.9.0 Released" /><published>2019-03-15T00:00:00-07:00</published><updated>2019-03-15T00:00:00-07:00</updated><id>/2019/03/15/apache-kudu-1-9-0-release</id><content type="html" xml:base="/2019/03/15/apache-kudu-1-9-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.9.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Added support for location awareness for placement of tablet replicas.&lt;/li&gt;
+  &lt;li&gt;Introduced docker scripts to facilitate building and running Kudu on various
+operating systems.&lt;/li&gt;
+  &lt;li&gt;Introduced an experimental feature to allow users to run tests against a Kudu
+mini cluster without having to first locally build or install Kudu.&lt;/li&gt;
+  &lt;li&gt;Updated the compaction policy to favor reducing the number of rowsets, which
+can lead to significantly faster scans and bootup times in certain workloads.&lt;/li&gt;
+  &lt;li&gt;Multiple tooling enhancements have been made to improve visibility into Kudu
+tables.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.9.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.9.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.9.0&quot;&gt;1.9.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.9.0/docs/installation.html#build_from_source&quot;&gt;1.9.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.9.0%22&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Andrew Wong</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.9.0!
+
+The new release adds several new features and improvements, including the
+following:</summary></entry><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/&quot;&gt;Transparent Hierarchical Storage Management with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;When picking a storage option for an application it is common to pick a single
@@ -834,64 +875,4 @@ Maven repository and are
 Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
-Release highlights:</summary></entry><entry><title>Slides: A brave new world in mutable big data: Relational storage</title><link href="/2017/10/23/nosql-kudu-spanner-slides.html" rel="alternate" type="text/html" title="Slides: A brave new world in mutable big data: Relational storage" /><published>2017-10-23T00:00:00-07:00</published><updated>2017-10-23T00:00:00-07:00</updated><id>/2017/10/23/nosql-kudu-spanner-slides</id><content type="html" xml:base="/2017/10/23/nosql-kudu-spanner-slides.html">&lt;p&gt;Since the Apache Kudu project made its debut in 2015, there have been
-a few common questions that kept coming up at every presentation:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Is Kudu an open source version of Google’s Spanner system?&lt;/li&gt;
-  &lt;li&gt;Is Kudu NoSQL or SQL?&lt;/li&gt;
-  &lt;li&gt;Why does Kudu have a relational data model? Isn’t SQL dead?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;!--more--&gt;
-
-&lt;p&gt;A few of these questions are addressed in the
-&lt;a href=&quot;https://kudu.apache.org/faq.html&quot;&gt;Kudu FAQ&lt;/a&gt;, but I thought they were
-interesting enough that I decided to give a talk on these subjects
-at &lt;a href=&quot;https://conferences.oreilly.com/strata/strata-ny&quot;&gt;Strata Data Conference NYC 2017&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Preparing this talk was particularly interesting, since Google recently released
-Spanner to the public in SaaS form as &lt;a href=&quot;https://cloud.google.com/spanner/&quot;&gt;Google Cloud Spanner&lt;/a&gt;.
-This meant that I was able to compare Kudu vs Spanner not just qualitatively
-based on some academic papers, but quantitatively as well.&lt;/p&gt;
-
-&lt;p&gt;To summarize the key points of the presentation:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Despite the growing popularity of “NoSQL” from 2009 through 2013, SQL has
-once again become the access mechanism of choice for the majority of
-analytic applications. NoSQL has become “Not Only SQL”.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Spanner and Kudu share a lot of common features. However:&lt;/p&gt;
-
-    &lt;ul&gt;
-      &lt;li&gt;
-        &lt;p&gt;Spanner offers a superior feature set and performance for Online
- Transactional Processing (OLTP) workloads, including ACID transactions and
- secondary indexing.&lt;/p&gt;
-      &lt;/li&gt;
-      &lt;li&gt;
-        &lt;p&gt;Kudu offers a superior feature set and performance for Online
- Analytical Processing (OLAP) and Hybrid Transactional/Analytic Processing
- (HTAP) workloads, including more complete SQL support and orders of
- magnitude better performance on large queries.&lt;/p&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For more details and for the full benchmark numbers, check out the slide deck
-below:&lt;/p&gt;
-
-&lt;iframe src=&quot;//www.slideshare.net/slideshow/embed_code/key/loQpO2vzlwGGgz&quot; width=&quot;595&quot; height=&quot;485&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; scrolling=&quot;no&quot; style=&quot;border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;&quot; allowfullscreen=&quot;&quot;&gt; &lt;/iframe&gt;
-&lt;div style=&quot;margin-bottom:15px&quot;&gt; &lt;strong&gt; &lt;a href=&quot;//www.slideshare.net/ToddLipcon/a-brave-new-world-in-mutable-big-data-relational-storage-strata-nyc-2017&quot; title=&quot;A brave new world in mutable big data relational storage (Strata NYC 2017)&quot; target=&quot;_blank&quot;&gt;A brave new world in mutable big data relational storage (Strata NYC 2017)&lt;/a&gt; &lt;/strong&gt; from &lt;strong&gt;&lt;a href=&quot;https://www.slideshare.net/ToddLipcon&quot; target=&quot;_blank&quot;&gt;Todd Lipcon&lt;/a&gt;&lt;/strong&gt; &lt;/div&gt;
-
-&lt;p&gt;Questions or comments? Join the &lt;a href=&quot;/community.html&quot;&gt;Apache Kudu Community&lt;/a&gt; to discuss.&lt;/p&gt;</content><author><name>Todd Lipcon</name></author><summary>Since the Apache Kudu project made its debut in 2015, there have been
-a few common questions that kept coming up at every presentation:
-
-
-  Is Kudu an open source version of Google’s Spanner system?
-  Is Kudu NoSQL or SQL?
-  Why does Kudu have a relational data model? Isn’t SQL dead?</summary></entry></feed>
+Release highlights:</summary></entry></feed>
