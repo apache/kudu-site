@@ -1,4 +1,229 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-15T11:32:17-07:00</updated><id>/</id><entry><title>Apache Kudu 1.9.0 Released</title><link href="/2019/03/15/apache-kudu-1-9-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.9.0 Released" /><published>2019-03-15T00:00:00-07:00</published><updated>2019-03-15T00:00:00-07:00</updated><id>/2019/03/15/apache-kudu-1-9-0-release</id><content type="html" xml:base="/2019/03/15/apache-kudu-1-9-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.9.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-03-20T12:04:20-05:00</updated><id>/</id><entry><title>Testing Apache Kudu Applications on the JVM</title><link href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html" rel="alternate" type="text/html" title="Testing Apache Kudu Applications on the JVM" /><published>2019-03-19T00:00:00-05:00</published><updated>2019-03-19T00:00:00-05:00</updated><id>/2019/03/19/testing-apache-kudu-applications-on-the-jvm</id><content type="html" xml:base="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+&lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/testing-apache-kudu-applications-on-the-jvm/&quot;&gt;Testing Apache Kudu Applications on the JVM&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Although the Kudu server is written in C++ for performance and efficiency, developers can write
+client applications in C++, Java, or Python. To make it easier for Java developers to create
+reliable client applications, we’ve added new utilities in Kudu 1.9.0 that allow you to write tests
+using a Kudu cluster without needing to build Kudu yourself, without any knowledge of C++,
+and without any complicated coordination around starting and stopping Kudu clusters for each test.
+This post describes how the new testing utilities work and how you can use them in your application
+tests.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;user-guide&quot;&gt;User Guide&lt;/h2&gt;
+
+&lt;p&gt;Note: It is possible this blog post could become outdated – for the latest documentation on using
+the JVM testing utilities see the
+&lt;a href=&quot;https://kudu.apache.org/docs/developing.html#_jvm_based_integration_testing&quot;&gt;Kudu documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;requirements&quot;&gt;Requirements&lt;/h3&gt;
+
+&lt;p&gt;In order to use the new testing utilities, the following requirements must be met:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;OS
+    &lt;ul&gt;
+      &lt;li&gt;macOS El Capitan (10.11) or later&lt;/li&gt;
+      &lt;li&gt;CentOS 6.6+, Ubuntu 14.04+, or another recent distribution of Linux
+ &lt;a href=&quot;https://kudu.apache.org/docs/installation.html#_prerequisites_and_requirements&quot;&gt;supported by Kudu&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;JVM
+    &lt;ul&gt;
+      &lt;li&gt;Java 8+&lt;/li&gt;
+      &lt;li&gt;Note: Java 7+ is deprecated, but still supported&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Build Tool
+    &lt;ul&gt;
+      &lt;li&gt;Maven 3.1 or later, required to support the
+&lt;a href=&quot;https://github.com/trustin/os-maven-plugin&quot;&gt;os-maven-plugin&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;Gradle 2.1 or later, to support the
+&lt;a href=&quot;https://github.com/google/osdetector-gradle-plugin&quot;&gt;osdetector-gradle-plugin&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;Any other build tool that can download the correct jar from Maven&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;build-configuration&quot;&gt;Build Configuration&lt;/h3&gt;
+
+&lt;p&gt;In order to use the Kudu testing utilities, add two dependencies to your classpath:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The &lt;code&gt;kudu-test-utils&lt;/code&gt; dependency&lt;/li&gt;
+  &lt;li&gt;The &lt;code&gt;kudu-binary&lt;/code&gt; dependency&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code&gt;kudu-test-utils&lt;/code&gt; dependency has useful utilities for testing applications that use Kudu.
+Primarily, it provides the
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/java/kudu-test-utils/src/main/java/org/apache/kudu/test/KuduTestHarness.java&quot;&gt;KuduTestHarness class&lt;/a&gt;
+to manage the lifecycle of a Kudu cluster for each test. The &lt;code&gt;KuduTestHarness&lt;/code&gt; is a
+&lt;a href=&quot;https://junit.org/junit4/javadoc/4.12/org/junit/rules/TestRule.html&quot;&gt;JUnit TestRule&lt;/a&gt;
+that not only starts and stops a Kudu cluster for each test, but also has methods to manage the
+cluster and get pre-configured &lt;code&gt;KuduClient&lt;/code&gt; instances for use while testing.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;kudu-binary&lt;/code&gt; dependency contains the native Kudu (server and command-line tool) binaries for
+the specified operating system. In order to download the right artifact for the running operating
+system it is easiest to use a plugin, such as the
+&lt;a href=&quot;https://github.com/trustin/os-maven-plugin&quot;&gt;os-maven-plugin&lt;/a&gt; or
+&lt;a href=&quot;https://github.com/google/osdetector-gradle-plugin&quot;&gt;osdetector-gradle-plugin&lt;/a&gt;, to detect the
+current runtime environment. The &lt;code&gt;KuduTestHarness&lt;/code&gt; will automatically find and use the &lt;code&gt;kudu-binary&lt;/code&gt;
+jar on the classpath.&lt;/p&gt;
+
+&lt;p&gt;WARNING: The &lt;code&gt;kudu-binary&lt;/code&gt; module should only be used to run Kudu for integration testing purposes.
+It should never be used to run an actual Kudu service, in production or development, because the
+&lt;code&gt;kudu-binary&lt;/code&gt; module includes native security-related dependencies that have been copied from the
+build system and will not be patched when the operating system on the runtime host is patched.&lt;/p&gt;
+
+&lt;h4 id=&quot;maven-configuration&quot;&gt;Maven Configuration&lt;/h4&gt;
+
+&lt;p&gt;If you are using Maven to build your project, add the following entries to your project’s
+&lt;code&gt;pom.xml&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;extensions&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- Used to find the right kudu-binary artifact with the Maven&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;         property ${os.detected.classifier} --&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;extension&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;kr.motd.maven&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;os-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.6.2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/extension&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/extensions&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.kudu&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;kudu-test-utils&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.9.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.kudu&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;kudu-binary&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.9.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;classifier&amp;gt;&lt;/span&gt;${os.detected.classifier}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/classifier&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;gradle-configuration&quot;&gt;Gradle Configuration&lt;/h4&gt;
+
+&lt;p&gt;If you are using Gradle to build your project, add the following entries to your project’s
+&lt;code&gt;build.gradle&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;n&quot;&gt;plugins&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// Used to find the right kudu-binary artifact with the Gradle&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// property ${osdetector.classifier}&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;com.google.osdetector&amp;quot;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;1.6.2&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;dependencies&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;testCompile&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;org.apache.kudu:kudu-test-utils:1.9.0&amp;quot;&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;testCompile&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;org.apache.kudu:kudu-binary:1.9.0:${osdetector.classifier}&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;test-setup&quot;&gt;Test Setup&lt;/h2&gt;
+
+&lt;p&gt;Once your project is configured correctly, you can start writing tests using the &lt;code&gt;kudu-test-utils&lt;/code&gt;
+and &lt;code&gt;kudu-binary&lt;/code&gt; artifacts. One line of code will ensure that each test automatically starts and
+stops a real Kudu cluster and that cluster logging is output through &lt;code&gt;slf4j&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;nd&quot;&gt;@Rule&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KuduTestHarness&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;KuduTestHarness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;a href=&quot;https://github.com/apache/kudu/blob/master/java/kudu-test-utils/src/main/java/org/apache/kudu/test/KuduTestHarness.java&quot;&gt;KuduTestHarness&lt;/a&gt;
+has methods to get pre-configured clients, start and stop servers, and more. Below is an example
+test to showcase some of the capabilities:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.kudu.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.kudu.client.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.kudu.test.KuduTestHarness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.junit.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Collections&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MyKuduTest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@Rule&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KuduTestHarness&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;KuduTestHarness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;nd&quot;&gt;@Test&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Get a KuduClient configured to talk to the running mini cluster.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;KuduClient&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Some of the other most common KuduTestHarness methods include:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;AsyncKuduClient&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;asyncClient&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getAsyncClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;masterAddresses&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMasterAddressesAsString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HostAndPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;masterServers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMasterServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;HostAndPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tabletServers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getTabletServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;killLeaderMasterServer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;killAllMasterServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startAllMasterServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;killAllTabletServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startAllTabletServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Create a new Kudu table.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tableName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;myTable&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Schema&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;schema&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Schema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ColumnSchema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ColumnSchemaBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;INT32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ColumnSchema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ColumnSchemaBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;value&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;CreateTableOptions&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CreateTableOptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setRangePartitionColumns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Collections&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;singletonList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tableName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;schema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;KuduTable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;openTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tableName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// Write a few rows to the table&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;KuduSession&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newSession&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Insert&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInsert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;PartialRow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;key&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;value&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;valueOf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;c1&quot;&gt;// ... Continue the test. Read and validate the rows, alter the table, etc.&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;For a complete example of a project using the &lt;code&gt;KuduTestHarness&lt;/code&gt;, see the
+&lt;a href=&quot;https://github.com/apache/kudu/tree/master/examples/java/java-example&quot;&gt;java-example&lt;/a&gt; project in
+the Kudu source code repository. The Kudu project itself uses the &lt;code&gt;KuduTestHarness&lt;/code&gt; for all of its
+own integration tests. For more complex examples, you can explore the various
+&lt;a href=&quot;https://github.com/apache/kudu/tree/master/java/kudu-client/src/test/java/org/apache/kudu/client&quot;&gt;Kudu integration&lt;/a&gt;
+tests in the Kudu source code repository.&lt;/p&gt;
+
+&lt;h2 id=&quot;feedback&quot;&gt;Feedback&lt;/h2&gt;
+
+&lt;p&gt;Kudu 1.9.0 is the first release to have these testing utilities available. Although these utilities
+simplify testing of Kudu applications, there is always room for improvement.
+Please report any issues, ideas, or feedback to the Kudu user mailing list, Jira, or Slack channel
+and we will try to incorporate your feedback quickly. See the
+&lt;a href=&quot;https://kudu.apache.org/community.html&quot;&gt;Kudu community page&lt;/a&gt; for details.&lt;/p&gt;
+
+&lt;h2 id=&quot;thank-you&quot;&gt;Thank You&lt;/h2&gt;
+
+&lt;p&gt;We would like to give a special thank you to everyone who helped contribute to the &lt;code&gt;kudu-test-utils&lt;/code&gt;
+and &lt;code&gt;kudu-binary&lt;/code&gt; artifacts. We would especially like to thank
+&lt;a href=&quot;https://www.linkedin.com/in/brian-mcdevitt-1136a08/&quot;&gt;Brian McDevitt&lt;/a&gt; at &lt;a href=&quot;https://www.phdata.io/&quot;&gt;phData&lt;/a&gt;
+and
+&lt;a href=&quot;https://twitter.com/timrobertson100&quot;&gt;Tim Robertson&lt;/a&gt; at &lt;a href=&quot;https://www.gbif.org/&quot;&gt;GBIF&lt;/a&gt; who helped us
+tremendously.&lt;/p&gt;</content><author><name>Grant Henke &amp; Mike Percy</name></author><summary>Note: This is a cross-post from the Cloudera Engineering Blog
+Testing Apache Kudu Applications on the JVM
+
+Although the Kudu server is written in C++ for performance and efficiency, developers can write
+client applications in C++, Java, or Python. To make it easier for Java developers to create
+reliable client applications, we’ve added new utilities in Kudu 1.9.0 that allow you to write tests
+using a Kudu cluster without needing to build Kudu yourself, without any knowledge of C++,
+and without any complicated coordination around starting and stopping Kudu clusters for each test.
+This post describes how the new testing utilities work and how you can use them in your application
+tests.</summary></entry><entry><title>Apache Kudu 1.9.0 Released</title><link href="/2019/03/15/apache-kudu-1-9-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.9.0 Released" /><published>2019-03-15T00:00:00-05:00</published><updated>2019-03-15T00:00:00-05:00</updated><id>/2019/03/15/apache-kudu-1-9-0-release</id><content type="html" xml:base="/2019/03/15/apache-kudu-1-9-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.9.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -39,7 +264,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Andrew Wong</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.9.0!
 
 The new release adds several new features and improvements, including the
-following:</summary></entry><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+following:</summary></entry><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-06:00</published><updated>2019-03-05T00:00:00-06:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/&quot;&gt;Transparent Hierarchical Storage Management with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;When picking a storage option for an application it is common to pick a single
@@ -448,7 +673,7 @@ scalability at a low cost you may want to use HDFS. For that reason, there is a 
 for a solution that allows you to leverage the best features of multiple storage
 options. This post describes the sliding window pattern using Apache Impala with data
 stored in Apache Kudu and Apache HDFS. With this pattern you get all of the benefits
-of multiple storage layers in a way that is transparent to users.</summary></entry><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00-08:00</published><updated>2018-12-11T00:00:00-08:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
+of multiple storage layers in a way that is transparent to users.</summary></entry><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00-06:00</published><updated>2018-12-11T00:00:00-06:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
 we’d like to share it with the world!&lt;/p&gt;
@@ -465,7 +690,7 @@ draft your post to Google Docs and share it with us on
 and post it to the blog for you.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
-we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00-07:00</published><updated>2018-10-26T00:00:00-07:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
+we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00-05:00</published><updated>2018-10-26T00:00:00-05:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -504,7 +729,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.8.0!
 
 The new release adds several new features and improvements, including the
-following:</summary></entry><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00-07:00</published><updated>2018-09-26T00:00:00-07:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+following:</summary></entry><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00-05:00</published><updated>2018-09-26T00:00:00-05:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
 My project was to optimize the Kudu scan path by implementing a technique called
 index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
 my experience and the progress we’ve made so far on the approach.&lt;/p&gt;
@@ -607,7 +832,7 @@ Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the
 &lt;p&gt;&lt;a href=&quot;https://www.sqlite.org/optoverview.html#skipscan&quot;&gt;[3]&lt;/a&gt;: Skip Scan - SQLite&lt;/p&gt;</content><author><name>Anupama Gupta</name></author><summary>This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
 My project was to optimize the Kudu scan path by implementing a technique called
 index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
-my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00-07:00</published><updated>2018-09-11T00:00:00-07:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
+my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00-05:00</published><updated>2018-09-11T00:00:00-05:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at &lt;a href=&quot;https://phdata.io/&quot;&gt;phData&lt;/a&gt;, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
 structured manner using tables.
@@ -647,7 +872,7 @@ and users to focus on solving business problems, rather than being bothered by t
 the backend.&lt;/p&gt;</content><author><name>Mac Noland</name></author><summary>I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at phData, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
-structured manner using tables.</summary></entry><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00-07:00</published><updated>2018-08-06T00:00:00-07:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
+structured manner using tables.</summary></entry><entry><title>Getting Started with Kudu - an O’Reilly Title</title><link href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html" rel="alternate" type="text/html" title="Getting Started with Kudu - an O&#39;Reilly Title" /><published>2018-08-06T00:00:00-05:00</published><updated>2018-08-06T00:00:00-05:00</updated><id>/2018/08/06/getting-started-with-kudu-an-oreilly-title</id><content type="html" xml:base="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">&lt;p&gt;The following article by Brock Noland was reposted from the
 &lt;a href=&quot;https://www.phdata.io/getting-started-with-kudu/&quot;&gt;phData&lt;/a&gt;
 blog with their permission.&lt;/p&gt;
 
@@ -710,7 +935,7 @@ Hadoop platform was hard. Organizations required strong Software Engineering
 capabilities to successfully implement complex Lambda architectures or even
 simply implement continuous ingest. Updating or deleting data, were simply a
 nightmare. General Data Protection Regulation (GDPR) would have been an extreme
-challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-07:00</published><updated>2018-07-10T00:00:00-07:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
+challenge at that time.</summary></entry><entry><title>Instrumentation in Apache Kudu</title><link href="/2018/07/10/instrumentation-in-kudu.html" rel="alternate" type="text/html" title="Instrumentation in Apache Kudu" /><published>2018-07-10T00:00:00-05:00</published><updated>2018-07-10T00:00:00-05:00</updated><id>/2018/07/10/instrumentation-in-kudu</id><content type="html" xml:base="/2018/07/10/instrumentation-in-kudu.html">&lt;p&gt;Last week, the &lt;a href=&quot;http://opentracing.io/&quot;&gt;OpenTracing&lt;/a&gt; community invited me to
 their monthly Google Hangout meetup to give an informal talk on tracing and
 instrumentation in Apache Kudu.&lt;/p&gt;
 
@@ -745,7 +970,7 @@ While Kudu doesn’t currently support distributed tracing using OpenTracing,
 it does have quite a lot of other types of instrumentation, metrics, and
 diagnostics logging. The OpenTracing team was interested to hear about some of
 the approaches that Kudu has used, and so I gave a brief introduction to topics
-including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-07:00</published><updated>2018-03-23T00:00:00-07:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
+including:</summary></entry><entry><title>Apache Kudu 1.7.0 released</title><link href="/2018/03/23/apache-kudu-1-7-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.7.0 released" /><published>2018-03-23T00:00:00-05:00</published><updated>2018-03-23T00:00:00-05:00</updated><id>/2018/03/23/apache-kudu-1-7-0-released</id><content type="html" xml:base="/2018/03/23/apache-kudu-1-7-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.7.0!&lt;/p&gt;
 
 &lt;p&gt;Apache Kudu 1.7.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
@@ -814,65 +1039,6 @@ Maven repository and are
 &lt;a href=&quot;https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.7.0%22&quot;&gt;now available&lt;/a&gt;.&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.7.0!
 
 Apache Kudu 1.7.0 is a minor release that offers new features, performance
-optimizations, incremental improvements, and bug fixes.
-
-Release highlights:</summary></entry><entry><title>Apache Kudu 1.6.0 released</title><link href="/2017/12/08/apache-kudu-1-6-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.6.0 released" /><published>2017-12-08T00:00:00-08:00</published><updated>2017-12-08T00:00:00-08:00</updated><id>/2017/12/08/apache-kudu-1-6-0-released</id><content type="html" xml:base="/2017/12/08/apache-kudu-1-6-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.6.0!&lt;/p&gt;
-
-&lt;p&gt;Apache Kudu 1.6.0 is a minor release that offers new features, performance
-optimizations, incremental improvements, and bug fixes.&lt;/p&gt;
-
-&lt;p&gt;Release highlights:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Kudu servers can now tolerate short interruptions in NTP clock
-synchronization. NTP synchronization is still required when any Kudu daemon
-starts up.&lt;/li&gt;
-  &lt;li&gt;Tablet servers will no longer crash when a disk containing data blocks
-fails, unless that disk also stores WAL segments or tablet metadata. Instead
-of crashing, the tablet server will shut down any tablets that may have lost
-data locally and Kudu will re-replicate the affected tablets to another
-tablet server. More information can be found in the documentation under
-&lt;a href=&quot;/releases/1.6.0/docs/administration.html#disk_failure_recovery&quot;&gt;Recovering from Disk Failure&lt;/a&gt;.&lt;/li&gt;
-  &lt;li&gt;Tablet server startup time has been improved significantly on servers
-containing large numbers of blocks.&lt;/li&gt;
-  &lt;li&gt;The Spark DataSource integration now can take advantage of scan locality for
-better scan performance. The scan will take place at the closest replica
-instead of going to the leader.&lt;/li&gt;
-  &lt;li&gt;Support for Spark 1 has been removed in Kudu 1.6.0 and now only Spark 2 is
-supported. Spark 1 support was deprecated in Kudu 1.5.0.&lt;/li&gt;
-  &lt;li&gt;HybridTime timestamp propagation now works in the Java client when using
-scan tokens.&lt;/li&gt;
-  &lt;li&gt;Tablet servers now consider the health of all replicas of a tablet before
-deciding to evict one. This can improve the stability of the Kudu cluster
-when multiple servers temporarily go down at the same time.&lt;/li&gt;
-  &lt;li&gt;A bug in the C++ client was fixed that could cause tablets to be erroneously
-pruned, or skipped, during certain scans, resulting in fewer results than
-expected being returned from queries. The bug only affected tables whose
-range partition columns are a proper prefix of the primary key.
-See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2173&quot;&gt;KUDU-2173&lt;/a&gt; for more
-information.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;For more details, and the complete list of changes in Kudu 1.6.0, please see
-the &lt;a href=&quot;/releases/1.6.0/docs/release_notes.html&quot;&gt;Kudu 1.6.0 release notes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
-1.6.0, follow these steps:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Download the &lt;a href=&quot;/releases/1.6.0/&quot;&gt;Kudu 1.6.0 source release&lt;/a&gt;.&lt;/li&gt;
-  &lt;li&gt;Follow the instructions in the documentation to
-&lt;a href=&quot;/releases/1.6.0/docs/installation.html#build_from_source&quot;&gt;build Kudu 1.6.0 from source&lt;/a&gt;.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
-DataSource, Flume sink, and other Java integrations are published to the ASF
-Maven repository and are
-&lt;a href=&quot;https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.6.0%22&quot;&gt;now available&lt;/a&gt;.&lt;/p&gt;</content><author><name>Mike Percy</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.6.0!
-
-Apache Kudu 1.6.0 is a minor release that offers new features, performance
 optimizations, incremental improvements, and bug fixes.
 
 Release highlights:</summary></entry></feed>
