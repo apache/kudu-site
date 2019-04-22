@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update June 27, 2016</title>
+    <title>Apache Kudu - Fine-Grained Authorization with Apache Kudu and Impala</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -114,112 +114,133 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update June 27, 2016</h1>
-    <p class="meta">Posted 27 Jun 2016 by Todd Lipcon</p>
+    <h1 class="entry-title">Fine-Grained Authorization with Apache Kudu and Impala</h1>
+    <p class="meta">Posted 22 Apr 2019 by Grant Henke</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the fifteenth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Note: This is a cross-post from the Cloudera Engineering Blog
+<a href="https://blog.cloudera.com/blog/2019/04/fine-grained-authorization-with-apache-kudu-and-impala/">Fine-Grained Authorization with Apache Kudu and Impala</a></p>
+
+<p>Apache Impala supports fine-grained authorization via Apache Sentry on all of the tables it
+manages including Apache Kudu tables. Given Impala is a very common way to access the data stored
+in Kudu, this capability allows users deploying Impala and Kudu to fully secure the Kudu data in
+multi-tenant clusters even though Kudu does not yet have native fine-grained authorization of its
+own. This solution works because Kudu natively supports coarse-grained (all or nothing)
+authorization which enables blocking all access to Kudu directly except for the impala user and
+an optional whitelist of other trusted users. This post will describe how to use Apache Impala’s
+fine-grained authorization support along with Apache Kudu’s coarse-grained authorization to
+achieve a secure multi-tenant deployment.</p>
 
 <!--more-->
 
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+<h2 id="sample-workflow">Sample Workflow</h2>
+
+<p>The examples in this post enable a workflow that uses Apache Spark to ingest data directly into
+Kudu and Impala to run analytic queries on that data. The Spark job, run as the <code>etl_service</code> user,
+is permitted to access the Kudu data via coarse-grained authorization. Even though this gives
+access to all the data in Kudu, the <code>etl_service</code> user is only used for scheduled jobs or by an
+administrator. All queries on the data, from a wide array of users, will use Impala and leverage
+Impala’s fine-grained authorization. Impala’s 
+<a href="https://impala.apache.org/docs/build/html/topics/impala_grant.html"><code>GRANT</code> statements</a>
+allow you to flexibly control the privileges on the Kudu storage tables. Impala’s fine-grained
+privileges along with support for
+<a href="https://impala.apache.org/docs/build/html/topics/impala_select.html"><code>SELECT</code></a>,
+<a href="https://impala.apache.org/docs/build/html/topics/impala_insert.html"><code>INSERT</code></a>,
+<a href="https://impala.apache.org/docs/build/html/topics/impala_update.html"><code>UPDATE</code></a>,
+<a href="https://impala.apache.org/docs/build/html/topics/impala_upsert.html"><code>UPSERT</code></a>,
+and <a href="https://impala.apache.org/docs/build/html/topics/impala_delete.html"><code>DELETE</code></a>
+statements, allow you to finely control who can read and write data to your Kudu tables while
+using Impala. Below is a diagram showing the workflow described:</p>
+
+<p><img src="/img/fine-grained-authorization-with-apache-kudu.png" alt="png" class="img-responsive" /></p>
+
+<p><em>Note</em>: The examples below assume that Authorization has already been configured for Kudu, Impala,
+and Spark. For help configuring authorization see the Cloudera 
+<a href="https://www.cloudera.com/documentation/enterprise/latest/topics/sg_auth_overview.html">authorization documentation</a>.</p>
+
+<h2 id="configuring-kudus-coarse-grained-authorization">Configuring Kudu’s Coarse-Grained Authorization</h2>
+
+<p>Kudu supports coarse-grained authorization of client requests based on the authenticated client
+Kerberos principal. The two levels of access which can be configured are:</p>
 
 <ul>
-  <li>
-    <p>Todd Lipcon diagnosed and fixed a <a href="https://gerrit.cloudera.org/3445">tricky bug</a>
-which could cause Kudu servers to crash under load. It turned out that the bug
-was in a synchronization profiling code path related to the tcmalloc allocator.
-This allocator is used in release builds, but can’t be used in instrumented builds
-such as
-<a href="http://clang.llvm.org/docs/AddressSanitizer.html">AddressSanitizer</a> or
-<a href="http://clang.llvm.org/docs/ThreadSanitizer.html">ThreadSanitizer</a>. This made it particularly difficult
-to catch. The bug fix will be released in the upcoming 0.9.1 release.</p>
-  </li>
-  <li>
-    <p>Todd also finished and committed a fix for <a href="https://issues.apache.org/jira/browse/KUDU-1469">KUDU-1469</a>,
-a bug in which Kudu’s implementation of Raft consensus could get “stuck” not making
-progress replicating operations for a tablet. See the
-<a href="https://gerrit.cloudera.org/#/c/3228/7/src/kudu/integration-tests/raft_consensus-itest.cc">new integration test case</a>
-for more details on this bug.</p>
-  </li>
-  <li>
-    <p>Mike Percy finished implementing and committed a feature which allows
-<a href="https://gerrit.cloudera.org/#/c/3135/">reserving disk space for non-Kudu processes</a>.
-This feature causes Kudu to stop allocating new data blocks on a
-disk if it is within a user-specified threshold of being full, preventing
-possible crashes and allowing for safer collocation of Kudu with other processes
-on a cluster.</p>
-  </li>
-  <li>
-    <p>Will Berkeley finished implementing <a href="https://issues.apache.org/jira/browse/KUDU-1398">KUDU-1398</a>,
-a new optimization which reduces the amount of disk space used by
-indexing structures in Kudu’s internal storage format. This should
-improve storage efficiency for workloads with large keys, and can
-also improve write performance by increasing the number of index
-entries which can fit in a given amount of cache memory.</p>
-  </li>
-  <li>
-    <p>David Alves has completed posting a patch series that implements
-exactly-once RPC semantics. The design, as mentioned in previous
-blog posts, is described in a <a href="https://gerrit.cloudera.org/#/c/2642/">design document</a>
-and the patches can be found in a 10-patch series starting with
-<a href="https://gerrit.cloudera.org/#/c/3190/">gerrit #3190</a>.</p>
-  </li>
-  <li>
-    <p>Dan Burkert is continuing working on adding support for
-<a href="https://github.com/apache/incubator-kudu/blob/master/docs/design-docs/non-covering-range-partitions.md">tables with range partitions that don’t cover the entire key
-space</a>.
-This past week, he focused on adding <a href="https://gerrit.cloudera.org/#/c/3388/">support in the the Java client</a>
-which also necessitated some serious <a href="https://gerrit.cloudera.org/#/c/3477/">refactoring</a>. These patches
-are now under review.</p>
-  </li>
-  <li>
-    <p>Congratulations to Andrew Wong, a new contributor who committed his
-first patches this week. Andrew <a href="https://gerrit.cloudera.org/#/c/3424/">improved the build docs for OSX</a>
-and also fixed a <a href="https://gerrit.cloudera.org/#/c/3486/">crash if the user forgot to specify the master address
-in some command line tools</a>.
-Thanks, Andrew!</p>
-  </li>
+  <li><em>Superuser</em> – principals authorized as a superuser are able to perform certain administrative
+functionality such as using the kudu command line tool to diagnose or repair cluster issues.</li>
+  <li><em>User</em> – principals authorized as a user are able to access and modify all data in the Kudu
+cluster. This includes the ability to create, drop, and alter tables as well as read, insert, 
+update, and delete data.</li>
 </ul>
 
-<h2 id="project-news">Project news</h2>
+<p>Access levels are granted using whitelist-style Access Control Lists (ACLs), one for each of the
+two levels. Each access control list either specifies a comma-separated list of users, or may be
+set to <code>*</code> to indicate that all authenticated users are able to gain access at the specified level.</p>
 
-<ul>
-  <li>
-    <p>The Apache Kudu web site has finished migrating to Apache Software Foundation infrastructure.
-The site can now be found at <a href="http://kudu.incubator.apache.org/">kudu.incubator.apache.org</a>.
-Existing links will automatically redirect.</p>
-  </li>
-  <li>
-    <p>A Kudu 0.9.1 release candidate was posted and passed a
-<a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CCADY20s6%3D%2BnKNgvx%3DG_pKupQGiH%2B9ToS53LqExBwWM6vLp-ns9A%40mail.gmail.com%3E">release vote</a>
-by the Kudu Podling PMC (PPMC).
-The release candidate will now be voted upon by the Apache Incubator PMC. If all goes well, we
-can expect a release late this week. The release fixes a few critical bugs discovered in 0.9.0.</p>
-  </li>
-  <li>
-    <p>Chris Mattmann, one of Kudu’s mentors from the Apache Incubator,
-started a <a href="http://mail-archives.apache.org/mod_mbox/incubator-kudu-dev/201606.mbox/%3CAD4A858D-403D-4E74-A4F4-DE2F08FB761E%40jpl.nasa.gov%3E">discussion</a>
-about the project’s graduation to a top-level project (TLP).
-Initial responses seem to be positive, so the next step will
-be to work on a draft resolution and various stages of
-voting.</p>
-  </li>
-</ul>
+<p><em>Note</em>: The default value for the User ACL is <code>*</code>, which allows all users access to the cluster.</p>
 
-<h2 id="on-the-kudu-blog">On the Kudu blog</h2>
+<h3 id="example-configuration">Example Configuration</h3>
 
-<ul>
-  <li>Adar Dembo published a post detailing his recent work on
-<a href="http://kudu.apache.org/2016/06/24/multi-master-1-0-0.html">master fault tolerance in Kudu 1.0</a>.</li>
-</ul>
+<p>The first and most important step is to remove the default ACL of <code>*</code> from Kudu’s 
+<a href="https://kudu.apache.org/docs/configuration_reference.html#kudu-master_user_acl"><code>–user_acl</code> configuration</a>.
+This will ensure only the users you list will have access to the Kudu cluster. Then, to allow the
+Impala service to access all of the data in Kudu, the Impala service user, usually impala, should
+be added to the Kudu <code>–user_acl</code> configuration. Any user that is not using Impala will also need
+to be added to this list. For example, an Apache Spark job might be used to load data directly
+into Kudu. Generally, a single user is used to run scheduled jobs of applications that do not
+support fine-grained authorization on their own. For this example, that user is <code>etl_service</code>. The
+full <code>–user_acl</code> configuration is:</p>
 
-<p>Want to learn more about a specific topic from this blog post? Shoot an email to the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
-tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">--user_acl<span class="o">=</span>impala,etl_service</code></pre></div>
+
+<p>For more details see the Kudu
+<a href="https://kudu.apache.org/docs/security.html#_coarse_grained_authorization">authorization documentation</a>.</p>
+
+<h2 id="using-impalas-fine-grained-authorization">Using Impala’s Fine-Grained Authorization</h2>
+
+<p>Follow Impala’s
+<a href="https://impala.apache.org/docs/build/html/topics/impala_authorization.html">authorization documentation</a>
+to configure fine-grained authorization. Once configured, you can use Impala’s
+<a href="https://impala.apache.org/docs/build/html/topics/impala_grant.html"><code>GRANT</code> statements</a>
+to control the privileges of Kudu tables. These fine-grained privileges can be set at the database,
+table and column level. Additionally you can individually control <code>SELECT</code>, <code>INSERT</code>, <code>CREATE</code>,
+<code>ALTER</code>, and <code>DROP</code> privileges.</p>
+
+<p><em>Note</em>: A user needs the <code>ALL</code> privilege in order to run <code>DELETE</code>, <code>UPDATE</code>, or <code>UPSERT</code>
+statements against a Kudu table.</p>
+
+<p>Below is a brief example with a couple tables stored in Kudu:</p>
+
+<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">messages</span>
+<span class="p">(</span>  
+  <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
+  <span class="n">time</span> <span class="k">TIMESTAMP</span><span class="p">,</span>
+  <span class="n">message</span> <span class="n">STRING</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">HASH</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="n">PARTITIONS</span> <span class="mi">4</span>
+<span class="n">STORED</span> <span class="k">AS</span> <span class="n">KUDU</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="k">TABLE</span> <span class="n">messages</span> <span class="k">TO</span> <span class="n">userA</span><span class="p">;</span>
+
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">metrics</span> 
+<span class="p">(</span>
+  <span class="k">host</span> <span class="n">STRING</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">metric</span> <span class="n">STRING</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">time</span> <span class="n">INT64</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">value</span> <span class="n">DOUBLE</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="k">host</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">HASH</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="n">PARTITIONS</span> <span class="mi">4</span>
+<span class="n">STORED</span> <span class="k">AS</span> <span class="n">KUDU</span><span class="p">;</span>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="k">TABLE</span> <span class="n">messages</span> <span class="k">TO</span> <span class="n">userB</span><span class="p">;</span></code></pre></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This brief example that combines Kudu’s coarse-grained authorization and Impala’s fine-grained
+authorization should enable you to meet the security needs of your data workflow today. The
+pattern described here can be applied to other services and workflows using Kudu as well. For
+greater authorization flexibility, you can look forward to the near future when Kudu supports
+native fine-grained authorization on its own. The Apache Kudu contributors understand the
+importance of native fine-grained authorization and they are working on integrations with
+Apache Sentry and Apache Ranger.</p>
 
   </div>
 </article>
