@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-07-09T12:48:11-05:00</updated><id>/</id><entry><title>Apache Kudu 1.10.0 Released</title><link href="/2019/07/09/apache-kudu-1-10-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.10.0 Released" /><published>2019-07-09T00:00:00-05:00</published><updated>2019-07-09T00:00:00-05:00</updated><id>/2019/07/09/apache-kudu-1-10-0-release</id><content type="html" xml:base="/2019/07/09/apache-kudu-1-10-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.10.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-07-09T14:14:43-05:00</updated><id>/</id><entry><title>Apache Kudu 1.10.0 Released</title><link href="/2019/07/09/apache-kudu-1-10-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.10.0 Released" /><published>2019-07-09T00:00:00-05:00</published><updated>2019-07-09T00:00:00-05:00</updated><id>/2019/07/09/apache-kudu-1-10-0-release</id><content type="html" xml:base="/2019/07/09/apache-kudu-1-10-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.10.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -31,7 +31,7 @@ the AlterTable API
 (see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-1711&quot;&gt;KUDU-1711&lt;/a&gt;).&lt;/li&gt;
   &lt;li&gt;The performance of mutations (i.e. UPDATE, DELETE, and re-INSERT) to
 not-yet-flushed Kudu data has been significantly optimized
-(see [KUDU-2826]https://issues.apache.org/jira/browse/KUDU-2826) and
+(see &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2826&quot;&gt;KUDU-2826&lt;/a&gt; and
 &lt;a href=&quot;https://github.com/apache/kudu/commit/f9f9526d3&quot;&gt;f9f9526d3&lt;/a&gt;).&lt;/li&gt;
   &lt;li&gt;Predicate performance for primitive columns and IS NULL and IS NOT NULL
 has been optimized
