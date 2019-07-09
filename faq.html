@@ -84,6 +84,7 @@
                     <li role="separator" class="divider"></li>
                     <li class="dropdown-header">SOCIAL MEDIA</li>
                     <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
                     <li role="separator" class="divider"></li>
                     <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
                     <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
@@ -156,8 +157,7 @@ workloads.</p>
 
 <h4 id="is-apache-kudu-ready-to-be-deployed-into-production-yet">Is Apache Kudu ready to be deployed into production yet?</h4>
 
-<p>Yes! Although Kudu is still relatively new, as far as storage engines are considered,
-it is ready for production workloads.</p>
+<p>Yes! Kudu has been battle tested in production at many major corporations.</p>
 
 <h4 id="is-kudu-open-source">Is Kudu open source?</h4>
 
@@ -192,12 +192,11 @@ store, and access data in Kudu tables with Apache Impala.</p>
 <p>Aside from training, you can also get help with using Kudu through
 <a href="docs/index.html">documentation</a>,
 the <a href="community.html">mailing lists</a>,
-the <a href="https://getkudu-slack.herokuapp.com/">Kudu chat room</a>, and the
-<a href="https://community.cloudera.com/t5/Beta-Releases-Kudu-RecordService/bd-p/Beta">Cloudera beta release forum</a>.</p>
+and the <a href="https://getkudu-slack.herokuapp.com/">Kudu chat room</a>.</p>
 
-<h4 id="is-there-a-quickstart-vm">Is there a quickstart VM?</h4>
+<h4 id="is-there-a-quickstart">Is there a quickstart?</h4>
 
-<p>Yes. Instructions on getting up and running on Kudu via a VM are provided in Kudu’s
+<p>Yes. Instructions on getting up and running on Kudu via a Docker based quickstart are provided in Kudu’s
 <a href="http://kudu.apache.org/docs/quickstart.html">quickstart guide</a>.</p>
 
 <h3 id="storage-details">Storage Details</h3>
@@ -370,10 +369,8 @@ further information and caveats.</p>
 <p>Kudu provides direct access via Java and C++ APIs. An experimental Python API is
 also available and is expected to be fully supported in the future. The easiest
 way to load data into Kudu is to use a <code>CREATE TABLE ... AS SELECT * FROM ...</code>
-statement in Impala. Although Kudu has not been extensively tested to work with
-ingest tools such as Flume, Sqoop, or Kafka, several of these have been
-experimentally tested. Explicit support for these ingest tools is expected with
-Kudu’s first generally available release.</p>
+statement in Impala. Additionally, data is commonly ingested into Kudu using
+Spark, Nifi, and Flume.</p>
 
 <h4 id="whats-the-most-efficient-way-to-bulk-load-data-into-kudu">What’s the most efficient way to bulk load data into Kudu?</h4>
 
@@ -381,8 +378,8 @@ Kudu’s first generally available release.</p>
 In this case, a simple <code>INSERT INTO TABLE some_kudu_table SELECT * FROM some_csv_table</code>
 does the trick.</p>
 
-<p>You can also use Kudu’s MapReduce OutputFormat to load data from HDFS, HBase, or
-any other data store that has an InputFormat.</p>
+<p>You can also use Kudu’s Spark integration to load data from or
+any other Spark compatible data store.</p>
 
 <p>No tool is provided to load data directly into Kudu’s on-disk data format. We
 have found that for many workloads, the insert performance of Kudu is comparable
@@ -396,7 +393,7 @@ BINARY column, but large values (10s of KB or more) are likely to cause
 performance or stability problems in current versions.</p>
 
 <p>Fuller support for semi-structured types like JSON and protobuf will be added in
-the future, contingent on demand from early adopters.</p>
+the future, contingent on demand.</p>
 
 <h4 id="is-there-a-jdbc-driver-available">Is there a JDBC driver available?</h4>
 
@@ -438,9 +435,8 @@ on HDFS, so there’s no need to accomodate reading Kudu’s data files directly
 
 <h4 id="what-frameworks-are-integrated-with-kudu-for-data-access">What frameworks are integrated with Kudu for data access?</h4>
 
-<p>Kudu is already integrated with Impala, MapReduce, and Spark. Additional
-frameworks are expected for GA with Hive being the current highest priority
-addition.</p>
+<p>Kudu is integrated with Impala, Spark, Nifi, MapReduce, and more. Additional
+frameworks are expected, with Hive being the current highest priority addition.</p>
 
 <h4 id="can-i-colocate-kudu-with-hdfs-on-the-same-servers">Can I colocate Kudu with HDFS on the same servers?</h4>
 
@@ -526,14 +522,19 @@ features.</p>
 
 <h4 id="how-can-i-back-up-my-kudu-data">How can I back up my Kudu data?</h4>
 
-<p>Kudu doesn’t yet have a built-in backup mechanism. Similar to bulk loading data,
-Impala can help if you have it available. You can use it to copy your data into
-Parquet format using a statement like:</p>
+<p>As of Kudu 1.10.0, Kudu supports both full and incremental table backups via a
+job implemented using Apache Spark. Additionally it supports restoring tables
+from full and incremental backups via a restore job implemented using Apache Spark.
+See the <a href="docs/administration.html">administration documentation</a> for details.</p>
+
+<p>For older versions which do not have a built-in backup mechanism, Impala can
+help if you have it available. You can use it to copy your data into Parquet
+format using a statement like:</p>
 
 <pre><code>INSERT INTO TABLE some_parquet_table SELECT * FROM kudu_table
 </code></pre>
 
-<p>then use <a href="http://hadoop.apache.org/docs/r1.2.1/distcp2.html">distcp</a>
+<p>then use <a href="http://hadoop.apache.org/docs/current/hadoop-distcp/DistCp.html">distcp</a>
 to copy the Parquet data to another cluster.</p>
 
 <h4 id="can-the-wal-transaction-logs-be-used-to-build-a-disaster-recovery-site">Can the WAL transaction logs be used to build a disaster recovery site?</h4>
@@ -661,7 +662,7 @@ currently provides are very similar to HBase.</p>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2016 The Apache Software Foundation. 
+            Copyright &copy; 2019 The Apache Software Foundation. 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
