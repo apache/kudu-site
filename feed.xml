@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-07-14T20:55:12-05:00</updated><id>/</id><entry><title>Apache Kudu 1.10.0 Released</title><link href="/2019/07/09/apache-kudu-1-10-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.10.0 Released" /><published>2019-07-09T00:00:00-05:00</published><updated>2019-07-09T00:00:00-05:00</updated><id>/2019/07/09/apache-kudu-1-10-0-release</id><content type="html" xml:base="/2019/07/09/apache-kudu-1-10-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.10.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2019-10-30T19:29:14-07:00</updated><id>/</id><entry><title>Apache Kudu 1.10.0 Released</title><link href="/2019/07/09/apache-kudu-1-10-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.10.0 Released" /><published>2019-07-09T00:00:00-07:00</published><updated>2019-07-09T00:00:00-07:00</updated><id>/2019/07/09/apache-kudu-1-10-0-release</id><content type="html" xml:base="/2019/07/09/apache-kudu-1-10-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.10.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -63,7 +63,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.10.0!
 
 The new release adds several new features and improvements, including the
-following:</summary></entry><entry><title>Location Awareness in Kudu</title><link href="/2019/04/30/location-awareness.html" rel="alternate" type="text/html" title="Location Awareness in Kudu" /><published>2019-04-30T00:00:00-05:00</published><updated>2019-04-30T00:00:00-05:00</updated><id>/2019/04/30/location-awareness</id><content type="html" xml:base="/2019/04/30/location-awareness.html">&lt;p&gt;This post is about location awareness in Kudu. It gives an overview
+following:</summary></entry><entry><title>Location Awareness in Kudu</title><link href="/2019/04/30/location-awareness.html" rel="alternate" type="text/html" title="Location Awareness in Kudu" /><published>2019-04-30T00:00:00-07:00</published><updated>2019-04-30T00:00:00-07:00</updated><id>/2019/04/30/location-awareness</id><content type="html" xml:base="/2019/04/30/location-awareness.html">&lt;p&gt;This post is about location awareness in Kudu. It gives an overview
 of the following:
 - principles of the design
 - restrictions of the current implementation
@@ -422,7 +422,7 @@ request is tracked by KUDU-2604 in Apache JIRA, see
 of the following:
 - principles of the design
 - restrictions of the current implementation
-- potential future enhancements and extensions</summary></entry><entry><title>Fine-Grained Authorization with Apache Kudu and Impala</title><link href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Fine-Grained Authorization with Apache Kudu and Impala" /><published>2019-04-22T00:00:00-05:00</published><updated>2019-04-22T00:00:00-05:00</updated><id>/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+- potential future enhancements and extensions</summary></entry><entry><title>Fine-Grained Authorization with Apache Kudu and Impala</title><link href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Fine-Grained Authorization with Apache Kudu and Impala" /><published>2019-04-22T00:00:00-07:00</published><updated>2019-04-22T00:00:00-07:00</updated><id>/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/blog/2019/04/fine-grained-authorization-with-apache-kudu-and-impala/&quot;&gt;Fine-Grained Authorization with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Apache Impala supports fine-grained authorization via Apache Sentry on all of the tables it
@@ -555,7 +555,7 @@ own. This solution works because Kudu natively supports coarse-grained (all or n
 authorization which enables blocking all access to Kudu directly except for the impala user and
 an optional whitelist of other trusted users. This post will describe how to use Apache Impala’s
 fine-grained authorization support along with Apache Kudu’s coarse-grained authorization to
-achieve a secure multi-tenant deployment.</summary></entry><entry><title>Testing Apache Kudu Applications on the JVM</title><link href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html" rel="alternate" type="text/html" title="Testing Apache Kudu Applications on the JVM" /><published>2019-03-19T00:00:00-05:00</published><updated>2019-03-19T00:00:00-05:00</updated><id>/2019/03/19/testing-apache-kudu-applications-on-the-jvm</id><content type="html" xml:base="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+achieve a secure multi-tenant deployment.</summary></entry><entry><title>Testing Apache Kudu Applications on the JVM</title><link href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html" rel="alternate" type="text/html" title="Testing Apache Kudu Applications on the JVM" /><published>2019-03-19T00:00:00-07:00</published><updated>2019-03-19T00:00:00-07:00</updated><id>/2019/03/19/testing-apache-kudu-applications-on-the-jvm</id><content type="html" xml:base="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/testing-apache-kudu-applications-on-the-jvm/&quot;&gt;Testing Apache Kudu Applications on the JVM&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Although the Kudu server is written in C++ for performance and efficiency, developers can write
@@ -780,7 +780,7 @@ reliable client applications, we’ve added new utilities in Kudu 1.9.0 that all
 using a Kudu cluster without needing to build Kudu yourself, without any knowledge of C++,
 and without any complicated coordination around starting and stopping Kudu clusters for each test.
 This post describes how the new testing utilities work and how you can use them in your application
-tests.</summary></entry><entry><title>Apache Kudu 1.9.0 Released</title><link href="/2019/03/15/apache-kudu-1-9-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.9.0 Released" /><published>2019-03-15T00:00:00-05:00</published><updated>2019-03-15T00:00:00-05:00</updated><id>/2019/03/15/apache-kudu-1-9-0-release</id><content type="html" xml:base="/2019/03/15/apache-kudu-1-9-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.9.0!&lt;/p&gt;
+tests.</summary></entry><entry><title>Apache Kudu 1.9.0 Released</title><link href="/2019/03/15/apache-kudu-1-9-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.9.0 Released" /><published>2019-03-15T00:00:00-07:00</published><updated>2019-03-15T00:00:00-07:00</updated><id>/2019/03/15/apache-kudu-1-9-0-release</id><content type="html" xml:base="/2019/03/15/apache-kudu-1-9-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.9.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -821,7 +821,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Andrew Wong</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.9.0!
 
 The new release adds several new features and improvements, including the
-following:</summary></entry><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-06:00</published><updated>2019-03-05T00:00:00-06:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+following:</summary></entry><entry><title>Transparent Hierarchical Storage Management with Apache Kudu and Impala</title><link href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Transparent Hierarchical Storage Management with Apache Kudu and Impala" /><published>2019-03-05T00:00:00-08:00</published><updated>2019-03-05T00:00:00-08:00</updated><id>/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/&quot;&gt;Transparent Hierarchical Storage Management with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;When picking a storage option for an application it is common to pick a single
@@ -1230,7 +1230,7 @@ scalability at a low cost you may want to use HDFS. For that reason, there is a 
 for a solution that allows you to leverage the best features of multiple storage
 options. This post describes the sliding window pattern using Apache Impala with data
 stored in Apache Kudu and Apache HDFS. With this pattern you get all of the benefits
-of multiple storage layers in a way that is transparent to users.</summary></entry><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00-06:00</published><updated>2018-12-11T00:00:00-06:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
+of multiple storage layers in a way that is transparent to users.</summary></entry><entry><title>Call for Posts</title><link href="/2018/12/11/call-for-posts.html" rel="alternate" type="text/html" title="Call for Posts" /><published>2018-12-11T00:00:00-08:00</published><updated>2018-12-11T00:00:00-08:00</updated><id>/2018/12/11/call-for-posts</id><content type="html" xml:base="/2018/12/11/call-for-posts.html">&lt;p&gt;Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
 we’d like to share it with the world!&lt;/p&gt;
@@ -1247,7 +1247,7 @@ draft your post to Google Docs and share it with us on
 and post it to the blog for you.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
-we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00-05:00</published><updated>2018-10-26T00:00:00-05:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
+we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00-07:00</published><updated>2018-10-26T00:00:00-07:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -1286,7 +1286,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.8.0!
 
 The new release adds several new features and improvements, including the
-following:</summary></entry><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00-05:00</published><updated>2018-09-26T00:00:00-05:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
+following:</summary></entry><entry><title>Index Skip Scan Optimization in Kudu</title><link href="/2018/09/26/index-skip-scan-optimization-in-kudu.html" rel="alternate" type="text/html" title="Index Skip Scan Optimization in Kudu" /><published>2018-09-26T00:00:00-07:00</published><updated>2018-09-26T00:00:00-07:00</updated><id>/2018/09/26/index-skip-scan-optimization-in-kudu</id><content type="html" xml:base="/2018/09/26/index-skip-scan-optimization-in-kudu.html">&lt;p&gt;This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
 My project was to optimize the Kudu scan path by implementing a technique called
 index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
 my experience and the progress we’ve made so far on the approach.&lt;/p&gt;
@@ -1389,7 +1389,7 @@ Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the
 &lt;p&gt;&lt;a href=&quot;https://www.sqlite.org/optoverview.html#skipscan&quot;&gt;[3]&lt;/a&gt;: Skip Scan - SQLite&lt;/p&gt;</content><author><name>Anupama Gupta</name></author><summary>This summer I got the opportunity to intern with the Apache Kudu team at Cloudera.
 My project was to optimize the Kudu scan path by implementing a technique called
 index skip scan (a.k.a. scan-to-seek, see section 4.1 in [1]). I wanted to share
-my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00-05:00</published><updated>2018-09-11T00:00:00-05:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
+my experience and the progress we’ve made so far on the approach.</summary></entry><entry><title>Simplified Data Pipelines with Kudu</title><link href="/2018/09/11/simplified-pipelines-with-kudu.html" rel="alternate" type="text/html" title="Simplified Data Pipelines with Kudu" /><published>2018-09-11T00:00:00-07:00</published><updated>2018-09-11T00:00:00-07:00</updated><id>/2018/09/11/simplified-pipelines-with-kudu</id><content type="html" xml:base="/2018/09/11/simplified-pipelines-with-kudu.html">&lt;p&gt;I’ve been working with Hadoop now for over seven years and fortunately, or unfortunately, have run
 across a lot of structured data use cases.  What we, at &lt;a href=&quot;https://phdata.io/&quot;&gt;phData&lt;/a&gt;, have found is
 that end users are typically comfortable with tabular data and prefer to access their data in a
 structured manner using tables.
