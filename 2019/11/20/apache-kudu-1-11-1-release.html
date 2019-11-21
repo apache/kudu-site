@@ -132,27 +132,30 @@ distributing libnuma library with the kudu-binary JAR artifact. Users of
 Kudu 1.11.0 are encouraged to upgrade to 1.11.1 as soon as possible.</p>
 
 <p>Apache Kudu 1.11.1 adds several new features and improvements since
-Apache Kudu 1.10.0, including the following:
-- Kudu now supports putting tablet servers into maintenance mode: while in this
-  mode, the tablet server’s replicas will not be re-replicated if the server
-  fails. Administrative CLI are added to orchestrate tablet server maintenance
-  (see <a href="https://issues.apache.org/jira/browse/KUDU-2069">KUDU-2069</a>).
-- Kudu now has a built-in NTP client which maintains the internal wallclock
-  time used for generation of HybridTime timestamps. When enabled, system clock
-  synchronization for nodes running Kudu is no longer necessary,
-  (see <a href="https://issues.apache.org/jira/browse/KUDU-2935">KUDU-2935</a>).
-- Aggregated table statistics are now available to Kudu clients. This allows
-  for various query optimizations. For example, Spark now uses it to perform
-  join optimizations
-  (see <a href="https://issues.apache.org/jira/browse/KUDU-2797">KUDU-2797</a> and
-  <a href="https://issues.apache.org/jira/browse/KUDU-2721">KUDU-2721</a>).
-- The kudu CLI tool now supports creating and dropping range partitions
-  for a table
-  (see <a href="https://issues.apache.org/jira/browse/KUDU-2881">KUDU-2881</a>).
-- The kudu CLI tool now supports altering and dropping table columns.
-- The kudu CLI tool now supports getting and setting extra configuration
-  properties for a table
-  (see <a href="https://issues.apache.org/jira/browse/KUDU-2514">KUDU-2514</a>).</p>
+Apache Kudu 1.10.0, including the following:</p>
+
+<ul>
+  <li>Kudu now supports putting tablet servers into maintenance mode: while in this
+mode, the tablet server’s replicas will not be re-replicated if the server
+fails. Administrative CLI are added to orchestrate tablet server maintenance
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2069">KUDU-2069</a>).</li>
+  <li>Kudu now has a built-in NTP client which maintains the internal wallclock
+time used for generation of HybridTime timestamps. When enabled, system clock
+synchronization for nodes running Kudu is no longer necessary,
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2935">KUDU-2935</a>).</li>
+  <li>Aggregated table statistics are now available to Kudu clients. This allows
+for various query optimizations. For example, Spark now uses it to perform
+join optimizations
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2797">KUDU-2797</a> and
+<a href="https://issues.apache.org/jira/browse/KUDU-2721">KUDU-2721</a>).</li>
+  <li>The kudu CLI tool now supports creating and dropping range partitions
+for a table
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2881">KUDU-2881</a>).</li>
+  <li>The kudu CLI tool now supports altering and dropping table columns.</li>
+  <li>The kudu CLI tool now supports getting and setting extra configuration
+properties for a table
+(see <a href="https://issues.apache.org/jira/browse/KUDU-2514">KUDU-2514</a>).</li>
+</ul>
 
 <p>See the <a href="/releases/1.11.1/docs/release_notes.html">release notes</a> for details.</p>
 
