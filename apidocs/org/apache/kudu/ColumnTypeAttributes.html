@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -157,37 +157,49 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#getLength--">getLength</a></span>()</code>
+<div class="block">Returns the length;</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#getPrecision--">getPrecision</a></span>()</code>
 <div class="block">Return the precision;</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#getScale--">getScale</a></span>()</code>
 <div class="block">Return the scale;</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#hashCode--">hashCode</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#hasLength--">hasLength</a></span>()</code>
+<div class="block">Returns true if the length is set;</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#hasPrecision--">hasPrecision</a></span>()</code>
 <div class="block">Returns true if the precision is set;</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#hasScale--">hasScale</a></span>()</code>
 <div class="block">Returns true if the scale is set;</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.html#toStringForType-org.apache.kudu.Type-">toStringForType</a></span>(<a href="../../../org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a>&nbsp;type)</code>
 <div class="block">Return a string representation appropriate for `type`.</div>
@@ -253,6 +265,26 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>getScale</h4>
 <pre>public&nbsp;int&nbsp;getScale()</pre>
 <div class="block">Return the scale;</div>
+</li>
+</ul>
+<a name="hasLength--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>hasLength</h4>
+<pre>public&nbsp;boolean&nbsp;hasLength()</pre>
+<div class="block">Returns true if the length is set;</div>
+</li>
+</ul>
+<a name="getLength--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getLength</h4>
+<pre>public&nbsp;int&nbsp;getLength()</pre>
+<div class="block">Returns the length;</div>
 </li>
 </ul>
 <a name="equals-java.lang.Object-">

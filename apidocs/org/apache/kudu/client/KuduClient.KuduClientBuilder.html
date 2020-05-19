@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":42,"i5":10,"i6":10,"i7":10};
+var methods = {"i0":42,"i1":10,"i2":10,"i3":10,"i4":42,"i5":10,"i6":10,"i7":42,"i8":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -162,7 +162,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html#bossCount-int-">bossCount</a></span>(int&nbsp;bossCount)</code>
-<div class="block">Set the maximum number of boss threads.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -199,12 +201,20 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html#nioExecutors-java.util.concurrent.Executor-java.util.concurrent.Executor-">nioExecutors</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;bossExecutor,
-            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;workerExecutor)</code>
-<div class="block">Set the executors which will be used for the embedded Netty boss and workers.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html#nioExecutor-java.util.concurrent.Executor-">nioExecutor</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;workerExecutor)</code>
+<div class="block">Set the executor which will be used for the embedded Netty workers.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html#nioExecutors-java.util.concurrent.Executor-java.util.concurrent.Executor-">nioExecutors</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;bossExecutor,
+            <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;workerExecutor)</code>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html#workerCount-int-">workerCount</a></span>(int&nbsp;workerCount)</code>
 <div class="block">Set the maximum number of worker threads.</div>
@@ -358,12 +368,24 @@ public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBui
 <ul class="blockList">
 <li class="blockList">
 <h4>nioExecutors</h4>
-<pre>public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a>&nbsp;nioExecutors(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;bossExecutor,
-                                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;workerExecutor)</pre>
-<div class="block">Set the executors which will be used for the embedded Netty boss and workers.
+<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang">@Deprecated</a>
+public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a>&nbsp;nioExecutors(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;bossExecutor,
+                                                             <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;workerExecutor)</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</li>
+</ul>
+<a name="nioExecutor-java.util.concurrent.Executor-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>nioExecutor</h4>
+<pre>public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a>&nbsp;nioExecutor(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executor.html?is-external=true" title="class or interface in java.util.concurrent">Executor</a>&nbsp;workerExecutor)</pre>
+<div class="block">Set the executor which will be used for the embedded Netty workers.
+
  Optional.
- If not provided, uses a simple cached threadpool. If either argument is null,
- then such a thread pool will be used in place of that argument.
+ If not provided, uses a simple cached threadpool. If workerExecutor is null,
+ then such a thread pool will be used.
  Note: executor's max thread number must be greater or equal to corresponding
  worker count, or netty cannot start enough threads, and client will get stuck.
  If not sure, please just use CachedThreadPool.</div>
@@ -375,10 +397,9 @@ public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBui
 <ul class="blockList">
 <li class="blockList">
 <h4>bossCount</h4>
-<pre>public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a>&nbsp;bossCount(int&nbsp;bossCount)</pre>
-<div class="block">Set the maximum number of boss threads.
- Optional.
- If not provided, 1 is used.</div>
+<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang">@Deprecated</a>
+public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a>&nbsp;bossCount(int&nbsp;bossCount)</pre>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
 </li>
 </ul>
 <a name="workerCount-int-">
@@ -389,8 +410,15 @@ public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBui
 <h4>workerCount</h4>
 <pre>public&nbsp;<a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a>&nbsp;workerCount(int&nbsp;workerCount)</pre>
 <div class="block">Set the maximum number of worker threads.
+ A worker thread performs non-blocking read and write for one or more
+ Netty Channels in a non-blocking mode.
+
  Optional.
- If not provided, (2 * the number of available processors) is used.</div>
+ If not provided, (2 * the number of available processors) is used. If
+ this client instance will be used on a machine running many client
+ instances, it may be wise to lower this count, for example to avoid
+ resource limits, at the possible cost of some performance of this client
+ instance.</div>
 </li>
 </ul>
 <a name="build--">

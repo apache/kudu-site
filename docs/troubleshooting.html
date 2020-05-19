@@ -237,14 +237,20 @@ error. If in the latter situation, consult the
 <div class="sect2">
 <h3 id="ntp"><a class="link" href="#ntp">NTP Clock Synchronization</a></h3>
 <div class="paragraph">
-<p>For the master and tablet server daemons, the server&#8217;s clock must be synchronized using NTP.
-In addition, the <strong>maximum clock error</strong> (not to be mistaken with the estimated error)
-be below a configurable threshold. The default value is 10 seconds, but it can be set with the flag
-<code>--max_clock_sync_error_usec</code>.</p>
+<p>The local clock of the machine where Kudu master or tablet server is running
+must be synchronized using the Network Time Protocol (NTP) if using the <code>system</code>
+time source. The time source is controlled by the <code>--time_source</code> flag and
+by default is set to <code>system</code>.</p>
 </div>
 <div class="paragraph">
-<p>If NTP is not installed, or if the clock is reported as unsynchronized, Kudu will not
-start, and will emit a message such as:</p>
+<p>Kudu requires the <strong>maximum clock error</strong> (not to be mistaken with the estimated
+error) of the NTP-synchronized clock be below a configurable threshold.
+The default threshold value is 10 seconds and it can be customized using the
+<code>--max_clock_sync_error_usec</code> flag.</p>
+</div>
+<div class="paragraph">
+<p>When running with the <code>system</code> time source, Kudu will not start and will emit
+a message such as below if the local clock is reported unsynchronized:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -252,7 +258,7 @@ start, and will emit a message such as:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>If NTP is installed and synchronized, but the maximum clock error is too high,
+<p>If the machine&#8217;s clock is synchronized, but the maximum clock error is too high,
 the user will see a message such as:</p>
 </div>
 <div class="listingblock">
@@ -268,10 +274,41 @@ the user will see a message such as:</p>
 <pre>Sep 17, 8:32:31.135 PM FATAL tablet_server_main.cc:38 Check failed: _s.ok() Bad status: Service unavailable: Cannot initialize clock: Cannot initialize HybridClock. Clock synchronized but error was too high (11711000 us).</pre>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_installing_ntp"><a class="link" href="#_installing_ntp">Installing NTP</a></h4>
 <div class="paragraph">
-<p>To install NTP, use the appropriate command for your operating system:</p>
+<p>In this and following NTP-related paragraphs, when talking about the
+'synchronization' with true time using NTP, we are referring to a couple of
+things:
+- the synchronization status of the NTP server which drives the local clock
+  of the machine
+- the synchronization status of the local machine&#8217;s clock itself as reported
+  by the kernel&#8217;s NTP discipline</p>
+</div>
+<div class="paragraph">
+<p>The former can be retrieved using the <code>ntpstat</code>, <code>ntpq</code>, and <code>ntpdc</code> utilities
+if using <code>ntpd</code> (they are included in the <code>ntp</code> package) or the <code>chronyc</code>
+utility if using <code>chronyd</code> (that&#8217;s a part of the <code>chrony</code> package). The latter
+can be retrieved using either the <code>ntptime</code> utility (the <code>ntptime</code> utility is
+also a part of the <code>ntp</code> package) or the <code>chronyc</code> utility if using <code>chronyd</code>.
+For more information, see the manual pages of the mentioned utilities and the
+paragraphs below.</p>
+</div>
+<div class="sect3">
+<h4 id="_ntp_related_packages"><a class="link" href="#_ntp_related_packages">NTP-related Packages</a></h4>
+<div class="paragraph">
+<p>For a long time, <code>ntpd</code> has been the recommended NTP server to use on Kudu
+nodes to synchronize local machines' clocks. Newer releases of Linux OS offer
+<code>chronyd</code> as an alternative to <code>ntpd</code> for network time synchronization. Both
+have been tested and proven to provide necessary functionality for clock
+synchronisation in a Kudu cluster.</p>
+</div>
+<div class="sect4">
+<h5 id="_installing_and_running_code_ntpd_code"><a class="link" href="#_installing_and_running_code_ntpd_code">Installing And Running <code>ntpd</code></a></h5>
+<div class="paragraph">
+<p><code>ntpd</code> is the NTP server from the ubiquitous <code>ntp</code> suite.</p>
+</div>
+<div class="paragraph">
+<p>To install <code>ntpd</code> and other NTP-related utilities, use the appropriate command
+for your operating system:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -296,7 +333,8 @@ the user will see a message such as:</p>
 </tbody>
 </table>
 <div class="paragraph">
-<p>If NTP is installed but not running, start it using one of these commands:</p>
+<p>If <code>ntpd</code> is installed but not running, start it using one of these commands
+(don&#8217;t forget to run <code>ntpdate</code> first):</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -316,16 +354,90 @@ the user will see a message such as:</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">RHEL/CentOS</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sudo /etc/init.d/ntpd restart</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sudo service ntpd restart</code></p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="_monitoring_ntp_status"><a class="link" href="#_monitoring_ntp_status">Monitoring NTP Status</a></h4>
 <div class="paragraph">
-<p>When NTP is installed, you can monitor the synchronization status by running
-<code>ntptime</code>. For example, a healthy system may report:</p>
+<p>Make sure <code>ntpdate</code> is in the list of services running when the machine starts:
+<code>ntpdate</code> should be run prior starting <code>ntpd</code> to avoid long synchronization
+delay of the machine&#8217;s local clock with the true time. The smaller the offset
+between local machine&#8217;s clock and the true time, the faster the NTP server can
+synchronize the clock.</p>
+</div>
+<div class="paragraph">
+<p>When running <code>ntpdate</code>, make sure the tool reports success: check its exit
+status and output. In case of issues connecting to the NTP servers, make sure
+NTP traffic is not being blocked by a firewall (NTP generates UDP traffic on
+port 123 by default) or other network connectivity issue.</p>
+</div>
+<div class="paragraph">
+<p>Below are a few examples of configuration files for <code>ntpd</code>. By default, <code>ntpd</code>
+uses <code>/etc/ntp.conf</code> configuration file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># Use my organization's internal NTP server (server in a local network).
+server ntp1.myorg.internal iburst maxpoll 7
+# Add servers from the NTP public pool for redundancy and robustness.
+server 0.pool.ntp.org iburst maxpoll 8
+server 1.pool.ntp.org iburst maxpoll 8
+server 2.pool.ntp.org iburst maxpoll 8
+server 3.pool.ntp.org iburst maxpoll 8</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># AWS case: use dedicated NTP server available via link-local IP address.
+server 169.254.169.123 iburst</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># GCE case: use dedicated NTP server available from within cloud instance.
+server metadata.google.internal iburst</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sometimes it takes too long to synchronize the machine&#8217;s local clock with the
+true time even if the <code>ntpstat</code> utility reports that the NTP daemon is
+synchronized with one of the reference NTP servers. This manifests as the
+following: the utilities which report on the synchronization status of the NTP
+daemon claim that all is well, but <code>ntptime</code> claims that the status of the
+local clock is unsynchronized and Kudu tablet servers and masters refuse to
+start, outputting an error like the one mentioned above. This situation often
+happens if the <code>ntpd</code> is run with the <code>-x</code> option. According to the manual
+page of <code>ntpd</code>, the <code>-x</code> flag configures the NTP server to only slew the clock.
+Without <code>-x</code>, the NTP server would do a step adjustment instead:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>  -x     Normally, the time is slewed if the offset is less than the
+         step threshold, which is 128 ms by default, and stepped if
+         above the threshold. This option sets the threshold to 600 s,
+         which is well within the accuracy window to set the clock manually.
+         Note: Since the slew rate of typical Unix kernels is limited to
+         0.5 ms/s, each second of	adjustment requires an amortization
+         interval of 2000 s. Thus, an adjustment as much as 600 s
+         will take almost 14 days to complete.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In such cases, removing the <code>-x</code> option will help synchronize the local clock
+faster.</p>
+</div>
+<div class="paragraph">
+<p>More information on best practices and examples of practical resolution of
+various NTP synchronization issues can be found found at
+<a href="https://www.redhat.com/en/blog/avoiding-clock-drift-vms">clock-drift</a></p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_monitoring_clock_synchronization_status_with_the_code_ntp_code_suite"><a class="link" href="#_monitoring_clock_synchronization_status_with_the_code_ntp_code_suite">Monitoring Clock Synchronization Status With The <code>ntp</code> Suite</a></h5>
+<div class="paragraph">
+<p>When the <code>ntp</code> package is installed, you can monitor the synchronization status
+of the machine&#8217;s clock by running <code>ntptime</code>. For example, a system
+with a local clock that is synchronized may report:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -341,22 +453,23 @@ ntp_adjtime() returns code 0 (OK)
 </div>
 </div>
 <div class="paragraph">
-<p>In particular, note the following most important pieces of output:</p>
+<p>Note the following most important pieces of output:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>maximum error 22455 us</code>: this value is well under the 10-second maximum error required
-by Kudu.</p>
+<p><code>maximum error 22455 us</code>: this value is well under the 10-second maximum
+error required by Kudu.</p>
 </li>
 <li>
-<p><code>status 0x2001 (PLL,NANO)</code>: this indicates a healthy synchronization status.</p>
+<p><code>status 0x2001 (PLL,NANO)</code>: this indicates the local clock is synchronized
+with the true time up to the maximum error above</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>In contrast, a system without NTP properly configured and running will output
-something like the following:</p>
+<p>In contrast, a system with unsynchronized local clock would report something
+like the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -372,12 +485,36 @@ ntp_adjtime() returns code 5 (ERROR)
 </div>
 </div>
 <div class="paragraph">
-<p>Note the <code>UNSYNC</code> status and the 16-second maximum error.</p>
+<p>The <code>UNSYNC</code> status means the local clock is not synchronized with the
+true time. Because of that, the maximum reported error doesn&#8217;t convey any
+meaningful estimation of the actual error.</p>
 </div>
 <div class="paragraph">
-<p>If more detailed information is needed, the <code>ntpq</code> or <code>ntpdc</code> tools
-can be used to dump further information about which network time servers
-are currently acting as sources:</p>
+<p>The <code>ntpstat</code> utility reports a summary on the synchronization status of
+the NTP daemon itself. For example, a system which have <code>ntpd</code> running and
+synchronized with one of its reference servers may report:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ ntpstat
+synchronised to NTP server (172.18.7.3) at stratum 4
+   time correct to within 160 ms
+   polling server every 1024 s</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Keep in mind that the synchronization status of the NTP daemon itself doesn&#8217;t
+reflect the synchronization status of the local clock. The way NTP daemon
+drives the local clock is subject to many constraints, and it may take the NTP
+daemon some time to synchronize the local clock after it itself has latched
+to one of the reference servers.</p>
+</div>
+<div class="paragraph">
+<p>If more detailed information is needed on the synchronization status of the
+NTP server (but not the synchronization status of the local clock), the <code>ntpq</code>
+or <code>ntpdc</code> tools can be used to get detailed information about what NTP server
+is currently acting as the source of the true time and which are considered
+as candidates (either viable or not):</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -391,14 +528,7 @@ are currently acting as sources:</p>
 -69.195.159.158  128.138.140.44   2 u    9   64    1   53.885   -0.016   0.013
 *216.218.254.202 .CDMA.           1 u    6   64    1    1.475   -0.400   0.012
 +129.250.35.250  249.224.99.213   2 u    7   64    1    1.342   -0.640   0.018
- 45.76.244.193   216.239.35.4     2 u    6   64    1   17.380   -0.754   0.051
- 69.89.207.199   212.215.1.157    2 u    5   64    1   57.796   -3.411   0.059
- 171.66.97.126   .GPSs.           1 u    4   64    1    1.024   -0.374   0.018
- 66.228.42.59    211.172.242.174  3 u    3   64    1   72.409    0.895   0.964
- 91.189.89.198   17.253.34.125    2 u    2   64    1  135.195   -0.329   0.171
- 162.210.111.4   216.218.254.202  2 u    1   64    1   28.570    0.693   0.306
- 199.102.46.80   .GPS.            1 u    2   64    1   55.652   -0.039   0.019
- 91.189.89.199   17.253.34.125    2 u    1   64    1  135.265   -0.413   0.037
+
 $ ntpq -nc opeers
      remote           local      st t when poll reach   delay   offset    disp
 ==============================================================================
@@ -408,15 +538,7 @@ $ ntpq -nc opeers
 -173.255.206.154 10.17.100.238    3 u   14   64    1   43.502    0.199 187.580
 -69.195.159.158  10.17.100.238    2 u   13   64    1   53.885   -0.016 187.561
 *216.218.254.202 10.17.100.238    1 u   10   64    1    1.475   -0.400 187.543
-+129.250.35.250  10.17.100.238    2 u   11   64    1    1.342   -0.640 187.588
- 45.76.244.193   10.17.100.238    2 u   10   64    1   17.380   -0.754 187.596
- 69.89.207.199   10.17.100.238    2 u    9   64    1   57.796   -3.411 187.541
- 171.66.97.126   10.17.100.238    1 u    8   64    1    1.024   -0.374 187.578
- 66.228.42.59    10.17.100.238    3 u    7   64    1   72.409    0.895 187.589
- 91.189.89.198   10.17.100.238    2 u    6   64    1  135.195   -0.329 187.584
- 162.210.111.4   10.17.100.238    2 u    5   64    1   28.570    0.693 187.606
- 199.102.46.80   10.17.100.238    1 u    4   64    1   55.652   -0.039 187.587
- 91.189.89.199   10.17.100.238    2 u    3   64    1  135.265   -0.413 187.621</pre>
++129.250.35.250  10.17.100.238    2 u   11   64    1    1.342   -0.640 187.588</pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -432,26 +554,238 @@ jitter, while <code>opeers</code> lists clock dispersion.
 </tr>
 </table>
 </div>
-<div class="admonitionblock note">
-<table>
+</div>
+<div class="sect4">
+<h5 id="_installing_and_running_code_chronyd_code"><a class="link" href="#_installing_and_running_code_chronyd_code">Installing And Running <code>chronyd</code></a></h5>
+<div class="paragraph">
+<p>Kudu has been tested and is supported on machines whose local clock is
+synchronized with NTP using <code>chronyd</code> version 3.2 and newer.</p>
+</div>
+<div class="paragraph">
+<p>The OS package is called <code>chrony</code> and contains both the NTP server <code>chronyd</code>
+and the <code>chronyc</code> command line utility. To install the <code>chronyd</code> NTP server
+and other utilities, use the appropriate command for your operating system:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
 <tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<div class="paragraph">
-<div class="title">Using <code>chrony</code> for time synchronization</div>
-<p>Some operating systems offer <code>chrony</code> as an alternative to <code>ntpd</code> for network time
-synchronization. Kudu has been tested most thoroughly using <code>ntpd</code> and use of
-<code>chrony</code> is considered experimental.</p>
-</div>
-<div class="paragraph">
-<p>In order to use <code>chrony</code> for synchronization, <code>chrony.conf</code> must be configured
-with the <code>rtcsync</code> option.</p>
-</div>
-</td>
+<th class="tableblock halign-left valign-top">OS</th>
+<th class="tableblock halign-left valign-top">Command</th>
 </tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Debian/Ubuntu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sudo apt-get install chrony</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RHEL/CentOS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sudo yum install chrony</code></p></td>
+</tr>
+</tbody>
 </table>
+<div class="paragraph">
+<p>If <code>chronyd</code> is installed but not yet running, start it using one of these
+commands (don&#8217;t forget to run <code>chronyd -q</code> first):</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">OS</th>
+<th class="tableblock halign-left valign-top">Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Debian/Ubuntu</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sudo service chrony restart</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RHEL/CentOS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sudo service chronyd restart</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>By default, <code>chronyd</code> uses <code>/etc/chrony.conf</code> configuration file. The <code>rtcsync</code>
+option must be enabled in <code>chrony.conf</code>. Without <code>rtcsync</code>, the local machine&#8217;s
+clock will always be reported as unsynchronized and Kudu masters and tablet
+servers will not be able to start. The following
+<a href="https://github.com/mlichvar/chrony/blob/994409a03697b8df68115342dc8d1e7ceeeb40bd/sys_timex.c#L162-L166">code</a>
+explains the observed behavior of <code>chronyd</code> when setting the synchronization
+status of the local clock on Linux.</p>
+</div>
+<div class="paragraph">
+<p>As verified at RHEL7.5/CentOS7.5 with <code>chronyd</code> 3.2 and newer, the default
+configuration file is good enough to satisfy Kudu requirements for the system
+clock if running on a machine that has Internet access.</p>
+</div>
+<div class="paragraph">
+<p>An <a href="https://chrony.tuxfamily.org/faq.html#_what_is_the_minimum_recommended_configuration_for_an_ntp_client">example of a minimum viable configuration</a> for <code>chronyd</code> is:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>pool pool.ntp.org iburst
+driftfile /var/lib/chrony/drift
+makestep 1 3
+rtcsync</pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_monitoring_clock_synchronization_status_with_the_code_chrony_code_suite"><a class="link" href="#_monitoring_clock_synchronization_status_with_the_code_chrony_code_suite">Monitoring Clock Synchronization Status With The <code>chrony</code> Suite</a></h5>
+<div class="paragraph">
+<p>When the <code>chrony</code> package is installed, you can monitor the synchronization
+status of the machine&#8217;s clock by running <code>chronyc tracking</code> (add <code>-n</code> option
+if no resolution of IP addresses back to FQDNs is desired:
+<code>chronyc -n tracking</code>).</p>
+</div>
+<div class="paragraph">
+<p>For example, a system where <code>chronyd</code> hasn&#8217;t synchronized the local clock yet
+may report something like the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Reference ID    : 00000000 ()
+Stratum         : 0
+Ref time (UTC)  : Thu Jan 01 00:00:00 1970
+System time     : 0.000000000 seconds fast of NTP time
+Last offset     : +0.000000000 seconds
+RMS offset      : 0.000000000 seconds
+Frequency       : 69.422 ppm slow
+Residual freq   : +0.000 ppm
+Skew            : 0.000 ppm
+Root delay      : 1.000000000 seconds
+Root dispersion : 1.000000000 seconds
+Update interval : 0.0 seconds
+Leap status     : Not synchronised</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A system with its local clock already synchronized may report:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Reference ID    : A9FEA9FE (169.254.169.254)
+Stratum         : 3
+Ref time (UTC)  : Tue Mar 03 06:33:23 2020
+System time     : 0.000011798 seconds fast of NTP time
+Last offset     : +0.000014285 seconds
+RMS offset      : 0.001493311 seconds
+Frequency       : 69.417 ppm slow
+Residual freq   : +0.000 ppm
+Skew            : 0.006 ppm
+Root delay      : 0.000786347 seconds
+Root dispersion : 0.000138749 seconds
+Update interval : 1036.7 seconds
+Leap status     : Normal</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note the following important pieces of output:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Root delay</code>: the total of the network path delays (round trips)
+to the Stratum 1 server with which this <code>chronyd</code> instance is synchronized.</p>
+</li>
+<li>
+<p><code>Root dispersion</code>: the total dispersion accumulated through all the paths up
+to the Stratum 1 server with which this <code>chronyd</code> instance is synchronized.</p>
+</li>
+<li>
+<p><code>Leap status</code>: whether the local clock is synchronized with the true time
+up to the maximum error (see below). The <code>Normal</code> status means the clock is
+synchronized, and <code>Not synchronised</code> naturally means otherwise.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>An absolute bound on the error of the clock maintained internally by <code>chronyd</code>
+at the time of the last NTP update can be expressed as:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>clock_error &lt;= abs(last_offset) + (root_delay / 2) + root_dispersion</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>chronyc sources</code> reports on the list of reference NTP servers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>210 Number of sources = 4
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^* 169.254.169.254               2  10   377   371   +240us[ +254us] +/-  501us
+^- 64.62.190.177                 3  11   377   102  +1033us[+1033us] +/-   81ms
+^- 64.246.132.14                 1  11   377   129   +323us[ +323us] +/-   16ms
+^- 184.105.182.16                2  10   377   130  -4719us[-4719us] +/-   55ms</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To get more details on the measurement stats for reference NTP servers use
+<code>chronyc sourcestats</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>210 Number of sources = 4
+Name/IP Address            NP  NR  Span  Frequency  Freq Skew  Offset  Std Dev
+==============================================================================
+169.254.169.254            46  27  323m     +0.000      0.006    +72ns    68us
+64.62.190.177              12  10  224m     +0.071      0.050  +1240us   154us
+64.246.132.14              21  13  326m     +0.012      0.030   +434us   230us
+184.105.182.16              6   3   86m     +0.252      0.559  -5097us   306us</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use <code>chronyc ntpdata [server]</code> to get information on a particular reference
+server (or all servers if the <code>server</code> parameter is omitted):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Remote address  : 169.254.169.254 (A9FEA9FE)
+Remote port     : 123
+Local address   : 172.31.113.1 (AC1F7101)
+Leap status     : Normal
+Version         : 4
+Mode            : Server
+Stratum         : 2
+Poll interval   : 10 (1024 seconds)
+Precision       : -20 (0.000000954 seconds)
+Root delay      : 0.000229 seconds
+Root dispersion : 0.000107 seconds
+Reference ID    : 474F4F47 ()
+Reference time  : Tue Mar 03 06:33:24 2020
+Offset          : -0.000253832 seconds
+Peer delay      : 0.000557465 seconds
+Peer dispersion : 0.000000987 seconds
+Response time   : 0.000000001 seconds
+Jitter asymmetry: +0.50
+NTP tests       : 111 111 1111
+Interleaved     : No
+Authenticated   : No
+TX timestamping : Daemon
+RX timestamping : Kernel
+Total TX        : 50
+Total RX        : 50
+Total valid RX  : 50</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For troubleshooting tips on clock synchronisation with chronyd see
+<a href="https://chrony.tuxfamily.org/faq.html#_computer_is_not_synchronising">this
+useful guide</a>.</p>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -461,49 +795,60 @@ with the <code>rtcsync</code> option.</p>
 these best NTP configuration best practices.</p>
 </div>
 <div class="paragraph">
-<p><strong>Always configure at least four time sources for NTP.</strong> In addition to providing
-redundancy in case one or more time sources becomes unavailable, The NTP protocol is
-designed to increase its accuracy with a diversity of sources. Even if your organization
-provides one or more local time servers, configuring additional remote servers is highly
-recommended for a robust setup.</p>
+<p><strong>Run <code>ntpdate</code> (or its alternatives <code>ntpd -q</code> or <code>chronyd -q</code> in case of chrony)
+prior to running the NTP server.</strong> If the offset of the local clock is too far
+from the true time, it can take a long time before the NTP server synchronizes
+the local clock, even if it&#8217;s allowed to perform step adjustments. So, after
+configuring <code>ntpd</code> or <code>chronyd</code>, first run the <code>ntpdate</code> tool with the same set
+of NTP servers or run <code>ntpd -q/chronyd -q</code>. It&#8217;s assumed that the NTP server
+is not running when <code>ntpdate/ntpd -q/chronyd -q</code> is run. On RHEL/CentOS, if
+using the <code>ntp</code> suite, enable the <code>ntpdate</code> service; if using the <code>chrony</code>
+suite, enable the <code>chrony-wait</code> service.</p>
 </div>
 <div class="paragraph">
-<p><strong>Pick servers in your server&#8217;s local geography.</strong> For example, if your servers are located
-in Europe, pick servers from the European NTP pool. If your servers are running in a public
-cloud environment, consult the cloud provider&#8217;s documentation for a recommended NTP setup.
-Many cloud providers offer highly accurate clock synchronization as a service.</p>
+<p><strong>In certain public cloud environments, use the highly-available NTP server
+accessible via link-local IP address or other dedicated NTP server provided
+as a service.</strong> If your cluster is running in a public cloud environment,
+consult the cloud provider&#8217;s documentation for the recommended NTP setup.
+Both AWS and GCE clouds offer dedicated highly available NTP servers accessible
+from within a cloud instance via link-local IP address.</p>
 </div>
 <div class="paragraph">
-<p><strong>Use the <code>iburst</code> option for faster synchronization at startup</strong>. The <code>iburst</code> option
-instructs <code>ntpd</code> to send an initial "burst" of time queries at startup. This typically
-results in a faster time synchronization when a machine restarts.</p>
+<p><strong>Unless using highly-available NTP reference server accessible via link-local
+address, always configure at least four time sources for NTP server at the
+local machine.</strong> In addition to providing redundancy in case one of time sources
+becomes unavailable, this might make the configuration more robust since the
+NTP is designed to increase its accuracy with a diversity of sources in networks
+with higher round-trip times and jitter.</p>
 </div>
 <div class="paragraph">
-<p>An example NTP server list may appear as follows:</p>
+<p><strong>Use the <code>iburst</code> option for faster synchronization at startup</strong>. The <code>iburst</code>
+option instructs the NTP server (both <code>ntpd</code> and <code>chronyd</code>) to send an initial
+"burst" of time queries at startup.  This results in a faster synchronization
+of the <code>ntpd/chronyd</code> with their reference servers upon startup.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre># Use my organization's internal NTP servers.
-server ntp1.myorg.internal iburst
-server ntp2.myorg.internal iburst
-# Provide several public pool servers for
-# redundancy and robustness.
-server 0.pool.ntp.org iburst
-server 1.pool.ntp.org iburst
-server 2.pool.ntp.org iburst
-server 3.pool.ntp.org iburst</pre>
+<div class="paragraph">
+<p><strong>If the maximum clock error goes beyond the default threshold set by Kudu
+(10 seconds), consider setting lower value for the <code>maxpoll</code> option for every
+NTP server in <code>ntp.conf/chrony.conf</code></strong>. For example, consider setting the
+<code>maxpoll</code> to 7 which will cause the NTP daemon to make requests to the
+corresponding NTP server at least every 128 seconds. The default maximum poll
+interval is 10 (1024 seconds) for both <code>ntpd</code> and <code>chronyd</code>.</p>
 </div>
-</div>
-<div class="admonitionblock tip">
+<div class="admonitionblock note">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
+<i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-After configuring NTP, use the <code>ntpq</code> tool described above to verify that <code>ntpd</code> was
-able to connect to a variety of peers. If no public peers appear, it is possiblbe that
-the NTP protocol is being blocked by a firewall or other network connectivity issue.
+<div class="paragraph">
+<p>If using custom <code>maxpoll</code> interval, don&#8217;t set <code>maxpoll</code> too low (e.g., lower
+than 6) to avoid flooding NTP servers, especially the public ones. Otherwise
+they may blacklist the client (i.e. the NTP daemon at your machine) and cease
+providing NTP service at all. If in doubt, consult the <code>ntp.conf</code> or
+<code>chrony.conf</code> manual page correspondingly.</p>
+</div>
 </td>
 </tr>
 </table>
@@ -512,9 +857,10 @@ the NTP protocol is being blocked by a firewall or other network connectivity is
 <div class="sect3">
 <h4 id="_troubleshooting_ntp_stability_problems"><a class="link" href="#_troubleshooting_ntp_stability_problems">Troubleshooting NTP Stability Problems</a></h4>
 <div class="paragraph">
-<p>As of Kudu 1.6.0, Kudu daemons are able to continue to operate during a brief loss of
-NTP synchronization. If NTP synchronization is lost for several hours, however, daemons
-may crash. If a daemon crashes due to NTP synchronization issues, consult the <code>ERROR</code> log
+<p>As of Kudu 1.6.0, both <code>kudu-master</code> and <code>kudu-tserver</code> are able to continue to
+operate during a brief loss of clock synchronization. If clock synchronization
+is lost for several hours, they may crash. If <code>kudu-master</code> or <code>kudu-tserver</code>
+process crashes due to clock synchronization issues, consult the <code>ERROR</code> log
 for a dump of related information which may help to diagnose the issue.</p>
 </div>
 <div class="admonitionblock tip">
@@ -528,8 +874,8 @@ Kudu 1.5.0 and earlier versions were less resilient to brief NTP outages. In
 addition, they contained a <a href="https://issues.apache.org/jira/browse/KUDU-2209">bug</a>
 which could cause Kudu to incorrectly measure the maximum error, resulting in
 crashes. If you experience crashes related to clock synchronization on these
-earlier versions of Kudu and it appears that the system&#8217;s NTP configuration is correct,
-consider upgrading to Kudu 1.6.0 or later.
+earlier versions of Kudu and it appears that the system&#8217;s NTP configuration
+is correct, consider upgrading to Kudu 1.6.0 or later.
 </td>
 </tr>
 </table>
@@ -541,9 +887,13 @@ consider upgrading to Kudu 1.6.0 or later.
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-NTP requires a network connection and may take a few minutes to synchronize the clock
-at startup. In some cases a spotty network connection may make NTP report the clock as unsynchronized.
-A common, though temporary, workaround for this is to restart NTP with one of the commands above.
+If using other than link-local NTP servers, it may take some time for the
+NTP server running on a local machine to synchronize with one of its reference
+servers in case of network connectivity issues. In case of a spotty network
+between the machine and the reference NTP servers, <code>ntpd/chronyd</code> may become
+unsynchronized with its reference NTP servers. If that happens, consider finding
+other set of reference NTP servers: the best bet is to use NTP servers in the
+local network or *.pool.ntp.org servers.
 </td>
 </tr>
 </table>
@@ -565,7 +915,7 @@ reflect the disk space used by Kudu data files:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ ls -lh /data/kudu/tserver/data
+<pre>$ ls -lh /data/kudu/tserver/data
 total 117M
 -rw------- 1 kudu kudu 160M Mar 26 19:37 0b9807b8b17d48a6a7d5b16bf4ac4e6d.data
 -rw------- 1 kudu kudu 4.4K Mar 26 19:37 0b9807b8b17d48a6a7d5b16bf4ac4e6d.metadata
@@ -579,7 +929,7 @@ total 117M
 -rw------- 1 kudu kudu 4.4K Mar 26 19:37 772d070347a04f9f8ad2ad3241440090.metadata
 -rw------- 1 kudu kudu 160M Mar 26 19:37 86e50a95531f46b6a79e671e6f5f4151.data
 -rw------- 1 kudu kudu 4.4K Mar 26 19:37 86e50a95531f46b6a79e671e6f5f4151.metadata
--rw------- 1 kudu kudu  687 Mar 26 19:26 block_manager_instance</code></pre>
+-rw------- 1 kudu kudu  687 Mar 26 19:26 block_manager_instance</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -592,8 +942,8 @@ file&#8217;s disk space usage.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ du -h /data/kudu/tserver/data
-118M   /data/kudu/tserver/data</code></pre>
+<pre>$ du -h /data/kudu/tserver/data
+118M   /data/kudu/tserver/data</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -601,8 +951,8 @@ file&#8217;s disk space usage.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">$ du -h --apparent-size /data/kudu/tserver/data
-1.7G  /data/kudu/tserver/data</code></pre>
+<pre>$ du -h --apparent-size /data/kudu/tserver/data
+1.7G  /data/kudu/tserver/data</pre>
 </div>
 </div>
 </div>
@@ -632,7 +982,7 @@ process. For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">sudo pkill -USR1 kudu-tserver</code></pre>
+<pre>sudo pkill -USR1 kudu-tserver</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -902,7 +1252,7 @@ example set:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-json" data-lang="json">{
+<pre>{
   "name": "block_cache_inserts",
   "value": 64
 },
@@ -933,7 +1283,7 @@ example set:</p>
 {
   "name": "block_cache_usage",
   "value": 6976
-}</code></pre>
+}</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1260,7 +1610,7 @@ leading to their automatic re-replication elsewhere.</p>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2019-11-19 20:16:56 PST 
+            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2020-05-18 13:51:59 PDT 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu

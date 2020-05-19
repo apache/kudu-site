@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9,"i12":9,"i13":9,"i14":10};
+var methods = {"i0":10,"i1":10,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9,"i12":9,"i13":9,"i14":9,"i15":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -185,13 +185,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.sql.Date-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
+                      <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
+                      <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Date.html?is-external=true" title="class or interface in java.sql">Date</a>&nbsp;value)</code>
+<div class="block">Creates a new comparison predicate on a date column.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-double-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                       <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
                       double&nbsp;value)</code>
 <div class="block">Creates a new comparison predicate on a double column.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-float-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                       <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
@@ -199,7 +207,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="block">Creates a new comparison predicate on a float column.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-long-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                       <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
@@ -207,7 +215,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="block">Creates a new comparison predicate on an integer or timestamp column.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.lang.Object-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                       <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
@@ -215,7 +223,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="block">Creates a new comparison predicate on a column.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.lang.String-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                       <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
@@ -223,7 +231,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="block">Creates a new comparison predicate on a string column.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.sql.Timestamp-">newComparisonPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                       <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
@@ -231,26 +239,26 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="block">Creates a new comparison predicate on a timestamp column.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newInListPredicate-org.apache.kudu.ColumnSchema-java.util.List-">newInListPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
                   <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;T&gt;&nbsp;values)</code>
 <div class="block">Creates a new IN list predicate.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newIsNotNullPredicate-org.apache.kudu.ColumnSchema-">newIsNotNullPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column)</code>
 <div class="block">Creates a new <code>IS NOT NULL</code> predicate.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#newIsNullPredicate-org.apache.kudu.ColumnSchema-">newIsNullPredicate</a></span>(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column)</code>
 <div class="block">Creates a new <code>IS NULL</code> predicate.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/KuduPredicate.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
@@ -340,6 +348,24 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
                                                    <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
                                                    <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Timestamp.html?is-external=true" title="class or interface in java.sql">Timestamp</a>&nbsp;value)</pre>
 <div class="block">Creates a new comparison predicate on a timestamp column.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>column</code> - the column schema</dd>
+<dd><code>op</code> - the comparison operation</dd>
+<dd><code>value</code> - the value to compare against</dd>
+</dl>
+</li>
+</ul>
+<a name="newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.sql.Date-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>newComparisonPredicate</h4>
+<pre>public static&nbsp;<a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a>&nbsp;newComparisonPredicate(<a href="../../../../org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a>&nbsp;column,
+                                                   <a href="../../../../org/apache/kudu/client/KuduPredicate.ComparisonOp.html" title="enum in org.apache.kudu.client">KuduPredicate.ComparisonOp</a>&nbsp;op,
+                                                   <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Date.html?is-external=true" title="class or interface in java.sql">Date</a>&nbsp;value)</pre>
+<div class="block">Creates a new comparison predicate on a date column.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>column</code> - the column schema</dd>
@@ -444,6 +470,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
   Type.FLOAT -> java.lang.Float
   Type.DOUBLE -> java.lang.Double
   Type.STRING -> java.lang.String
+  Type.VARCHAR -> java.lang.String
   Type.BINARY -> byte[]
   Type.DECIMAL -> java.math.BigDecimal</div>
 <dl>

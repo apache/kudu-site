@@ -151,6 +151,44 @@ be used for production or performance/scale testing.
 to install docker in your Linux, Mac, or Windows environment.</p>
 </div>
 <div class="paragraph">
+<p>Configure the Docker install to have enough resources to run the quickstart guides.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://docs.docker.com/docker-for-mac/#resources">Docker for Mac Resource Configuration Guide</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A minimum configuration that can run all the quickstart examples comfortably is:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>4 CPUs</p>
+</li>
+<li>
+<p>6 GB Memory</p>
+</li>
+<li>
+<p>50 GB Disk</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You can likely get by with a lower resource configuration, but you may lose some performance and stability.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
 <p>You may also want to read through the Docker getting started guide, but that isn&#8217;t a requirement.</p>
 </div>
 </div>
@@ -193,7 +231,7 @@ you can specify the master addresses with <code>localhost:7051,localhost:7151,lo
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-bash" data-lang="bash">docker-compose -f docker/quickstart.yml up</code></pre>
+<pre class="highlight"><code class="language-bash" data-lang="bash">docker-compose -f docker/quickstart.yml up -d</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -203,7 +241,7 @@ you can specify the master addresses with <code>localhost:7051,localhost:7151,lo
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You can include the <code>-d</code> flag to run the cluster in the background.
+You can remove the <code>-d</code> flag to run the cluster in the foreground.
 </td>
 </tr>
 </table>
@@ -284,6 +322,19 @@ java -DkuduMasters=localhost:7051,localhost:7151,localhost:7251 -jar target/kudu
 <p>More complete walkthroughs using the quickstart Kudu cluster can be found in the
 <code>examples/quickstart</code> directory. For convenience you can browse them on
 <a href="https://github.com/apache/kudu/tree/master/examples/quickstart">Github</a>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/apache/kudu/tree/master/examples/quickstart/nifi">NiFi Quickstart Guide</a></p>
+</li>
+<li>
+<p><a href="https://github.com/apache/kudu/tree/master/examples/quickstart/spark">Spark Quickstart Guide</a></p>
+</li>
+<li>
+<p><a href="https://github.com/apache/kudu/tree/master/examples/quickstart/impala">Impala Quickstart Guide</a></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -500,7 +551,7 @@ are always expected to be reachable.</p>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2019-11-19 20:16:56 PST 
+            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2020-05-18 13:51:59 PDT 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu

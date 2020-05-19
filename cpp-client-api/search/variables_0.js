@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['data',['Data',['../classkudu_1_1client_1_1KuduPredicate.html#ae8643ced562f7c8a4625a58a4e39abb0',1,'kudu::client::KuduPredicate']]]
+  ['columnar_5flayout',['COLUMNAR_LAYOUT',['../classkudu_1_1client_1_1KuduScanner.html#ac524332b8cfac93065b1006847b16f10',1,'kudu::client::KuduScanner']]]
 ];

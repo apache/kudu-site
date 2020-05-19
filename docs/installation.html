@@ -168,8 +168,9 @@ only tolerate a single failure; two-master deployments cannot tolerate any failu
 <div class="ulist">
 <ul>
 <li>
-<p>RHEL 6, RHEL 7, CentOS 6, CentOS 7, Ubuntu 14.04 (trusty), Ubuntu 16.04 (xenial),
-Ubuntu 18.04 (bionic), Debian 8 (Jessie), or SLES 12.</p>
+<p>RHEL 6, RHEL 7, RHEL 8, CentOS 6, CentOS 7, CentOS 8,
+Ubuntu 14.04 (trusty), Ubuntu 16.04 (xenial), Ubuntu 18.04 (bionic),
+Debian 8 (Jessie), or SLES 12.</p>
 </li>
 <li>
 <p>A kernel and filesystem that support <em>hole punching</em>. Hole punching is the use of the
@@ -481,7 +482,7 @@ automated deployment scenario. It skips the steps marked <strong>Optional</stron
 <div class="content">
 <pre class="highlight"><code class="language-bash" data-lang="bash">#!/bin/bash
 
-sudo yum -y install autoconf automake cyrus-sasl-devel cyrus-sasl-gssapi \
+sudo yum -y install autoconf automake curl cyrus-sasl-devel cyrus-sasl-gssapi \
   cyrus-sasl-plain flex gcc gcc-c++ gdb git java-1.8.0-openjdk-devel \
   krb5-server krb5-workstation libtool make openssl-devel patch pkgconfig \
   redhat-lsb-core rsync unzip vim-common which
@@ -1336,7 +1337,7 @@ $ ./kudu tserver set_flag C follower_unavailable_considered_failed_sec 300</code
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2019-11-19 20:16:56 PST 
+            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2020-05-18 13:53:35 PDT 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu

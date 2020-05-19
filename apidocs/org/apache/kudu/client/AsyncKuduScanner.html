@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -220,41 +220,47 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code><a href="../../../../org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client">ResourceMetrics</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#getResourceMetrics--">getResourceMetrics</a></span>()</code>
+<div class="block">Returns the <code>ResourceMetrics</code> for this scanner.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#getScanRequestTimeout--">getScanRequestTimeout</a></span>()</code>
 <div class="block">Returns the scan request timeout for this scanner.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#hasMoreRows--">hasMoreRows</a></span>()</code>
 <div class="block">Tells if the last rpc returned that there might be more rows to scan.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#isClosed--">isClosed</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>com.stumbleupon.async.Deferred&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html?is-external=true" title="class or interface in java.lang">Void</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#keepAlive--">keepAlive</a></span>()</code>
 <div class="block">Keep the current remote scanner alive.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>com.stumbleupon.async.Deferred&lt;<a href="../../../../org/apache/kudu/client/RowResultIterator.html" title="class in org.apache.kudu.client">RowResultIterator</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#nextRows--">nextRows</a></span>()</code>
 <div class="block">Scans a number of rows.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#setReuseRowResult-boolean-">setReuseRowResult</a></span>(boolean&nbsp;reuseRowResult)</code>
 <div class="block">If set to true, the <a href="../../../../org/apache/kudu/client/RowResult.html" title="class in org.apache.kudu.client"><code>RowResult</code></a> object returned by the <a href="../../../../org/apache/kudu/client/RowResultIterator.html" title="class in org.apache.kudu.client"><code>RowResultIterator</code></a>
  will be reused with each call to <a href="../../../../org/apache/kudu/client/RowResultIterator.html#next--"><code>RowResultIterator.next()</code></a>.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
@@ -387,6 +393,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <h4>getKeepAlivePeriodMs</h4>
 <pre>public&nbsp;long&nbsp;getKeepAlivePeriodMs()</pre>
+</li>
+</ul>
+<a name="getResourceMetrics--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getResourceMetrics</h4>
+<pre>public&nbsp;<a href="../../../../org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client">ResourceMetrics</a>&nbsp;getResourceMetrics()</pre>
+<div class="block">Returns the <code>ResourceMetrics</code> for this scanner. These metrics are
+ updated with each batch of rows returned from the server.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the resource metrics for this scanner</dd>
+</dl>
 </li>
 </ul>
 <a name="setReuseRowResult-boolean-">

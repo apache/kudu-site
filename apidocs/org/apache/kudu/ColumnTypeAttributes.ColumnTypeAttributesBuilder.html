@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -159,11 +159,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html#length-int-">length</a></span>(int&nbsp;length)</code>&nbsp;</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code><a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html#precision-int-">precision</a></span>(int&nbsp;precision)</code>
 <div class="block">Set the precision.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html#scale-int-">scale</a></span>(int&nbsp;scale)</code>
 <div class="block">Set the scale.</div>
@@ -226,6 +230,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h4>scale</h4>
 <pre>public&nbsp;<a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a>&nbsp;scale(int&nbsp;scale)</pre>
 <div class="block">Set the scale. Only used for Decimal columns.</div>
+</li>
+</ul>
+<a name="length-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>length</h4>
+<pre>public&nbsp;<a href="../../../org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a>&nbsp;length(int&nbsp;length)</pre>
 </li>
 </ul>
 <a name="build--">

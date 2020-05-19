@@ -233,11 +233,67 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>none</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>no_compression</code></p></td>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
 <td class="tableblock halign-left valign-top"><p class="tableblock">advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_builtin_ntp_client_bind_address"><a class="link" href="#kudu-tserver_builtin_ntp_client_bind_address"><code>--builtin_ntp_client_bind_address</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Local address to bind client UDP socket used to send and receive NTP packets. The default value '0.0.0.0' is equivalent to '0.0.0.0:0' meaning 'bind to all available IPv4 interfaces using ephemeral ports (i.e. port 0)'. It might be useful to customize this flag if getting through a firewall to reach public NTP servers specified by --builtin_ntp_servers.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0.0.0.0</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_builtin_ntp_poll_interval_ms"><a class="link" href="#kudu-tserver_builtin_ntp_poll_interval_ms"><code>--builtin_ntp_poll_interval_ms</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The time between successive polls of a single NTP server (in milliseconds)</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uint32</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>16000</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -552,6 +608,62 @@ subject to being changed or removed without notice.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="kudu-tserver_fs_wal_dir_reserved_bytes"><a class="link" href="#kudu-tserver_fs_wal_dir_reserved_bytes"><code>--fs_wal_dir_reserved_bytes</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Number of bytes to reserve on the log directory filesystem for non-Kudu usage. The default, which is represented by -1, is that 1% of the disk space on each disk will be reserved. Any other value specified represents the number of bytes reserved and must be greater than or equal to 0. Explicit percentages to reserve are not currently supported</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int64</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-1</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_fs_wal_use_file_cache"><a class="link" href="#kudu-tserver_fs_wal_use_file_cache"><code>--fs_wal_use_file_cache</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Whether to use the server-wide file cache for WAL segments and WAL index chunks.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced,runtime</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
 <h2 id="kudu-tserver_group_commit_queue_size_bytes"><a class="link" href="#kudu-tserver_group_commit_queue_size_bytes"><code>--group_commit_queue_size_bytes</code></a></h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -629,7 +741,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,runtime,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced,runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -1112,6 +1224,34 @@ subject to being changed or removed without notice.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="kudu-tserver_fs_max_thread_count_per_data_dir"><a class="link" href="#kudu-tserver_fs_max_thread_count_per_data_dir"><code>--fs_max_thread_count_per_data_dir</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Maximum work thread per data directory.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uint64</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>8</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
 <h2 id="kudu-tserver_block_manager"><a class="link" href="#kudu-tserver_block_manager"><code>--block_manager</code></a></h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1385,7 +1525,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,runtime,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced,runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -1829,7 +1969,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>10</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>20</code></p></td>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
@@ -2222,6 +2362,34 @@ subject to being changed or removed without notice.</p>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>TLSv1</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_server_max_open_files"><a class="link" href="#kudu-tserver_server_max_open_files"><code>--server_max_open_files</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Maximum number of open file descriptors. If 0, Kudu will automatically calculate this value. This is a soft limit</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uint64</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
@@ -2869,7 +3037,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -3038,6 +3206,34 @@ subject to being changed or removed without notice.</p>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
 <td class="tableblock halign-left valign-top"><p class="tableblock">experimental</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_enable_deleted_rowset_gc"><a class="link" href="#kudu-tserver_enable_deleted_rowset_gc"><code>--enable_deleted_rowset_gc</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Whether to enable garbage collection of fully deleted rowsets. Disabling deleted rowset garbage collection may increase disk space usage for workloads that involve a high number of deletes. Only deleted rowsets that are entirely considered ancient history (see --tablet_history_max_age_sec) are deleted.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -3604,6 +3800,202 @@ subject to being changed or removed without notice.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="kudu-tserver_cloud_aws_instance_id_url"><a class="link" href="#kudu-tserver_cloud_aws_instance_id_url"><code>--cloud_aws_instance_id_url</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The URL to fetch the identifier of an AWS instance</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://169.254.169.254/latest/meta-data/instance-id" class="bare">http://169.254.169.254/latest/meta-data/instance-id</a></code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_cloud_aws_ntp_server"><a class="link" href="#kudu-tserver_cloud_aws_ntp_server"><code>--cloud_aws_ntp_server</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>IP address/FQDN of the internal NTP server to use from within an AWS instance</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>169.254.169.123</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_cloud_azure_instance_id_url"><a class="link" href="#kudu-tserver_cloud_azure_instance_id_url"><code>--cloud_azure_instance_id_url</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The URL to fetch the identifier of an Azure instance</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://169.254.169.254/metadata/instance/compute/vmId?api-version=2018-10-01&amp;format=text" class="bare">http://169.254.169.254/metadata/instance/compute/vmId?api-version=2018-10-01&amp;format=text</a></code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_cloud_gce_instance_id_url"><a class="link" href="#kudu-tserver_cloud_gce_instance_id_url"><code>--cloud_gce_instance_id_url</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The URL to fetch the identifier of a GCE instance</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://metadata.google.internal/computeMetadata/v1/instance/id" class="bare">http://metadata.google.internal/computeMetadata/v1/instance/id</a></code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_cloud_gce_ntp_server"><a class="link" href="#kudu-tserver_cloud_gce_ntp_server"><code>--cloud_gce_ntp_server</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>IP address/FQDN of the internal NTP server to use from within a GCE instance</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>metadata.google.internal</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_cloud_metadata_server_request_timeout_ms"><a class="link" href="#kudu-tserver_cloud_metadata_server_request_timeout_ms"><code>--cloud_metadata_server_request_timeout_ms</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Timeout for HTTP/HTTPS requests to the instance metadata server (in milliseconds)</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">uint32</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1000</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_cloud_openstack_metadata_url"><a class="link" href="#kudu-tserver_cloud_openstack_metadata_url"><code>--cloud_openstack_metadata_url</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The URL to fetch metadata of an OpenStack instance via Nova metadata service. OpenStack Nova metadata server does not provide a separate URL to fetch instance UUID, at least with 12.0.0 (Liberty) release.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="http://169.254.169.254/openstack/latest/meta_data.json" class="bare">http://169.254.169.254/openstack/latest/meta_data.json</a></code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
 <h2 id="kudu-tserver_trace_to_console"><a class="link" href="#kudu-tserver_trace_to_console"><code>--trace_to_console</code></a></h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -3803,7 +4195,7 @@ subject to being changed or removed without notice.</p>
 <h2 id="kudu-tserver_data_gc_min_size_mb"><a class="link" href="#kudu-tserver_data_gc_min_size_mb"><code>--data_gc_min_size_mb</code></a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The (exclusive) minimum number of megabytes of ancient data on disk, per tablet, needed to prioritize deletion of that data.</p>
+<p>The (exclusive) minimum number of mebibytes of ancient data on disk, per tablet, needed to prioritize deletion of that data.</p>
 </div>
 <table class="tableblock frame-all grid-all" style="width: 50%;">
 <colgroup>
@@ -3905,7 +4297,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -3933,7 +4325,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -4080,34 +4472,6 @@ subject to being changed or removed without notice.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="kudu-tserver_nvm_cache_allocation_retry_count"><a class="link" href="#kudu-tserver_nvm_cache_allocation_retry_count"><code>--nvm_cache_allocation_retry_count</code></a></h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>The number of times that the NVM cache will retry attempts to allocate memory for new entries. In between attempts, a cache entry will be evicted.</p>
-</div>
-<table class="tableblock frame-all grid-all" style="width: 50%;">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 75%;">
-</colgroup>
-<tbody>
-<tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
-</tr>
-<tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
-</tr>
-<tr>
-<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
 <h2 id="kudu-tserver_nvm_cache_path"><a class="link" href="#kudu-tserver_nvm_cache_path"><code>--nvm_cache_path</code></a></h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -4130,6 +4494,34 @@ subject to being changed or removed without notice.</p>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
 <td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kudu-tserver_nvm_cache_usage_ratio"><a class="link" href="#kudu-tserver_nvm_cache_usage_ratio"><code>--nvm_cache_usage_ratio</code></a></h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A ratio to set the usage of nvm cache. The charge of an item in the nvm cache is equal to the results of memkind_malloc_usable_size multiplied by the ratio.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>1.25</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -4483,7 +4875,7 @@ subject to being changed or removed without notice.</p>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2019-11-19 23:11:36 PST 
+            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2020-05-18 14:07:21 PDT 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu

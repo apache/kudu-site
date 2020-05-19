@@ -1,7 +1,10 @@
 var searchData=
 [
+  ['kudubloomfilter',['KuduBloomFilter',['../classkudu_1_1client_1_1KuduBloomFilter.html',1,'kudu::client']]],
+  ['kudubloomfilterbuilder',['KuduBloomFilterBuilder',['../classkudu_1_1client_1_1KuduBloomFilterBuilder.html',1,'kudu::client']]],
   ['kuduclient',['KuduClient',['../classkudu_1_1client_1_1KuduClient.html',1,'kudu::client']]],
   ['kuduclientbuilder',['KuduClientBuilder',['../classkudu_1_1client_1_1KuduClientBuilder.html',1,'kudu::client']]],
+  ['kuducolumnarscanbatch',['KuduColumnarScanBatch',['../classkudu_1_1client_1_1KuduColumnarScanBatch.html',1,'kudu::client']]],
   ['kuducolumnschema',['KuduColumnSchema',['../classkudu_1_1client_1_1KuduColumnSchema.html',1,'kudu::client']]],
   ['kuducolumnspec',['KuduColumnSpec',['../classkudu_1_1client_1_1KuduColumnSpec.html',1,'kudu::client']]],
   ['kuducolumnstorageattributes',['KuduColumnStorageAttributes',['../classkudu_1_1client_1_1KuduColumnStorageAttributes.html',1,'kudu::client']]],
@@ -9,6 +12,7 @@ var searchData=
   ['kududelete',['KuduDelete',['../classkudu_1_1client_1_1KuduDelete.html',1,'kudu::client']]],
   ['kuduerror',['KuduError',['../classkudu_1_1client_1_1KuduError.html',1,'kudu::client']]],
   ['kuduinsert',['KuduInsert',['../classkudu_1_1client_1_1KuduInsert.html',1,'kudu::client']]],
+  ['kuduinsertignore',['KuduInsertIgnore',['../classkudu_1_1client_1_1KuduInsertIgnore.html',1,'kudu::client']]],
   ['kuduloggingcallback',['KuduLoggingCallback',['../classkudu_1_1client_1_1KuduLoggingCallback.html',1,'kudu::client']]],
   ['kuduloggingfunctioncallback',['KuduLoggingFunctionCallback',['../classkudu_1_1client_1_1KuduLoggingFunctionCallback.html',1,'kudu::client']]],
   ['kuduloggingmembercallback',['KuduLoggingMemberCallback',['../classkudu_1_1client_1_1KuduLoggingMemberCallback.html',1,'kudu::client']]],

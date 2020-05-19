@@ -145,31 +145,37 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#BOOL">BOOL</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#DATE">DATE</a></span></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#DECIMAL">DECIMAL</a></span></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#DOUBLE">DOUBLE</a></span></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#FLOAT">FLOAT</a></span></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#INT16">INT16</a></span></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#INT32">INT32</a></span></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#INT64">INT64</a></span></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#INT8">INT8</a></span></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#STRING">STRING</a></span></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#UNIXTIME_MICROS">UNIXTIME_MICROS</a></span></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#VARCHAR">VARCHAR</a></span></code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -228,7 +234,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>static <a href="../../../org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#getTypeForName-java.lang.String-">getTypeForName</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../org/apache/kudu/Type.html#getTypeForName-java.lang.String-">getTypeForName</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</code>
+<div class="block">Create a Type from its name</div>
+</td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
@@ -369,10 +377,28 @@ the order they are declared.</div>
 <a name="DECIMAL">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>DECIMAL</h4>
 <pre>public static final&nbsp;<a href="../../../org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a> DECIMAL</pre>
+</li>
+</ul>
+<a name="VARCHAR">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>VARCHAR</h4>
+<pre>public static final&nbsp;<a href="../../../org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a> VARCHAR</pre>
+</li>
+</ul>
+<a name="DATE">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>DATE</h4>
+<pre>public static final&nbsp;<a href="../../../org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a> DATE</pre>
 </li>
 </ul>
 </li>
@@ -431,7 +457,8 @@ not permitted.)</div>
 <ul class="blockList">
 <li class="blockList">
 <h4>getDataType</h4>
-<pre>public&nbsp;org.apache.kudu.Common.DataType&nbsp;getDataType()</pre>
+<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang">@Deprecated</a>
+public&nbsp;org.apache.kudu.Common.DataType&nbsp;getDataType()</pre>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">use <a href="../../../org/apache/kudu/Type.html#getDataType-org.apache.kudu.ColumnTypeAttributes-"><code>getDataType(ColumnTypeAttributes)</code></a></span></div>
 <div class="block">Get the data type from the common's pb</div>
 <dl>
@@ -476,7 +503,8 @@ not permitted.)</div>
 <ul class="blockList">
 <li class="blockList">
 <h4>getSize</h4>
-<pre>public&nbsp;int&nbsp;getSize()</pre>
+<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang">@Deprecated</a>
+public&nbsp;int&nbsp;getSize()</pre>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;<span class="deprecationComment">use <a href="../../../org/apache/kudu/Type.html#getSize-org.apache.kudu.ColumnTypeAttributes-"><code>getSize(ColumnTypeAttributes)</code></a></span></div>
 <div class="block">The size of this type on the wire</div>
 <dl>
@@ -537,6 +565,17 @@ not permitted.)</div>
 <li class="blockList">
 <h4>getTypeForName</h4>
 <pre>public static&nbsp;<a href="../../../org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a>&nbsp;getTypeForName(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</pre>
+<div class="block">Create a Type from its name</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>name</code> - The DataType name. It accepts Type name (from the getName()
+ method) and ENUM name (from the name() method).</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a matching Type.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang">IllegalArgumentException</a></code> - if the provided name doesn't map to any
+ known type.</dd>
+</dl>
 </li>
 </ul>
 </li>

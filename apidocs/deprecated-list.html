@@ -72,7 +72,6 @@
 <h2 title="Contents">Contents</h2>
 <ul>
 <li><a href="#class">Deprecated Classes</a></li>
-<li><a href="#field">Deprecated Fields</a></li>
 <li><a href="#method">Deprecated Methods</a></li>
 </ul>
 </div>
@@ -91,39 +90,6 @@
 <td class="colOne"><a href="org/apache/kudu/client/ColumnRangePredicate.html" title="class in org.apache.kudu.client">org.apache.kudu.client.ColumnRangePredicate</a>
 <div class="block"><span class="deprecationComment">use the <a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client"><code>KuduPredicate</code></a> class instead.</span></div>
 </td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-<a name="field">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<table class="deprecatedSummary" border="0" cellpadding="3" cellspacing="0" summary="Deprecated Fields table, listing deprecated fields, and an explanation">
-<caption><span>Deprecated Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colOne" scope="col">Field and Description</th>
-</tr>
-<tbody>
-<tr class="altColor">
-<td class="colOne"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_SKIP_BAD_COLUMN_VALUE">org.apache.kudu.flume.sink.RegexpKuduOperationsProducer.DEFAULT_SKIP_BAD_COLUMN_VALUE</a></td>
-</tr>
-<tr class="rowColor">
-<td class="colOne"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_SKIP_MISSING_COLUMN">org.apache.kudu.flume.sink.RegexpKuduOperationsProducer.DEFAULT_SKIP_MISSING_COLUMN</a></td>
-</tr>
-<tr class="altColor">
-<td class="colOne"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_WARN_UNMATCHED_ROWS">org.apache.kudu.flume.sink.RegexpKuduOperationsProducer.DEFAULT_WARN_UNMATCHED_ROWS</a></td>
-</tr>
-<tr class="rowColor">
-<td class="colOne"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#SKIP_BAD_COLUMN_VALUE_PROP">org.apache.kudu.flume.sink.RegexpKuduOperationsProducer.SKIP_BAD_COLUMN_VALUE_PROP</a></td>
-</tr>
-<tr class="altColor">
-<td class="colOne"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#SKIP_MISSING_COLUMN_PROP">org.apache.kudu.flume.sink.RegexpKuduOperationsProducer.SKIP_MISSING_COLUMN_PROP</a></td>
-</tr>
-<tr class="rowColor">
-<td class="colOne"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#WARN_UNMATCHED_ROWS_PROP">org.apache.kudu.flume.sink.RegexpKuduOperationsProducer.WARN_UNMATCHED_ROWS_PROP</a></td>
 </tr>
 </tbody>
 </table>
@@ -161,13 +127,23 @@
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#defaultSocketReadTimeoutMs-long-">org.apache.kudu.client.KuduClient.KuduClientBuilder.defaultSocketReadTimeoutMs(long)</a>
-<div class="block"><span class="deprecationComment">socket read timeouts are no longer used</span></div>
+<td class="colOne"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#bossCount-int-">org.apache.kudu.client.AsyncKuduClient.AsyncKuduClientBuilder.bossCount(int)</a>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colOne"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#bossCount-int-">org.apache.kudu.client.KuduClient.KuduClientBuilder.bossCount(int)</a>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colOne"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#defaultSocketReadTimeoutMs-long-">org.apache.kudu.client.AsyncKuduClient.AsyncKuduClientBuilder.defaultSocketReadTimeoutMs(long)</a>
 <div class="block"><span class="deprecationComment">this option no longer has any effect</span></div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#defaultSocketReadTimeoutMs-long-">org.apache.kudu.client.KuduClient.KuduClientBuilder.defaultSocketReadTimeoutMs(long)</a>
+<div class="block"><span class="deprecationComment">socket read timeouts are no longer used</span></div>
 </td>
 </tr>
 <tr class="altColor">
@@ -237,15 +213,25 @@
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><a href="org/apache/kudu/client/KuduSession.html#setMutationBufferLowWatermark-float-">org.apache.kudu.client.KuduSession.setMutationBufferLowWatermark(float)</a></td>
+<td class="colOne"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#nioExecutors-java.util.concurrent.Executor-java.util.concurrent.Executor-">org.apache.kudu.client.AsyncKuduClient.AsyncKuduClientBuilder.nioExecutors(Executor, Executor)</a>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><a href="org/apache/kudu/client/SessionConfiguration.html#setMutationBufferLowWatermark-float-">org.apache.kudu.client.SessionConfiguration.setMutationBufferLowWatermark(float)</a>
-<div class="block"><span class="deprecationComment">The low watermark no longer has any effect.</span></div>
+<td class="colOne"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#nioExecutors-java.util.concurrent.Executor-java.util.concurrent.Executor-">org.apache.kudu.client.KuduClient.KuduClientBuilder.nioExecutors(Executor, Executor)</a>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colOne"><a href="org/apache/kudu/client/AsyncKuduSession.html#setMutationBufferLowWatermark-float-">org.apache.kudu.client.AsyncKuduSession.setMutationBufferLowWatermark(float)</a></td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><a href="org/apache/kudu/client/KuduSession.html#setMutationBufferLowWatermark-float-">org.apache.kudu.client.KuduSession.setMutationBufferLowWatermark(float)</a></td>
+</tr>
+<tr class="altColor">
+<td class="colOne"><a href="org/apache/kudu/client/SessionConfiguration.html#setMutationBufferLowWatermark-float-">org.apache.kudu.client.SessionConfiguration.setMutationBufferLowWatermark(float)</a>
+<div class="block"><span class="deprecationComment">The low watermark no longer has any effect.</span></div>
+</td>
 </tr>
 </tbody>
 </table>

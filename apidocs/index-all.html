@@ -140,6 +140,14 @@
  <code>Job</code> so that <a href="org/apache/kudu/client/KuduClient.html" title="class in org.apache.kudu.client"><code>KuduClient</code></a>s created from within tasks of that job can
  authenticate to Kudu.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#addDate-int-java.sql.Date-">addDate(int, Date)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Add a sql.Date for the specified column.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#addDate-java.lang.String-java.sql.Date-">addDate(String, Date)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Add a Date for the specified column.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#addDecimal-int-java.math.BigDecimal-">addDecimal(int, BigDecimal)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
 <dd>
 <div class="block">Add a Decimal for the specified column.</div>
@@ -282,6 +290,14 @@
 <dd>
 <div class="block">Add a Timestamp for the specified column.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#addVarchar-int-java.lang.String-">addVarchar(int, String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Add a VARCHAR for the specified column.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#addVarchar-java.lang.String-java.lang.String-">addVarchar(String, String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Add a VARCHAR for the specified column.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#ADMIN_OPERATION_TIMEOUT_MS_KEY">ADMIN_OPERATION_TIMEOUT_MS_KEY</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/test/KuduTestHarness.html#after--">after()</a></span> - Method in class org.apache.kudu.test.<a href="org/apache/kudu/test/KuduTestHarness.html" title="class in org.apache.kudu.test">KuduTestHarness</a></dt>
@@ -365,26 +381,12 @@
 <div class="block">An <code>AsyncKuduSession</code> belongs to a specific <a href="org/apache/kudu/client/AsyncKuduClient.html" title="class in org.apache.kudu.client"><code>AsyncKuduClient</code></a>, and represents a
  context in which all write data access should take place.</div>
 </dd>
-<dt><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink"><span class="typeNameLink">AvroKuduOperationsProducer</span></a> - Class in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>
-<div class="block">An Avro serializer that generates one operation per event by deserializing the event
- body as an Avro record and mapping its fields to columns in a Kudu table.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#AvroKuduOperationsProducer--">AvroKuduOperationsProducer()</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <a name="I:B">
 <!--   -->
 </a>
 <h2 class="title">B</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#BAD_COLUMN_VALUE_POLICY_PROP">BAD_COLUMN_VALUE_POLICY_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#BATCH_SIZE">BATCH_SIZE</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Maximum number of events that the sink should take from the channel per
- transaction.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html#batchSizeBytes-int-">batchSizeBytes(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html" title="class in org.apache.kudu.client">AbstractKuduScannerBuilder</a></dt>
 <dd>
 <div class="block">Sets the maximum number of bytes returned by the scanner, on each batch.</div>
@@ -402,11 +404,15 @@
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#bossCount-int-">bossCount(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html" title="class in org.apache.kudu.client">AsyncKuduClient.AsyncKuduClientBuilder</a></dt>
 <dd>
-<div class="block">Set the maximum number of boss threads.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#bossCount-int-">bossCount(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></dt>
 <dd>
-<div class="block">Set the maximum number of boss threads.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html#build--">build()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html" title="class in org.apache.kudu.client">AbstractKuduScannerBuilder</a></dt>
 <dd>&nbsp;</dd>
@@ -532,18 +538,6 @@
 <dd>
 <div class="block">Blocking call that flushes the buffers (see <a href="org/apache/kudu/client/KuduSession.html#flush--"><code>KuduSession.flush()</code></a>) and closes the sessions.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#close--">close()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html#close--">close()</a></span> - Method in interface org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html" title="interface in org.apache.kudu.flume.sink">KuduOperationsProducer</a></dt>
-<dd>
-<div class="block">Cleans up any state.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#close--">close()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#close--">close()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#close--">close()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/OperationResponse.html#collectErrors-java.util.List-">collectErrors(List&lt;OperationResponse&gt;)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/OperationResponse.html" title="class in org.apache.kudu.client">OperationResponse</a></dt>
 <dd>
 <div class="block">Utility method that collects all the row errors from the given list of responses.</div>
@@ -698,16 +692,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#ConfigurationError-java.lang.String-int-">ConfigurationError(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#configure-org.apache.flume.Context-">configure(Context)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#configure-org.apache.flume.Context-">configure(Context)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#configure-org.apache.flume.Context-">configure(Context)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#configure-org.apache.flume.Context-">configure(Context)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#configure-org.apache.flume.Context-">configure(Context)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#Corruption-java.lang.String-">Corruption(String)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#Corruption-java.lang.String-int-">Corruption(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
@@ -765,40 +749,16 @@
 </a>
 <h2 class="title">D</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_BAD_COLUMN_VALUE_POLICY">DEFAULT_BAD_COLUMN_VALUE_POLICY</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_ENCODING">DEFAULT_ENCODING</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/tools/BigLinkedListCommon.html#DEFAULT_HEADS_TABLE_NAME">DEFAULT_HEADS_TABLE_NAME</a></span> - Static variable in class org.apache.kudu.mapreduce.tools.<a href="org/apache/kudu/mapreduce/tools/BigLinkedListCommon.html" title="class in org.apache.kudu.mapreduce.tools">BigLinkedListCommon</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.html#DEFAULT_KEEP_ALIVE_PERIOD_MS">DEFAULT_KEEP_ALIVE_PERIOD_MS</a></span> - Static variable in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.html" title="class in org.apache.kudu.client">AsyncKuduClient</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_MISSING_COLUMN_POLICY">DEFAULT_MISSING_COLUMN_POLICY</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#DEFAULT_OPERATION">DEFAULT_OPERATION</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_OPERATION">DEFAULT_OPERATION</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.html#DEFAULT_OPERATION_TIMEOUT_MS">DEFAULT_OPERATION_TIMEOUT_MS</a></span> - Static variable in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.html" title="class in org.apache.kudu.client">AsyncKuduClient</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_SKIP_BAD_COLUMN_VALUE">DEFAULT_SKIP_BAD_COLUMN_VALUE</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_SKIP_MISSING_COLUMN">DEFAULT_SKIP_MISSING_COLUMN</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/test/KuduTestHarness.html#DEFAULT_SLEEP">DEFAULT_SLEEP</a></span> - Static variable in class org.apache.kudu.test.<a href="org/apache/kudu/test/KuduTestHarness.html" title="class in org.apache.kudu.test">KuduTestHarness</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/tools/BigLinkedListCommon.html#DEFAULT_TABLE_NAME">DEFAULT_TABLE_NAME</a></span> - Static variable in class org.apache.kudu.mapreduce.tools.<a href="org/apache/kudu/mapreduce/tools/BigLinkedListCommon.html" title="class in org.apache.kudu.mapreduce.tools">BigLinkedListCommon</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_UNMATCHED_ROW_POLICY">DEFAULT_UNMATCHED_ROW_POLICY</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#DEFAULT_WARN_UNMATCHED_ROWS">DEFAULT_WARN_UNMATCHED_ROWS</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#defaultAdminOperationTimeoutMs-long-">defaultAdminOperationTimeoutMs(long)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html" title="class in org.apache.kudu.client">AsyncKuduClient.AsyncKuduClientBuilder</a></dt>
 <dd>
 <div class="block">Sets the default timeout used for administrative operations (e.g.</div>
@@ -912,13 +872,13 @@
 <dd>
 <div class="block">Set the block encoding for this column.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#ENCODING_PROP">ENCODING_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#EndOfFile-java.lang.String-">EndOfFile(String)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#EndOfFile-java.lang.String-int-">EndOfFile(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduScanToken.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduScanToken.html" title="class in org.apache.kudu.client">KuduScanToken</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnSchema.html#equals-java.lang.Object-">equals(Object)</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a></dt>
 <dd>&nbsp;</dd>
@@ -994,6 +954,11 @@
 </a>
 <h2 class="title">G</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/ResourceMetrics.html#get--">get()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client">ResourceMetrics</a></dt>
+<dd>
+<div class="block">Returns a copy of this ResourceMetrics's underlying map of metric name to
+ metric value.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#getAdminOperationTimeoutMs--">getAdminOperationTimeoutMs()</a></span> - Method in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>
 <div class="block">Get the configured timeout for admin operations.</div>
@@ -1099,8 +1064,6 @@
 <dd>
 <div class="block">Returns if this scanner was configured to cache data blocks or not.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#getClient--">getClient()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#getClient--">getClient()</a></span> - Method in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>
 <div class="block">Get a client connected to the configured Master(s).</div>
@@ -1235,6 +1198,22 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/Type.html#getDataType-org.apache.kudu.ColumnTypeAttributes-">getDataType(ColumnTypeAttributes)</a></span> - Method in enum org.apache.kudu.<a href="org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a></dt>
 <dd>
 <div class="block">Get the data type from the common's pb</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#getDate-java.lang.String-">getDate(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Get the specified column's Date.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#getDate-int-">getDate(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Get the specified column's Date.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/RowResult.html#getDate-java.lang.String-">getDate(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/RowResult.html" title="class in org.apache.kudu.client">RowResult</a></dt>
+<dd>
+<div class="block">Get the specified column's Date.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/RowResult.html#getDate-int-">getDate(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/RowResult.html" title="class in org.apache.kudu.client">RowResult</a></dt>
+<dd>
+<div class="block">Get the specified column's Date.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#getDecimal-java.lang.String-">getDecimal(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
 <dd>
@@ -1432,6 +1411,14 @@
 <dd>
 <div class="block">Return the current leader, or null if there is none.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnTypeAttributes.html#getLength--">getLength()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnTypeAttributes.html" title="class in org.apache.kudu">ColumnTypeAttributes</a></dt>
+<dd>
+<div class="block">Returns the length;</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnTypeAttributes.html#getLength--">getLength()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnTypeAttributes.html" title="class in org.apache.kudu">ColumnTypeAttributes</a></dt>
+<dd>
+<div class="block">Returns the length;</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduScanner.html#getLimit--">getLimit()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduScanner.html" title="class in org.apache.kudu.client">AsyncKuduScanner</a></dt>
 <dd>
 <div class="block">Returns the maximum number of rows that this scanner was configured to return.</div>
@@ -1506,6 +1493,10 @@
 <div class="block"><span class="deprecationComment">Please use getErrorStatus() instead. Will be removed in a future version.</span></div>
 </div>
 </dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/ResourceMetrics.html#getMetric-java.lang.String-">getMetric(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client">ResourceMetrics</a></dt>
+<dd>
+<div class="block">Returns the value of the metric named by 'name', or 0 if there is no such metric.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduTable.html#getName--">getName()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduTable.html" title="class in org.apache.kudu.client">KuduTable</a></dt>
 <dd>
 <div class="block">Get this table's name.</div>
@@ -1526,7 +1517,7 @@
 <dd>
 <div class="block">Get the string representation of this type</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/util/BloomFilter.html#getNHashes--">getNHashes()</a></span> - Method in class org.apache.kudu.util.<a href="org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></dt>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/util/BloomFilter.html#getNumHashes--">getNumHashes()</a></span> - Method in class org.apache.kudu.util.<a href="org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></dt>
 <dd>
 <div class="block">Get the number of hashing times when updating or checking containment.</div>
 </dd>
@@ -1566,18 +1557,6 @@
 <dd>
 <div class="block">Get the Operation that failed.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#getOperations-org.apache.flume.Event-">getOperations(Event)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html#getOperations-org.apache.flume.Event-">getOperations(Event)</a></span> - Method in interface org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html" title="interface in org.apache.kudu.flume.sink">KuduOperationsProducer</a></dt>
-<dd>
-<div class="block">Returns the operations that should be written to Kudu as a result of this event.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#getOperations-org.apache.flume.Event-">getOperations(Event)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#getOperations-org.apache.flume.Event-">getOperations(Event)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#getOperations-org.apache.flume.Event-">getOperations(Event)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#getOperationTimeoutMs--">getOperationTimeoutMs()</a></span> - Method in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>
 <div class="block">Get the configured timeout for operations on sessions and scanners.</div>
@@ -1650,6 +1629,14 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/LocatedTablet.html#getReplicas--">getReplicas()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/LocatedTablet.html" title="class in org.apache.kudu.client">LocatedTablet</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduScanner.html#getResourceMetrics--">getResourceMetrics()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduScanner.html" title="class in org.apache.kudu.client">AsyncKuduScanner</a></dt>
+<dd>
+<div class="block">Returns the <code>ResourceMetrics</code> for this scanner.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduScanner.html#getResourceMetrics--">getResourceMetrics()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduScanner.html" title="class in org.apache.kudu.client">KuduScanner</a></dt>
+<dd>
+<div class="block">Returns the resource metrics of this scanner.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/LocatedTablet.Replica.html#getRole--">getRole()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/LocatedTablet.Replica.html" title="class in org.apache.kudu.client">LocatedTablet.Replica</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Operation.html#getRow--">getRow()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Operation.html" title="class in org.apache.kudu.client">Operation</a></dt>
@@ -1948,9 +1935,13 @@
 <div class="block">Convert the pb DataType to a Type</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/Type.html#getTypeForName-java.lang.String-">getTypeForName(String)</a></span> - Static method in enum org.apache.kudu.<a href="org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Create a Type from its name</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/Type.html#getTypeForName-java.lang.String-">getTypeForName(String)</a></span> - Static method in enum org.apache.kudu.<a href="org/apache/kudu/Type.html" title="enum in org.apache.kudu">Type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Create a Type from its name</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnSchema.html#getTypeSize--">getTypeSize()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a></dt>
 <dd>
 <div class="block">The size of this type in bytes on the wire.</div>
@@ -1963,6 +1954,22 @@
 <dd>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
 <div class="block">Get the upper bound in its raw representation</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#getVarchar-java.lang.String-">getVarchar(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Get the specified column's VARCHAR.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#getVarchar-int-">getVarchar(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
+<dd>
+<div class="block">Get the specified column's VARCHAR.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/RowResult.html#getVarchar-int-">getVarchar(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/RowResult.html" title="class in org.apache.kudu.client">RowResult</a></dt>
+<dd>
+<div class="block">Get the specified column's varchar.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/RowResult.html#getVarchar-java.lang.String-">getVarchar(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/RowResult.html" title="class in org.apache.kudu.client">RowResult</a></dt>
+<dd>
+<div class="block">Get the specified column's varchar.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/Schema.html#getVarLengthColumnCount--">getVarLengthColumnCount()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/Schema.html" title="class in org.apache.kudu">Schema</a></dt>
 <dd>
@@ -2015,6 +2022,8 @@
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#hashCode--">hashCode()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduScanToken.html#hashCode--">hashCode()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduScanToken.html" title="class in org.apache.kudu.client">KuduScanToken</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnSchema.html#hashCode--">hashCode()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnSchema.html#hashCode--">hashCode()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnSchema.html" title="class in org.apache.kudu">ColumnSchema</a></dt>
@@ -2036,6 +2045,14 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduClient.html#hasLastPropagatedTimestamp--">hasLastPropagatedTimestamp()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduClient.html" title="class in org.apache.kudu.client">KuduClient</a></dt>
 <dd>
 <div class="block">Checks if the client received any timestamps from a server.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnTypeAttributes.html#hasLength--">hasLength()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnTypeAttributes.html" title="class in org.apache.kudu">ColumnTypeAttributes</a></dt>
+<dd>
+<div class="block">Returns true if the length is set;</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnTypeAttributes.html#hasLength--">hasLength()</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnTypeAttributes.html" title="class in org.apache.kudu">ColumnTypeAttributes</a></dt>
+<dd>
+<div class="block">Returns true if the length is set;</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduScanner.html#hasMoreRows--">hasMoreRows()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduScanner.html" title="class in org.apache.kudu.client">AsyncKuduScanner</a></dt>
 <dd>
@@ -2098,10 +2115,6 @@
 </a>
 <h2 class="title">I</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#IGNORE_DUPLICATE_ROWS">IGNORE_DUPLICATE_ROWS</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Whether to ignore duplicate primary key errors caused by inserts.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#IllegalState-java.lang.String-">IllegalState(String)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#IllegalState-java.lang.String-int-">IllegalState(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
@@ -2135,21 +2148,13 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#Incomplete-java.lang.String-int-">Incomplete(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#initialize-org.apache.kudu.client.KuduTable-">initialize(KuduTable)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html#initialize-org.apache.kudu.client.KuduTable-">initialize(KuduTable)</a></span> - Method in interface org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html" title="interface in org.apache.kudu.flume.sink">KuduOperationsProducer</a></dt>
-<dd>
-<div class="block">Initializes the operations producer.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#initialize-org.apache.kudu.client.KuduTable-">initialize(KuduTable)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#initialize-org.apache.kudu.client.KuduTable-">initialize(KuduTable)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#initialize-org.apache.kudu.client.KuduTable-">initialize(KuduTable)</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/apache/kudu/client/Insert.html" title="class in org.apache.kudu.client"><span class="typeNameLink">Insert</span></a> - Class in <a href="org/apache/kudu/client/package-summary.html">org.apache.kudu.client</a></dt>
 <dd>
 <div class="block">Represents a single row insert.</div>
+</dd>
+<dt><a href="org/apache/kudu/client/InsertIgnore.html" title="class in org.apache.kudu.client"><span class="typeNameLink">InsertIgnore</span></a> - Class in <a href="org/apache/kudu/client/package-summary.html">org.apache.kudu.client</a></dt>
+<dd>
+<div class="block">Represents a single row insert ignoring duplicate rows.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduScanToken.html#intoScanner-org.apache.kudu.client.KuduClient-">intoScanner(KuduClient)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduScanToken.html" title="class in org.apache.kudu.client">KuduScanToken</a></dt>
 <dd>
@@ -2349,14 +2354,6 @@
 <div class="block">Set the period at which to send keep-alive requests to the tablet
  server to ensure that this scanner will not time out.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#KERBEROS_KEYTAB">KERBEROS_KEYTAB</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Path to the keytab file used for authentication</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#KERBEROS_PRINCIPAL">KERBEROS_PRINCIPAL</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Kerberos principal used for authentication</div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnSchema.ColumnSchemaBuilder.html#key-boolean-">key(boolean)</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnSchema.ColumnSchemaBuilder.html" title="class in org.apache.kudu">ColumnSchema.ColumnSchemaBuilder</a></dt>
 <dd>
 <div class="block">Sets if the column is part of the row key.</div>
@@ -2365,10 +2362,6 @@
 <dd>
 <div class="block">Sets if the column is part of the row key.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#KEY_COLUMN_DEFAULT">KEY_COLUMN_DEFAULT</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#KEY_COLUMN_PROP">KEY_COLUMN_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/test/KuduTestHarness.html#killAllMasterServers--">killAllMasterServers()</a></span> - Method in class org.apache.kudu.test.<a href="org/apache/kudu/test/KuduTestHarness.html" title="class in org.apache.kudu.test">KuduTestHarness</a></dt>
 <dd>
 <div class="block">Kills all the master servers.</div>
@@ -2426,11 +2419,6 @@
 <div class="block">When exceptions are thrown by the asynchronous Kudu client, the stack trace is
  typically deep within the internals of the Kudu client and/or Netty.</div>
 </dd>
-<dt><a href="org/apache/kudu/flume/sink/KuduOperationsProducer.html" title="interface in org.apache.kudu.flume.sink"><span class="typeNameLink">KuduOperationsProducer</span></a> - Interface in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>
-<div class="block">Interface for an operations producer that produces Kudu Operations from
- Flume events.</div>
-</dd>
 <dt><a href="org/apache/kudu/client/KuduPartitioner.html" title="class in org.apache.kudu.client"><span class="typeNameLink">KuduPartitioner</span></a> - Class in <a href="org/apache/kudu/client/package-summary.html">org.apache.kudu.client</a></dt>
 <dd>
 <div class="block">A KuduPartitioner allows clients to determine the target partition of a
@@ -2477,18 +2465,6 @@
 <dd>
 <div class="block">Synchronous version of <a href="org/apache/kudu/client/AsyncKuduSession.html" title="class in org.apache.kudu.client"><code>AsyncKuduSession</code></a>.</div>
 </dd>
-<dt><a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink"><span class="typeNameLink">KuduSink</span></a> - Class in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>
-<div class="block">A Flume sink that reads events from a channel and writes them to a Kudu table.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#KuduSink--">KuduSink()</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#KuduSink-org.apache.kudu.client.KuduClient-">KuduSink(KuduClient)</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink"><span class="typeNameLink">KuduSinkConfigurationConstants</span></a> - Class in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#KuduSinkConfigurationConstants--">KuduSinkConfigurationConstants()</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/apache/kudu/client/KuduTable.html" title="class in org.apache.kudu.client"><span class="typeNameLink">KuduTable</span></a> - Class in <a href="org/apache/kudu/client/package-summary.html">org.apache.kudu.client</a></dt>
 <dd>
 <div class="block">A KuduTable represents a table on a particular cluster.</div>
@@ -2538,6 +2514,10 @@
 </a>
 <h2 class="title">L</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html#length-int-">length(int)</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html#length-int-">length(int)</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnTypeAttributes.ColumnTypeAttributesBuilder.html" title="class in org.apache.kudu">ColumnTypeAttributes.ColumnTypeAttributesBuilder</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html#limit-long-">limit(long)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html" title="class in org.apache.kudu.client">AbstractKuduScannerBuilder</a></dt>
 <dd>
 <div class="block">Sets a limit on the number of rows that will be returned by the scanner.</div>
@@ -2590,10 +2570,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/tools/ImportParquet.html#main-java.lang.String:A-">main(String[])</a></span> - Static method in class org.apache.kudu.mapreduce.tools.<a href="org/apache/kudu/mapreduce/tools/ImportParquet.html" title="class in org.apache.kudu.mapreduce.tools">ImportParquet</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#MASTER_ADDRESSES">MASTER_ADDRESSES</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Comma-separated list of "host:port" Kudu master addresses.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#MASTER_ADDRESSES_DEFAULT">MASTER_ADDRESSES_DEFAULT</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#MASTER_ADDRESSES_KEY">MASTER_ADDRESSES_KEY</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
@@ -2615,8 +2591,6 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/util/BloomFilter.html#mayContain-double-">mayContain(double)</a></span> - Method in class org.apache.kudu.util.<a href="org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/util/BloomFilter.html#mayContain-java.lang.String-">mayContain(String)</a></span> - Method in class org.apache.kudu.util.<a href="org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#MISSING_COLUMN_POLICY_PROP">MISSING_COLUMN_POLICY_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <a name="I:N">
@@ -2645,6 +2619,10 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.sql.Timestamp-">newComparisonPredicate(ColumnSchema, KuduPredicate.ComparisonOp, Timestamp)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
 <dd>
 <div class="block">Creates a new comparison predicate on a timestamp column.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-java.sql.Date-">newComparisonPredicate(ColumnSchema, KuduPredicate.ComparisonOp, Date)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
+<dd>
+<div class="block">Creates a new comparison predicate on a date column.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#newComparisonPredicate-org.apache.kudu.ColumnSchema-org.apache.kudu.client.KuduPredicate.ComparisonOp-float-">newComparisonPredicate(ColumnSchema, KuduPredicate.ComparisonOp, float)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
 <dd>
@@ -2677,6 +2655,10 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduTable.html#newInsert--">newInsert()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduTable.html" title="class in org.apache.kudu.client">KuduTable</a></dt>
 <dd>
 <div class="block">Get a new insert configured with this table's schema.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduTable.html#newInsertIgnore--">newInsertIgnore()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduTable.html" title="class in org.apache.kudu.client">KuduTable</a></dt>
+<dd>
+<div class="block">Get a new insert ignore configured with this table's schema.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#newIsNotNullPredicate-org.apache.kudu.ColumnSchema-">newIsNotNullPredicate(ColumnSchema)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
 <dd>
@@ -2734,13 +2716,25 @@
 <dd>
 <div class="block">Scans a number of rows.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#nioExecutor-java.util.concurrent.Executor-">nioExecutor(Executor)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html" title="class in org.apache.kudu.client">AsyncKuduClient.AsyncKuduClientBuilder</a></dt>
+<dd>
+<div class="block">Set the executor which will be used for the embedded Netty workers.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#nioExecutor-java.util.concurrent.Executor-">nioExecutor(Executor)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></dt>
+<dd>
+<div class="block">Set the executor which will be used for the embedded Netty workers.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#nioExecutors-java.util.concurrent.Executor-java.util.concurrent.Executor-">nioExecutors(Executor, Executor)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html" title="class in org.apache.kudu.client">AsyncKuduClient.AsyncKuduClientBuilder</a></dt>
 <dd>
-<div class="block">Set the executors which will be used for the embedded Netty boss and workers.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#nioExecutors-java.util.concurrent.Executor-java.util.concurrent.Executor-">nioExecutors(Executor, Executor)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></dt>
 <dd>
-<div class="block">Set the executors which will be used for the embedded Netty boss and workers.</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="block"><span class="deprecationComment">the bossExecutor is no longer used and will have no effect if provided</span></div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.html#NO_TIMESTAMP">NO_TIMESTAMP</a></span> - Static variable in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.html" title="class in org.apache.kudu.client">AsyncKuduClient</a></dt>
 <dd>&nbsp;</dd>
@@ -2794,14 +2788,6 @@
 <dd>
 <div class="block">Base class for the RPCs that related to WriteRequestPB.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#OPERATION_DEFAULT">OPERATION_DEFAULT</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#OPERATION_PROP">OPERATION_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#OPERATION_PROP">OPERATION_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#OPERATION_PROP">OPERATION_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#OPERATION_TIMEOUT_MS_DEFAULT">OPERATION_TIMEOUT_MS_DEFAULT</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#OPERATION_TIMEOUT_MS_KEY">OPERATION_TIMEOUT_MS_KEY</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
@@ -2835,16 +2821,6 @@
 <dd>
 <div class="block">Determine the partition index that the given row falls into.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#PATTERN_PROP">PATTERN_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#PAYLOAD_COLUMN_DEFAULT">PAYLOAD_COLUMN_DEFAULT</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#PAYLOAD_COLUMN_DEFAULT">PAYLOAD_COLUMN_DEFAULT</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#PAYLOAD_COLUMN_PROP">PAYLOAD_COLUMN_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#PAYLOAD_COLUMN_PROP">PAYLOAD_COLUMN_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduScanner.ReadMode.html#pbVersion--">pbVersion()</a></span> - Method in enum org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduScanner.ReadMode.html" title="enum in org.apache.kudu.client">AsyncKuduScanner.ReadMode</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/ExternalConsistencyMode.html#pbVersion--">pbVersion()</a></span> - Method in enum org.apache.kudu.client.<a href="org/apache/kudu/client/ExternalConsistencyMode.html" title="enum in org.apache.kudu.client">ExternalConsistencyMode</a></dt>
@@ -2864,22 +2840,6 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html#prefetching-boolean-">prefetching(boolean)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html" title="class in org.apache.kudu.client">AbstractKuduScannerBuilder</a></dt>
 <dd>
 <div class="block">Enables prefetching of rows for the scanner, i.e.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#process--">process()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#PRODUCER">PRODUCER</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">The fully qualified class name of the KuduOperationsProducer class that the
- sink should use.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#PRODUCER_PREFIX">PRODUCER_PREFIX</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Prefix for configuration parameters that are passed to the
- KuduOperationsProducer.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#PROXY_USER">PROXY_USER</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">The effective user if different from the kerberos principal</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/util/BloomFilter.html#put-byte:A-">put(byte[])</a></span> - Method in class org.apache.kudu.util.<a href="org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></dt>
 <dd>
@@ -2931,14 +2891,6 @@
 <dd>
 <div class="block">Sets the read mode, the default is to read the latest values.</div>
 </dd>
-<dt><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink"><span class="typeNameLink">RegexpKuduOperationsProducer</span></a> - Class in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>
-<div class="block">A regular expression operations producer that generates one or more Kudu
- <a href="org/apache/kudu/client/Insert.html" title="class in org.apache.kudu.client"><code>Insert</code></a> or <a href="org/apache/kudu/client/Upsert.html" title="class in org.apache.kudu.client"><code>Upsert</code></a> operations per Flume <code>Event</code> by
- parsing the event <code>body</code> using a regular expression.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#RegexpKuduOperationsProducer--">RegexpKuduOperationsProducer()</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#RemoteError-java.lang.String-">RemoteError(String)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#RemoteError-java.lang.String-int-">RemoteError(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
@@ -2970,6 +2922,12 @@
 <div class="block">Resets the clients so that their state is completely fresh, including meta
  cache, connections, open tables, sessions and scanners, and propagated timestamp.</div>
 </dd>
+<dt><a href="org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client"><span class="typeNameLink">ResourceMetrics</span></a> - Class in <a href="org/apache/kudu/client/package-summary.html">org.apache.kudu.client</a></dt>
+<dd>
+<div class="block">A container for scanner resource metrics.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="org/apache/kudu/client/ResourceMetrics.html#ResourceMetrics--">ResourceMetrics()</a></span> - Constructor for class org.apache.kudu.client.<a href="org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client">ResourceMetrics</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/test/KuduTestHarness.html#restartLeaderMaster--">restartLeaderMaster()</a></span> - Method in class org.apache.kudu.test.<a href="org/apache/kudu/test/KuduTestHarness.html" title="class in org.apache.kudu.test">KuduTestHarness</a></dt>
 <dd>
 <div class="block">Kills and restarts the leader master.</div>
@@ -3056,12 +3014,6 @@
 <dd>
 <div class="block">Constructs a schema using the specified columns and IDs.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#SCHEMA_LITERAL_HEADER">SCHEMA_LITERAL_HEADER</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#SCHEMA_PROP">SCHEMA_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html#SCHEMA_URL_HEADER">SCHEMA_URL_HEADER</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/AvroKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">AvroKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduPredicate.html#serialize-java.util.List-">serialize(List&lt;KuduPredicate&gt;)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></dt>
 <dd>
 <div class="block">Serializes a list of <code>KuduPredicate</code> into a byte array.</div>
@@ -3346,28 +3298,6 @@
 <dd>
 <div class="block">Performs a graceful shutdown of this instance.</div>
 </dd>
-<dt><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink"><span class="typeNameLink">SimpleKeyedKuduOperationsProducer</span></a> - Class in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>
-<div class="block">A simple serializer that generates one <a href="org/apache/kudu/client/Insert.html" title="class in org.apache.kudu.client"><code>Insert</code></a> or <a href="org/apache/kudu/client/Upsert.html" title="class in org.apache.kudu.client"><code>Upsert</code></a>
- per <code>Event</code> by writing the event body into a BINARY column.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html#SimpleKeyedKuduOperationsProducer--">SimpleKeyedKuduOperationsProducer()</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKeyedKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKeyedKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink"><span class="typeNameLink">SimpleKuduOperationsProducer</span></a> - Class in <a href="org/apache/kudu/flume/sink/package-summary.html">org.apache.kudu.flume.sink</a></dt>
-<dd>
-<div class="block">A simple serializer that generates one <a href="org/apache/kudu/client/Insert.html" title="class in org.apache.kudu.client"><code>Insert</code></a> per <code>Event</code>
- by writing the event body into a BINARY column.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html#SimpleKuduOperationsProducer--">SimpleKuduOperationsProducer()</a></span> - Constructor for class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/SimpleKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">SimpleKuduOperationsProducer</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#SKIP_BAD_COLUMN_VALUE_PROP">SKIP_BAD_COLUMN_VALUE_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#SKIP_MISSING_COLUMN_PROP">SKIP_MISSING_COLUMN_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.html#SLEEP_TIME">SLEEP_TIME</a></span> - Static variable in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.html" title="class in org.apache.kudu.client">AsyncKuduClient</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html#snapshotTimestampMicros-long-">snapshotTimestampMicros(long)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AbstractKuduScannerBuilder.html" title="class in org.apache.kudu.client">AbstractKuduScannerBuilder</a></dt>
@@ -3381,8 +3311,6 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#SOCKET_READ_TIMEOUT_MS_DEFAULT">SOCKET_READ_TIMEOUT_MS_DEFAULT</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/CommandLineParser.html#SOCKET_READ_TIMEOUT_MS_KEY">SOCKET_READ_TIMEOUT_MS_KEY</a></span> - Static variable in class org.apache.kudu.mapreduce.<a href="org/apache/kudu/mapreduce/CommandLineParser.html" title="class in org.apache.kudu.mapreduce">CommandLineParser</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#start--">start()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/test/KuduTestHarness.html#startAllMasterServers--">startAllMasterServers()</a></span> - Method in class org.apache.kudu.test.<a href="org/apache/kudu/test/KuduTestHarness.html" title="class in org.apache.kudu.test">KuduTestHarness</a></dt>
 <dd>
@@ -3406,8 +3334,6 @@
 <dd>
 <div class="block">Representation of an error code and message.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSink.html#stop--">stop()</a></span> - Method in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSink.html" title="class in org.apache.kudu.flume.sink">KuduSink</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/PartialRow.html#stringifyRowKey--">stringifyRowKey()</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></dt>
 <dd>
 <div class="block">Transforms the row key into a string representation where each column is in the format:
@@ -3427,10 +3353,6 @@
 </a>
 <h2 class="title">T</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#TABLE_NAME">TABLE_NAME</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">The name of the table in Kudu to write to.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/mapreduce/tools/BigLinkedListCommon.html#TABLE_NAME_KEY">TABLE_NAME_KEY</a></span> - Static variable in class org.apache.kudu.mapreduce.tools.<a href="org/apache/kudu/mapreduce/tools/BigLinkedListCommon.html" title="class in org.apache.kudu.mapreduce.tools">BigLinkedListCommon</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.html#tableExists-java.lang.String-">tableExists(String)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.html" title="class in org.apache.kudu.client">AsyncKuduClient</a></dt>
@@ -3449,10 +3371,6 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#TimedOut-java.lang.String-int-">TimedOut(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html#TIMEOUT_MILLIS">TIMEOUT_MILLIS</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/KuduSinkConfigurationConstants.html" title="class in org.apache.kudu.flume.sink">KuduSinkConfigurationConstants</a></dt>
-<dd>
-<div class="block">Timeout period for Kudu operations, in milliseconds.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/ColumnRangePredicate.html#toByteArray-java.util.List-">toByteArray(List&lt;ColumnRangePredicate&gt;)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/ColumnRangePredicate.html" title="class in org.apache.kudu.client">ColumnRangePredicate</a></dt>
 <dd>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
@@ -3537,8 +3455,6 @@
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#Uninitialized-java.lang.String-">Uninitialized(String)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/Status.html#Uninitialized-java.lang.String-int-">Uninitialized(String, int)</a></span> - Static method in class org.apache.kudu.client.<a href="org/apache/kudu/client/Status.html" title="class in org.apache.kudu.client">Status</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#UNMATCHED_ROW_POLICY_PROP">UNMATCHED_ROW_POLICY_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/apache/kudu/client/Update.html" title="class in org.apache.kudu.client"><span class="typeNameLink">Update</span></a> - Class in <a href="org/apache/kudu/client/package-summary.html">org.apache.kudu.client</a></dt>
 <dd>
@@ -3685,10 +3601,6 @@ the order they are declared.</div>
 </a>
 <h2 class="title">W</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html#WARN_UNMATCHED_ROWS_PROP">WARN_UNMATCHED_ROWS_PROP</a></span> - Static variable in class org.apache.kudu.flume.sink.<a href="org/apache/kudu/flume/sink/RegexpKuduOperationsProducer.html" title="class in org.apache.kudu.flume.sink">RegexpKuduOperationsProducer</a></dt>
-<dd>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
-</dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/ColumnSchema.ColumnSchemaBuilder.html#wireType-org.apache.kudu.Common.DataType-">wireType(Common.DataType)</a></span> - Method in class org.apache.kudu.<a href="org/apache/kudu/ColumnSchema.ColumnSchemaBuilder.html" title="class in org.apache.kudu">ColumnSchema.ColumnSchemaBuilder</a></dt>
 <dd>
 <div class="block">Allows an alternate <code>Common.DataType</code> to override the <a href="org/apache/kudu/Type.html" title="enum in org.apache.kudu"><code>Type</code></a>
@@ -3701,7 +3613,7 @@ the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html#workerCount-int-">workerCount(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/AsyncKuduClient.AsyncKuduClientBuilder.html" title="class in org.apache.kudu.client">AsyncKuduClient.AsyncKuduClientBuilder</a></dt>
 <dd>
-<div class="block">Set the maximum number of worker threads.</div>
+<div class="block">Set the maximum number of Netty worker threads.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html#workerCount-int-">workerCount(int)</a></span> - Method in class org.apache.kudu.client.<a href="org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></dt>
 <dd>

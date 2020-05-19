@@ -42,7 +42,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../org/apache/kudu/package-summary.html">Prev&nbsp;Package</a></li>
-<li><a href="../../../../org/apache/kudu/flume/sink/package-summary.html">Next&nbsp;Package</a></li>
+<li><a href="../../../../org/apache/kudu/mapreduce/package-summary.html">Next&nbsp;Package</a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?org/apache/kudu/client/package-summary.html" target="_top">Frames</a></li>
@@ -180,139 +180,151 @@
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><a href="../../../../org/apache/kudu/client/InsertIgnore.html" title="class in org.apache.kudu.client">InsertIgnore</a></td>
+<td class="colLast">
+<div class="block">Represents a single row insert ignoring duplicate rows.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/IsAlterTableDoneResponse.html" title="class in org.apache.kudu.client">IsAlterTableDoneResponse</a></td>
 <td class="colLast">
 <div class="block">Response to a isAlterTableDone command to use to know if an alter table is currently running on
  the specified table.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/IsCreateTableDoneResponse.html" title="class in org.apache.kudu.client">IsCreateTableDoneResponse</a></td>
 <td class="colLast">
 <div class="block">Response to an isCreateTableDone command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduClient.html" title="class in org.apache.kudu.client">KuduClient</a></td>
 <td class="colLast">
 <div class="block">A synchronous and thread-safe client for Kudu.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduClient.KuduClientBuilder.html" title="class in org.apache.kudu.client">KuduClient.KuduClientBuilder</a></td>
 <td class="colLast">
 <div class="block">Builder class to use in order to connect to Kudu.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduException.OriginalException.html" title="class in org.apache.kudu.client">KuduException.OriginalException</a></td>
 <td class="colLast">
 <div class="block">When exceptions are thrown by the asynchronous Kudu client, the stack trace is
  typically deep within the internals of the Kudu client and/or Netty.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduPartitioner.html" title="class in org.apache.kudu.client">KuduPartitioner</a></td>
 <td class="colLast">
 <div class="block">A KuduPartitioner allows clients to determine the target partition of a
  row without actually performing a write.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduPartitioner.KuduPartitionerBuilder.html" title="class in org.apache.kudu.client">KuduPartitioner.KuduPartitionerBuilder</a></td>
 <td class="colLast">
 <div class="block">A Builder class to build <a href="../../../../org/apache/kudu/client/KuduPartitioner.html" title="class in org.apache.kudu.client"><code>KuduPartitioner</code></a>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduPredicate.html" title="class in org.apache.kudu.client">KuduPredicate</a></td>
 <td class="colLast">
 <div class="block">A predicate which can be used to filter rows based on the value of a column.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduScanner.html" title="class in org.apache.kudu.client">KuduScanner</a></td>
 <td class="colLast">
 <div class="block">Synchronous version of <a href="../../../../org/apache/kudu/client/AsyncKuduScanner.html" title="class in org.apache.kudu.client"><code>AsyncKuduScanner</code></a>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduScanner.KuduScannerBuilder.html" title="class in org.apache.kudu.client">KuduScanner.KuduScannerBuilder</a></td>
 <td class="colLast">
 <div class="block">A Builder class to build <a href="../../../../org/apache/kudu/client/KuduScanner.html" title="class in org.apache.kudu.client"><code>KuduScanner</code></a>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduScannerIterator.html" title="class in org.apache.kudu.client">KuduScannerIterator</a></td>
 <td class="colLast">
 <div class="block">An iterator for the RowResults of a KuduScanner.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduScanToken.html" title="class in org.apache.kudu.client">KuduScanToken</a></td>
 <td class="colLast">
 <div class="block">A scan token describes a partial scan of a Kudu table limited to a single
  contiguous physical location.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduScanToken.KuduScanTokenBuilder.html" title="class in org.apache.kudu.client">KuduScanToken.KuduScanTokenBuilder</a></td>
 <td class="colLast">
 <div class="block">Builds a sequence of scan tokens.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduSession.html" title="class in org.apache.kudu.client">KuduSession</a></td>
 <td class="colLast">
 <div class="block">Synchronous version of <a href="../../../../org/apache/kudu/client/AsyncKuduSession.html" title="class in org.apache.kudu.client"><code>AsyncKuduSession</code></a>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduTable.html" title="class in org.apache.kudu.client">KuduTable</a></td>
 <td class="colLast">
 <div class="block">A KuduTable represents a table on a particular cluster.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/KuduTableStatistics.html" title="class in org.apache.kudu.client">KuduTableStatistics</a></td>
 <td class="colLast">
 <div class="block">Represent statistics belongs to a specific kudu table.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/ListTablesResponse.html" title="class in org.apache.kudu.client">ListTablesResponse</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/ListTabletServersResponse.html" title="class in org.apache.kudu.client">ListTabletServersResponse</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/LocatedTablet.html" title="class in org.apache.kudu.client">LocatedTablet</a></td>
 <td class="colLast">
 <div class="block">Information about the locations of tablets in a Kudu table.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/LocatedTablet.Replica.html" title="class in org.apache.kudu.client">LocatedTablet.Replica</a></td>
 <td class="colLast">
 <div class="block">One of the replicas of the tablet.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/Operation.html" title="class in org.apache.kudu.client">Operation</a></td>
 <td class="colLast">
 <div class="block">Base class for the RPCs that related to WriteRequestPB.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/OperationResponse.html" title="class in org.apache.kudu.client">OperationResponse</a></td>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../org/apache/kudu/client/PartialRow.html" title="class in org.apache.kudu.client">PartialRow</a></td>
 <td class="colLast">
 <div class="block">Class used to represent parts of a row along with its schema.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a href="../../../../org/apache/kudu/client/ResourceMetrics.html" title="class in org.apache.kudu.client">ResourceMetrics</a></td>
+<td class="colLast">
+<div class="block">A container for scanner resource metrics.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -464,7 +476,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../org/apache/kudu/package-summary.html">Prev&nbsp;Package</a></li>
-<li><a href="../../../../org/apache/kudu/flume/sink/package-summary.html">Next&nbsp;Package</a></li>
+<li><a href="../../../../org/apache/kudu/mapreduce/package-summary.html">Next&nbsp;Package</a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?org/apache/kudu/client/package-summary.html" target="_top">Frames</a></li>

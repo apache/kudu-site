@@ -607,39 +607,19 @@ in many places. When interfacing with that code, you can continue to use <code>s
 <div class="sect3">
 <h4 id="_function_binding_and_callbacks"><a class="link" href="#_function_binding_and_callbacks">Function Binding and Callbacks</a></h4>
 <div class="paragraph">
-<p>Existing code uses <code>boost::bind</code> and <code>boost::function</code> to capture and manage
-functors. For new code, use <code>std::bind</code> and <code>std::function</code>, which are
-functionally equivalent.</p>
+<p>All code should use C++11 lambdas to capture and manage functors. Functions that
+take a lambda as an argument should use <code>std::function</code> as the argument&#8217;s
+type. Do not use <code>boost::bind</code> or <code>std::bind</code> to create functors. Lambdas offer
+the compiler greater opportunity to inline, and <code>std::bind</code> in particular is
+<a href="https://abseil.io/tips/108">error-prone</a> and has a proclivity towards heap
+allocation for storing bound parameters.</p>
 </div>
 <div class="paragraph">
-<p>Alternatively, the <code>Bind</code> and <code>Callback</code> classes in <code>gutil</code> may also be used to
-capture functors. See <em>gutil/callback.h</em> for more details and
-<em>util/callback_bind-test.cc</em> for examples. While less full-featured, they
-provide different options from their counterparts by the way of argument
-lifecycle management. The benefits of each are described below:</p>
-</div>
-<div class="ulist none">
-<div class="title"><code>std::bind</code> and <code>std::function</code></div>
-<ul class="none">
-<li>
-<p>natively supports binding <code>shared_ptr</code> and <code>weak_ptr</code> objects, so a bound
-smartpointer argument will increment its count during <code>bind</code>, and decrement it
-when the <code>function</code> leaves scope</p>
-</li>
-<li>
-<p>supports argument placeholders, wrapped function pointers, and function objects</p>
-</li>
-</ul>
-</div>
-<div class="ulist none">
-<div class="title"><code>Bind</code> and <code>Callback</code></div>
-<ul class="none">
-<li>
-<p>natively supports binding <code>RefCounted</code> objects, so a bound argument whose
-class extends <code>RefCounted</code> will increment its count during <code>Bind</code> and decrement
-it when the <code>Callback</code> goes out of scope</p>
-</li>
-</ul>
+<p>Until Kudu is upgraded to C++14, lambda support will be
+<a href="https://stackoverflow.com/a/17545183">somewhat incomplete</a>. For example, it
+is not possible in C++11 to capture an argument by move. Nor is it possible
+to define new variables in the context of a lambda capture. Workarounds for
+these deficiencies exist, and they must be used in the interim.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1222,7 +1202,7 @@ download it, which can speed up the review process.</p>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2019-11-19 20:16:56 PST 
+            Copyright &copy; 2019 The Apache Software Foundation.  Last updated 2020-05-18 13:53:35 PDT 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu

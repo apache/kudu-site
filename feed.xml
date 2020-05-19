@@ -1,4 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2020-05-15T23:28:44-07:00</updated><id>/</id><entry><title>Apache Kudu 1.11.1 released</title><link href="/2019/11/20/apache-kudu-1-11-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.11.1 released" /><published>2019-11-20T00:00:00-08:00</published><updated>2019-11-20T00:00:00-08:00</updated><id>/2019/11/20/apache-kudu-1-11-1-release</id><content type="html" xml:base="/2019/11/20/apache-kudu-1-11-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.11.1!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="2.5.3">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2020-05-18T21:34:40-07:00</updated><id>/</id><entry><title>Apache Kudu 1.12.0 released</title><link href="/2020/05/18/apache-kudu-1-12-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.12.0 released" /><published>2020-05-18T00:00:00-07:00</published><updated>2020-05-18T00:00:00-07:00</updated><id>/2020/05/18/apache-kudu-1-12-0-release</id><content type="html" xml:base="/2020/05/18/apache-kudu-1-12-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.12.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Kudu now supports native fine-grained authorization via integration with
+Apache Ranger. Kudu may now enforce access control policies defined for
+Kudu tables and columns stored in Ranger. See the
+&lt;a href=&quot;/releases/1.12.0/docs/security.html#fine_grained_authz&quot;&gt;authorization documentation&lt;/a&gt;
+for more details.&lt;/li&gt;
+  &lt;li&gt;Kudu’s web UI now supports proxying via Apache Knox. Kudu may be deployed
+in a firewalled state behind a Knox Gateway which will forward HTTP requests
+and responses between clients and the Kudu web UI.&lt;/li&gt;
+  &lt;li&gt;Kudu’s web UI now supports HTTP keep-alive. Operations that access multiple
+URLs will now reuse a single HTTP connection, improving their performance.&lt;/li&gt;
+  &lt;li&gt;The &lt;code&gt;kudu tserver quiesce&lt;/code&gt; tool is added to quiesce tablet servers. While a
+tablet server is quiescing, it will stop hosting tablet leaders and stop
+serving new scan requests. This can be used to orchestrate a rolling restart
+without stopping on-going Kudu workloads.&lt;/li&gt;
+  &lt;li&gt;Introduced &lt;code&gt;auto&lt;/code&gt; time source for HybridClock timestamps. With
+&lt;code&gt;--time_source=auto&lt;/code&gt; in AWS and GCE cloud environments, Kudu masters and
+tablet servers use the built-in NTP client synchronized with dedicated NTP
+servers available via host-only networks. With &lt;code&gt;--time_source=auto&lt;/code&gt; in
+environments other than AWS/GCE, Kudu masters and tablet servers rely on
+their local machine’s clock synchronized by NTP. The default setting for
+the HybridClock time source (&lt;code&gt;--time_source=system&lt;/code&gt;) is backward-compatible,
+requiring the local machine’s clock to be synchronized by the kernel’s NTP
+discipline.&lt;/li&gt;
+  &lt;li&gt;The &lt;code&gt;kudu cluster rebalance&lt;/code&gt; tool now supports moving replicas away from
+specific tablet servers by supplying the &lt;code&gt;--ignored_tservers&lt;/code&gt; and
+&lt;code&gt;--move_replicas_from_ignored_tservers&lt;/code&gt; arguments (see
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2914&quot;&gt;KUDU-2914&lt;/a&gt; for more
+details).&lt;/li&gt;
+  &lt;li&gt;Write Ahead Log file segments and index chunks are now managed by Kudu’s file
+cache. With that, all long-lived file descriptors used by Kudu are managed by
+the file cache, and there’s no longer a need for capacity planning of file
+descriptor usage.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.12.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.12.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.12.0&quot;&gt;1.12.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.12.0/docs/installation.html#build_from_source&quot;&gt;1.12.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.12.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Hao Hao</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.12.0!
+
+The new release adds several new features and improvements, including the
+following:</summary></entry><entry><title>Apache Kudu 1.11.1 released</title><link href="/2019/11/20/apache-kudu-1-11-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.11.1 released" /><published>2019-11-20T00:00:00-08:00</published><updated>2019-11-20T00:00:00-08:00</updated><id>/2019/11/20/apache-kudu-1-11-1-release</id><content type="html" xml:base="/2019/11/20/apache-kudu-1-11-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.11.1!&lt;/p&gt;
 
 &lt;p&gt;This release contains a fix which addresses a critical issue discovered in
 1.10.0 and 1.11.0 and adds several new features and improvements since 1.10.0.&lt;/p&gt;
@@ -1339,43 +1406,4 @@ draft your post to Google Docs and share it with us on
 and post it to the blog for you.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>Most of the posts in the Kudu blog have been written by the project’s
 committers and are either technical or news-like in nature. We’d like to hear
 how you’re using Kudu in production, in testing, or in your hobby project and
-we’d like to share it with the world!</summary></entry><entry><title>Apache Kudu 1.8.0 Released</title><link href="/2018/10/26/apache-kudu-1-8-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.8.0 Released" /><published>2018-10-26T00:00:00-07:00</published><updated>2018-10-26T00:00:00-07:00</updated><id>/2018/10/26/apache-kudu-1-8-0-released</id><content type="html" xml:base="/2018/10/26/apache-kudu-1-8-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.8.0!&lt;/p&gt;
-
-&lt;p&gt;The new release adds several new features and improvements, including the
-following:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Introduced manual data rebalancer tool which can be used to redistribute
-table replicas among tablet servers&lt;/li&gt;
-  &lt;li&gt;Added support for &lt;code&gt;IS NULL&lt;/code&gt; and &lt;code&gt;IS NOT NULL&lt;/code&gt; predicates to the Kudu Python
-client&lt;/li&gt;
-  &lt;li&gt;Multiple tooling improvements make diagnostics and troubleshooting simpler&lt;/li&gt;
-  &lt;li&gt;The Kudu Spark connector now supports Spark Streaming DataFrames&lt;/li&gt;
-  &lt;li&gt;Added Pandas support to the Python client&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
-features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.8.0/docs/release_notes.html&quot;&gt;release
-notes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
-1.8.0, follow these steps:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.8.0&quot;&gt;1.8.0 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.8.0/docs/installation.html#build_from_source&quot;&gt;1.8.0 from
-source&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
-DataSource, Flume sink, and other Java integrations are published to the ASF
-Maven repository and are &lt;a href=&quot;https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.kudu%22%20AND%20v%3A%221.8.0%22&quot;&gt;now
-available&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Python client source is also available on
-&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary>The Apache Kudu team is happy to announce the release of Kudu 1.8.0!
-
-The new release adds several new features and improvements, including the
-following:</summary></entry></feed>
+we’d like to share it with the world!</summary></entry></feed>

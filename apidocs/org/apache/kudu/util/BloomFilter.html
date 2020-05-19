@@ -128,15 +128,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
  <p>Here is an example for use:
  <pre>
  <code>
-   BloomFilter bf = BloomFilter.BySizeAndFPRate(nBytes);
+   BloomFilter bf = BloomFilter.BySizeAndFPRate(numBytes);
    bf.put(1);
    bf.put(3);
    bf.put(4);
    byte[] bitSet = bf.getBitSet();
-   byte[] nHashes = bf.getNHashes();
+   byte[] numHashes = bf.getNumHashes();
    String hashFunctionName = bf.getHashFunctionName();
    // TODO: implement the interface for serializing and sending
-   // (bitSet, nHashes, hashFunctionName) to TServer.
+   // (bitSet, numHashes, hashFunctionName) to TServer.
  </code>
  </pre></div>
 </li>
@@ -180,20 +180,20 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#bySize-int-">bySize</a></span>(int&nbsp;nBytes)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#bySize-int-">bySize</a></span>(int&nbsp;numBytes)</code>
 <div class="block">Generate bloom filter, default hashing is <code>Murmur2</code> and false positive rate is 0.01.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#bySizeAndFPRate-int-double-">bySizeAndFPRate</a></span>(int&nbsp;nBytes,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#bySizeAndFPRate-int-double-">bySizeAndFPRate</a></span>(int&nbsp;numBytes,
                double&nbsp;fpRate)</code>
 <div class="block">Generate bloom filter, default hashing is <code>Murmur2</code>.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#bySizeAndFPRate-int-double-org.apache.kudu.util.BloomFilter.HashFunction-">bySizeAndFPRate</a></span>(int&nbsp;nBytes,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#bySizeAndFPRate-int-double-org.apache.kudu.util.BloomFilter.HashFunction-">bySizeAndFPRate</a></span>(int&nbsp;numBytes,
                double&nbsp;fpRate,
                org.apache.kudu.util.BloomFilter.HashFunction&nbsp;hashFunction)</code>
 <div class="block">Generate bloom filter.</div>
@@ -213,7 +213,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#getNHashes--">getNHashes</a></span>()</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/apache/kudu/util/BloomFilter.html#getNumHashes--">getNumHashes</a></span>()</code>
 <div class="block">Get the number of hashing times when updating or checking containment.</div>
 </td>
 </tr>
@@ -303,11 +303,11 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>bySize</h4>
-<pre>public static&nbsp;<a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a>&nbsp;bySize(int&nbsp;nBytes)</pre>
+<pre>public static&nbsp;<a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a>&nbsp;bySize(int&nbsp;numBytes)</pre>
 <div class="block">Generate bloom filter, default hashing is <code>Murmur2</code> and false positive rate is 0.01.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>nBytes</code> - size of bloom filter in bytes</dd>
+<dd><code>numBytes</code> - size of bloom filter in bytes</dd>
 </dl>
 </li>
 </ul>
@@ -317,12 +317,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>bySizeAndFPRate</h4>
-<pre>public static&nbsp;<a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a>&nbsp;bySizeAndFPRate(int&nbsp;nBytes,
+<pre>public static&nbsp;<a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a>&nbsp;bySizeAndFPRate(int&nbsp;numBytes,
                                           double&nbsp;fpRate)</pre>
 <div class="block">Generate bloom filter, default hashing is <code>Murmur2</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>nBytes</code> - size of bloom filter in bytes</dd>
+<dd><code>numBytes</code> - size of bloom filter in bytes</dd>
 <dd><code>fpRate</code> - the probability that TServer will erroneously return a record that has not
                ever been <code>put</code> into the <code>BloomFilter</code>.</dd>
 </dl>
@@ -334,13 +334,13 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <h4>bySizeAndFPRate</h4>
-<pre>public static&nbsp;<a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a>&nbsp;bySizeAndFPRate(int&nbsp;nBytes,
+<pre>public static&nbsp;<a href="../../../../org/apache/kudu/util/BloomFilter.html" title="class in org.apache.kudu.util">BloomFilter</a>&nbsp;bySizeAndFPRate(int&nbsp;numBytes,
                                           double&nbsp;fpRate,
                                           org.apache.kudu.util.BloomFilter.HashFunction&nbsp;hashFunction)</pre>
 <div class="block">Generate bloom filter.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>nBytes</code> - size of bloom filter in bytes</dd>
+<dd><code>numBytes</code> - size of bloom filter in bytes</dd>
 <dd><code>fpRate</code> - the probability that TServer will erroneously return a record that has not
                ever been <code>put</code> into the <code>BloomFilter</code>.</dd>
 <dd><code>hashFunction</code> - hashing used when updating or checking containment, user should pick
@@ -502,13 +502,13 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="block">Get the internal bit set in bytes.</div>
 </li>
 </ul>
-<a name="getNHashes--">
+<a name="getNumHashes--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getNHashes</h4>
-<pre>public&nbsp;int&nbsp;getNHashes()</pre>
+<h4>getNumHashes</h4>
+<pre>public&nbsp;int&nbsp;getNumHashes()</pre>
 <div class="block">Get the number of hashing times when updating or checking containment.</div>
 </li>
 </ul>

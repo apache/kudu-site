@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['scale',['Scale',['../classkudu_1_1client_1_1KuduColumnSpec.html#ad2d1fe7273f0f5d656375e53f96ac777',1,'kudu::client::KuduColumnSpec::Scale()'],['../classkudu_1_1client_1_1KuduColumnTypeAttributes.html#a9531cde8c3ce74fc61c1bd5b0d667567',1,'kudu::client::KuduColumnTypeAttributes::scale()']]],
-  ['schema',['schema',['../classkudu_1_1client_1_1KuduTableCreator.html#a38a83cf0e856ebaf4a5afe8c4a1d06f7',1,'kudu::client::KuduTableCreator::schema()'],['../classkudu_1_1client_1_1KuduTable.html#aefc75c9c36846675e4b8bd53075f6f5c',1,'kudu::client::KuduTable::schema()'],['../classKuduPartialRow.html#aff66c4638ad8dee78a59937592147fd8',1,'KuduPartialRow::schema()']]],
+  ['scale',['Scale',['../classkudu_1_1client_1_1KuduColumnSpec.html#ad2d1fe7273f0f5d656375e53f96ac777',1,'kudu::client::KuduColumnSpec::Scale()'],['../classkudu_1_1client_1_1KuduColumnTypeAttributes.html#aed765104c7a622f8a8d8c0a00e4a1cca',1,'kudu::client::KuduColumnTypeAttributes::scale()']]],
+  ['schema',['schema',['../classkudu_1_1client_1_1KuduTableCreator.html#a38a83cf0e856ebaf4a5afe8c4a1d06f7',1,'kudu::client::KuduTableCreator::schema()'],['../classkudu_1_1client_1_1KuduTable.html#a4482e54a05c5b61b2bddc8c5297973fd',1,'kudu::client::KuduTable::schema()'],['../classKuduPartialRow.html#a33abfa2504b7e6323cdbba22ad346023',1,'KuduPartialRow::schema()']]],
   ['serialize',['Serialize',['../classkudu_1_1client_1_1KuduScanToken.html#a6eb749ddf0a1434596d86df88341a008',1,'kudu::client::KuduScanToken']]],
   ['set_5frange_5fpartition_5fcolumns',['set_range_partition_columns',['../classkudu_1_1client_1_1KuduTableCreator.html#a482701285b7a071dd56f04df480bc7c3',1,'kudu::client::KuduTableCreator']]],
   ['setbatchsizebytes',['SetBatchSizeBytes',['../classkudu_1_1client_1_1KuduScanner.html#af82c4ccb442c222033841dd65cf5a67c',1,'kudu::client::KuduScanner::SetBatchSizeBytes()'],['../classkudu_1_1client_1_1KuduScanTokenBuilder.html#a36523ca7f2f9a2b4e3c096cf6167643c',1,'kudu::client::KuduScanTokenBuilder::SetBatchSizeBytes()']]],
@@ -30,11 +30,16 @@ var searchData=
   ['setsnapshotraw',['SetSnapshotRaw',['../classkudu_1_1client_1_1KuduScanner.html#ab13dbb301197b411dec4cd6870801bae',1,'kudu::client::KuduScanner::SetSnapshotRaw()'],['../classkudu_1_1client_1_1KuduScanTokenBuilder.html#a313e345dc6c1f9ccdad65df5af2cf4b7',1,'kudu::client::KuduScanTokenBuilder::SetSnapshotRaw()']]],
   ['settimeoutmillis',['SetTimeoutMillis',['../classkudu_1_1client_1_1KuduSession.html#a25b22362650d7120f59cc1025e40bd79',1,'kudu::client::KuduSession::SetTimeoutMillis()'],['../classkudu_1_1client_1_1KuduScanner.html#a97c9f5e6a1056484c88ced411e19bee6',1,'kudu::client::KuduScanner::SetTimeoutMillis()'],['../classkudu_1_1client_1_1KuduScanTokenBuilder.html#a0f0e58d5d6fb3867ff0a03f7fc633445',1,'kudu::client::KuduScanTokenBuilder::SetTimeoutMillis()']]],
   ['shared_5fptr_2eh',['shared_ptr.h',['../shared__ptr_8h.html',1,'']]],
-  ['size',['size',['../classkudu_1_1Slice.html#aec1c45dc306dce4a0977fff8eabdb433',1,'kudu::Slice']]],
-  ['slice',['Slice',['../classkudu_1_1Slice.html',1,'kudu::Slice'],['../classkudu_1_1Slice.html#aaee66c59ee434349680679bdf0462b66',1,'kudu::Slice::Slice()'],['../classkudu_1_1Slice.html#a904b8732b247676c52cbd9147b34c54c',1,'kudu::Slice::Slice(const uint8_t *d, size_t n)'],['../classkudu_1_1Slice.html#a9cb396203dd2c589e7d4f10bd80461d5',1,'kudu::Slice::Slice(const char *d, size_t n)'],['../classkudu_1_1Slice.html#a13838e07b6dcea1895a774ab1ba62bdd',1,'kudu::Slice::Slice(const std::string &amp;s)'],['../classkudu_1_1Slice.html#ae8c6057eea15f8136e62255fd766e345',1,'kudu::Slice::Slice(const char *s)']]],
+  ['size',['size',['../classkudu_1_1Slice.html#a141b4a1fc0555d57f192e574e427c146',1,'kudu::Slice']]],
+  ['slice',['Slice',['../classkudu_1_1Slice.html',1,'kudu']]],
+  ['slice',['Slice',['../classkudu_1_1Slice.html#aaee66c59ee434349680679bdf0462b66',1,'kudu::Slice::Slice()'],['../classkudu_1_1Slice.html#a904b8732b247676c52cbd9147b34c54c',1,'kudu::Slice::Slice(const uint8_t *d, size_t n)'],['../classkudu_1_1Slice.html#a9cb396203dd2c589e7d4f10bd80461d5',1,'kudu::Slice::Slice(const char *d, size_t n)'],['../classkudu_1_1Slice.html#a13838e07b6dcea1895a774ab1ba62bdd',1,'kudu::Slice::Slice(const std::string &amp;s)'],['../classkudu_1_1Slice.html#ae8c6057eea15f8136e62255fd766e345',1,'kudu::Slice::Slice(const char *s)']]],
   ['slicemap',['SliceMap',['../structkudu_1_1SliceMap.html',1,'kudu']]],
-  ['split_5frows',['split_rows',['../classkudu_1_1client_1_1KuduTableCreator.html#ac296091e47ca0dce18cc26e2b24b54a6',1,'kudu::client::KuduTableCreator']]],
-  ['starts_5fwith',['starts_with',['../classkudu_1_1Slice.html#ab1919baa9e854b50b938c35bd1686c9d',1,'kudu::Slice']]],
-  ['status',['Status',['../classkudu_1_1Status.html',1,'kudu::Status'],['../classkudu_1_1client_1_1KuduError.html#a6d8adf94782868d081cff223664257a7',1,'kudu::client::KuduError::status()'],['../classkudu_1_1Status.html#ad14eb530b3449967ee976aaa1c0bcde0',1,'kudu::Status::Status()'],['../classkudu_1_1Status.html#affca5639a3341212bb23ae7f5c701803',1,'kudu::Status::Status(const Status &amp;s)']]],
-  ['status_2eh',['status.h',['../status_8h.html',1,'']]]
+  ['split_5frows',['split_rows',['../classkudu_1_1client_1_1KuduTableCreator.html#ae12cc7c72da40f25b079273a6169faf9',1,'kudu::client::KuduTableCreator']]],
+  ['starts_5fwith',['starts_with',['../classkudu_1_1Slice.html#a3ad7697d76b8205099d43ca552c12b8d',1,'kudu::Slice']]],
+  ['status',['Status',['../classkudu_1_1Status.html',1,'kudu']]],
+  ['status',['status',['../classkudu_1_1client_1_1KuduError.html#abd5c5cd46255c8587a5562aec197077c',1,'kudu::client::KuduError::status()'],['../classkudu_1_1Status.html#ad14eb530b3449967ee976aaa1c0bcde0',1,'kudu::Status::Status()'],['../classkudu_1_1Status.html#affca5639a3341212bb23ae7f5c701803',1,'kudu::Status::Status(const Status &amp;s)']]],
+  ['status_2eh',['status.h',['../status_8h.html',1,'']]],
+  ['stringtocompressiontype',['StringToCompressionType',['../classkudu_1_1client_1_1KuduColumnStorageAttributes.html#af497b47eaaa28205a8a6a5a4362954af',1,'kudu::client::KuduColumnStorageAttributes']]],
+  ['stringtodatatype',['StringToDataType',['../classkudu_1_1client_1_1KuduColumnSchema.html#abd89b94b581cc09387921c476ccb56b8',1,'kudu::client::KuduColumnSchema']]],
+  ['stringtoencodingtype',['StringToEncodingType',['../classkudu_1_1client_1_1KuduColumnStorageAttributes.html#a5422435108d868ad7379e03c8bf516db',1,'kudu::client::KuduColumnStorageAttributes']]]
 ];
