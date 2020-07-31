@@ -120,10 +120,12 @@
   </header>
   <div class="entry-content">
     <p>This post is about location awareness in Kudu. It gives an overview
-of the following:
-- principles of the design
-- restrictions of the current implementation
-- potential future enhancements and extensions</p>
+of the following:</p>
+<ul>
+  <li>principles of the design</li>
+  <li>restrictions of the current implementation</li>
+  <li>potential future enhancements and extensions</li>
+</ul>
 
 <!--more-->
 
@@ -147,11 +149,11 @@ network latency between datacenters is low. This is why we call the feature
 <em>location awareness</em> and not <em>rack awareness</em>.</p>
 
 <h1 id="locations-in-kudu">Locations in Kudu</h1>
-<p>In Kudu, a location is defined by a string that begins with a slash (<code>/</code>) and
+<p>In Kudu, a location is defined by a string that begins with a slash (<code class="language-plaintext highlighter-rouge">/</code>) and
 consists of slash-separated tokens each of which contains only characters from
-the set <code>[a-zA-Z0-9_-.]</code>. The components of the location string hierarchy
+the set <code class="language-plaintext highlighter-rouge">[a-zA-Z0-9_-.]</code>. The components of the location string hierarchy
 should correspond to the physical or cloud-defined hierarchy of the deployed
-cluster, e.g. <code>/data-center-0/rack-09</code> or <code>/region-0/availability-zone-01</code>.</p>
+cluster, e.g. <code class="language-plaintext highlighter-rouge">/data-center-0/rack-09</code> or <code class="language-plaintext highlighter-rouge">/region-0/availability-zone-01</code>.</p>
 
 <p>The design choice of using hierarchical paths for location strings is
 partially influenced by HDFS. The intention was to make it possible using
@@ -176,7 +178,7 @@ message about that into their logs. In case of tablet server registrations
 such outcome is deemed as a registration failure and the corresponding tablet
 server is not added into the master’s registry. The latter renders the tablet
 server unusable to Kudu clients since non-registered tablet servers are not
-discoverable to Kudu clients via <code>GetTableLocations</code> RPC.</p>
+discoverable to Kudu clients via <code class="language-plaintext highlighter-rouge">GetTableLocations</code> RPC.</p>
 
 <p>The master associates the produced location string with the registered tablet
 server and keeps it until the tablet server re-registers, which only occurs
@@ -193,9 +195,11 @@ so the assigned location is not reported back to a registered tablet server.</p>
 
 <h1 id="the-location-aware-placement-policy-for-tablet-replicas-in-kudu">The location-aware placement policy for tablet replicas in Kudu</h1>
 <p>While placing replicas of tablets in location-aware cluster, Kudu uses a best
-effort approach to adhere to the following principle:
-- Spread replicas across locations so that the failure of tablet servers
-  in one location does not make tablets unavailable.</p>
+effort approach to adhere to the following principle:</p>
+<ul>
+  <li>Spread replicas across locations so that the failure of tablet servers
+in one location does not make tablets unavailable.</li>
+</ul>
 
 <p>That’s referred to as the <em>replica placement policy</em> or just <em>placement policy</em>.
 In Kudu, both the initial placement of tablet replicas and the automatic
@@ -228,16 +232,16 @@ server is run at each node (i.e. machine) in a rack.</p>
 
 <p>The first phase of the rebalancing process is about detecting violations and
 reinstating the placement policy in the cluster. In the diagram below, there
-are three locations defined: <code>/L0</code>, <code>/L1</code>, <code>/L2</code>. Each location has two tablet
-servers. Table <code>A</code> has the replication factor of three (RF=3) and consists of
-four tablets: <code>A0</code>, <code>A1</code>, <code>A2</code>, <code>A3</code>. Table <code>B</code> has replication factor of five
-(RF=5) and consists of three tablets: <code>B0</code>, <code>B1</code>, <code>B2</code>.</p>
+are three locations defined: <code class="language-plaintext highlighter-rouge">/L0</code>, <code class="language-plaintext highlighter-rouge">/L1</code>, <code class="language-plaintext highlighter-rouge">/L2</code>. Each location has two tablet
+servers. Table <code class="language-plaintext highlighter-rouge">A</code> has the replication factor of three (RF=3) and consists of
+four tablets: <code class="language-plaintext highlighter-rouge">A0</code>, <code class="language-plaintext highlighter-rouge">A1</code>, <code class="language-plaintext highlighter-rouge">A2</code>, <code class="language-plaintext highlighter-rouge">A3</code>. Table <code class="language-plaintext highlighter-rouge">B</code> has replication factor of five
+(RF=5) and consists of three tablets: <code class="language-plaintext highlighter-rouge">B0</code>, <code class="language-plaintext highlighter-rouge">B1</code>, <code class="language-plaintext highlighter-rouge">B2</code>.</p>
 
-<p>The distribution of the replicas for tablet <code>A0</code> violates the placement policy.
-Why? Because replicas <code>A0.0</code> and <code>A0.1</code> constitute the majority of replicas
-(two out of three) and reside in the same location <code>/L0</code>.</p>
+<p>The distribution of the replicas for tablet <code class="language-plaintext highlighter-rouge">A0</code> violates the placement policy.
+Why? Because replicas <code class="language-plaintext highlighter-rouge">A0.0</code> and <code class="language-plaintext highlighter-rouge">A0.1</code> constitute the majority of replicas
+(two out of three) and reside in the same location <code class="language-plaintext highlighter-rouge">/L0</code>.</p>
 
-<pre><code>         /L0                     /L1                    /L2
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         /L0                     /L1                    /L2
 +-------------------+   +-------------------+  +-------------------+
 |   TS0      TS1    |   |   TS2      TS3    |  |   TS4      TS5    |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
@@ -250,21 +254,21 @@ Why? Because replicas <code>A0.0</code> and <code>A0.1</code> constitute the maj
 | | B2.0 | | B2.1 | |   | | B2.2 | | B2.3 | |  | | B2.4 | |      | |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
 +-------------------+   +-------------------+  +-------------------+
-</code></pre>
+</code></pre></div></div>
 
-<p>The location-aware rebalancer should initiate movement either of <code>T0.0</code> or
-<code>T0.1</code> from <code>/L0</code> to other location, so the resulting replica distribution would
+<p>The location-aware rebalancer should initiate movement either of <code class="language-plaintext highlighter-rouge">T0.0</code> or
+<code class="language-plaintext highlighter-rouge">T0.1</code> from <code class="language-plaintext highlighter-rouge">/L0</code> to other location, so the resulting replica distribution would
 <em>not</em> contain the majority of replicas in any single location. In addition to
 that, the rebalancer tool tries to evenly spread the load across all locations
 and tablet servers within each location. The latter narrows down the list
-of the candidate replicas to move: <code>A0.1</code> is the best candidate to move from
-location <code>/L0</code>, so location <code>/L0</code> would not contain the majority of replicas
-for tablet <code>A0</code>. The same principle dictates the target location and the target
-tablet server to receive <code>A0.1</code>: that should be tablet server <code>TS5</code> in the
-location <code>/L2</code>. The result distribution of the tablet replicas after the move
+of the candidate replicas to move: <code class="language-plaintext highlighter-rouge">A0.1</code> is the best candidate to move from
+location <code class="language-plaintext highlighter-rouge">/L0</code>, so location <code class="language-plaintext highlighter-rouge">/L0</code> would not contain the majority of replicas
+for tablet <code class="language-plaintext highlighter-rouge">A0</code>. The same principle dictates the target location and the target
+tablet server to receive <code class="language-plaintext highlighter-rouge">A0.1</code>: that should be tablet server <code class="language-plaintext highlighter-rouge">TS5</code> in the
+location <code class="language-plaintext highlighter-rouge">/L2</code>. The result distribution of the tablet replicas after the move
 is represented in the diagram below.</p>
 
-<pre><code>         /L0                     /L1                    /L2
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         /L0                     /L1                    /L2
 +-------------------+   +-------------------+  +-------------------+
 |   TS0      TS1    |   |   TS2      TS3    |  |   TS4      TS5    |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
@@ -277,29 +281,33 @@ is represented in the diagram below.</p>
 | | B2.0 | | B2.1 | |   | | B2.2 | | B2.3 | |  | | B2.4 | |      | |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
 +-------------------+   +-------------------+  +-------------------+
-</code></pre>
+</code></pre></div></div>
 
 <p>The second phase of the location-aware rebalancing is about moving tablet
 replicas across locations to make the locations’ load more balanced. For the
-number <code>S</code> of tablet servers in a location and the total number <code>R</code> of replicas
-in the location, the <em>load of the location</em> is defined as <code>R/S</code>.</p>
+number <code class="language-plaintext highlighter-rouge">S</code> of tablet servers in a location and the total number <code class="language-plaintext highlighter-rouge">R</code> of replicas
+in the location, the <em>load of the location</em> is defined as <code class="language-plaintext highlighter-rouge">R/S</code>.</p>
 
 <p>At this stage all violations of the placement policy are already rectified. The
 rebalancer tool doesn’t attempt to make any moves which would violate the
 placement policy.</p>
 
-<p>The load of the locations in the diagram above:
-- <code>/L0</code>: 1/5
-- <code>/L1</code>: 1/5
-- <code>/L2</code>: 2/7</p>
+<p>The load of the locations in the diagram above:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/L0</code>: 1/5</li>
+  <li><code class="language-plaintext highlighter-rouge">/L1</code>: 1/5</li>
+  <li><code class="language-plaintext highlighter-rouge">/L2</code>: 2/7</li>
+</ul>
 
 <p>A possible distribution of the tablet replicas after the second phase is
-represented below. The result load of the locations:
-- <code>/L0</code>: 2/9
-- <code>/L1</code>: 2/9
-- <code>/L2</code>: 2/9</p>
+represented below. The result load of the locations:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">/L0</code>: 2/9</li>
+  <li><code class="language-plaintext highlighter-rouge">/L1</code>: 2/9</li>
+  <li><code class="language-plaintext highlighter-rouge">/L2</code>: 2/9</li>
+</ul>
 
-<pre><code>         /L0                     /L1                    /L2
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         /L0                     /L1                    /L2
 +-------------------+   +-------------------+  +-------------------+
 |   TS0      TS1    |   |   TS2      TS3    |  |   TS4      TS5    |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
@@ -312,7 +320,7 @@ represented below. The result load of the locations:
 | | B2.0 | | B2.1 | |   | | B2.2 | | B2.3 | |  | | B2.4 | |      | |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
 +-------------------+   +-------------------+  +-------------------+
-</code></pre>
+</code></pre></div></div>
 
 <p>The third phase of the location-aware rebalancing is about moving tablet
 replicas within each location to make the distribution of replicas even,
@@ -321,7 +329,7 @@ both per-table and per-server.</p>
 <p>See below for a possible replicas’ distribution in the example scenario
 after the third phase of the location-aware rebalancing successfully completes.</p>
 
-<pre><code>         /L0                     /L1                    /L2
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>         /L0                     /L1                    /L2
 +-------------------+   +-------------------+  +-------------------+
 |   TS0      TS1    |   |   TS2      TS3    |  |   TS4      TS5    |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
@@ -334,11 +342,11 @@ after the third phase of the location-aware rebalancing successfully completes.<
 | | B2.0 | | B2.1 | |   | | B2.2 | | B2.3 | |  | |      | | B2.4 | |
 | +------+ +------+ |   | +------+ +------+ |  | +------+ +------+ |
 +-------------------+   +-------------------+  +-------------------+
-</code></pre>
+</code></pre></div></div>
 
 <h1 id="how-to-make-a-kudu-cluster-location-aware">How to make a Kudu cluster location-aware</h1>
 <p>To make a Kudu cluster location-aware, it’s necessary to set the
-<code>--location_mapping_cmd</code> flag for Kudu master(s) and make the corresponding
+<code class="language-plaintext highlighter-rouge">--location_mapping_cmd</code> flag for Kudu master(s) and make the corresponding
 executable (binary or a script) available at the nodes where Kudu masters run.
 In case of multiple masters, it’s important to make sure that the location
 mappings stay the same regardless of the node where the location assignment
@@ -350,16 +358,16 @@ With two locations or less it’s not possible to spread replicas
 of tablets with replication factor of three and higher such that no location
 contains a majority of replicas.</p>
 
-<p>For example, running a Kudu cluster in a single datacenter <code>dc0</code>, assign
-location <code>/dc0/rack0</code> to tablet servers running at machines in the rack <code>rack0</code>,
-<code>/dc0/rack1</code> to tablet servers running at machines in the rack <code>rack1</code>,
-and <code>/dc0/rack2</code> to tablet servers running at machines in the rack <code>rack2</code>.
-In a similar way, when running in cloud, assign location <code>/regionA/az0</code>
-to tablet servers running in availability zone <code>az0</code> of region <code>regionA</code>,
-and <code>/regionA/az1</code> to tablet servers running in zone <code>az1</code> of the same region.</p>
+<p>For example, running a Kudu cluster in a single datacenter <code class="language-plaintext highlighter-rouge">dc0</code>, assign
+location <code class="language-plaintext highlighter-rouge">/dc0/rack0</code> to tablet servers running at machines in the rack <code class="language-plaintext highlighter-rouge">rack0</code>,
+<code class="language-plaintext highlighter-rouge">/dc0/rack1</code> to tablet servers running at machines in the rack <code class="language-plaintext highlighter-rouge">rack1</code>,
+and <code class="language-plaintext highlighter-rouge">/dc0/rack2</code> to tablet servers running at machines in the rack <code class="language-plaintext highlighter-rouge">rack2</code>.
+In a similar way, when running in cloud, assign location <code class="language-plaintext highlighter-rouge">/regionA/az0</code>
+to tablet servers running in availability zone <code class="language-plaintext highlighter-rouge">az0</code> of region <code class="language-plaintext highlighter-rouge">regionA</code>,
+and <code class="language-plaintext highlighter-rouge">/regionA/az1</code> to tablet servers running in zone <code class="language-plaintext highlighter-rouge">az1</code> of the same region.</p>
 
 <h1 id="an-example-of-location-assignment-script-for-kudu">An example of location assignment script for Kudu</h1>
-<pre><code>#!/bin/sh
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/bin/sh
 #
 # It's assumed a Kudu cluster consists of nodes with IPv4 addresses in the
 # private 192.168.100.0/32 subnet. The nodes are hosted in racks, where
@@ -425,7 +433,7 @@ elif [ $suffix -ge 192 -a $suffix -lt 224 ]; then
 else
   echo "/dc0/rack07"
 fi
-</code></pre>
+</code></pre></div></div>
 
 <h1 id="reinstating-the-placement-policy-in-a-location-aware-kudu-cluster">Reinstating the placement policy in a location-aware Kudu cluster</h1>
 <p>As explained earlier, even if the initial placement of tablet replicas conforms
@@ -434,13 +442,13 @@ enough tablet servers to place a new or a replacement replica. Ideally, such
 situations should be handled automatically: once there are enough tablet servers
 in the cluster or the misconfiguration is fixed, the placement policy should
 be reinstated. Currently, it’s possible to reinstate the placement policy using
-the <code>kudu</code> CLI tool:</p>
+the <code class="language-plaintext highlighter-rouge">kudu</code> CLI tool:</p>
 
-<p><code>sudo -u kudu kudu cluster rebalance &lt;master_rpc_endpoints&gt;</code></p>
+<p><code class="language-plaintext highlighter-rouge">sudo -u kudu kudu cluster rebalance &lt;master_rpc_endpoints&gt;</code></p>
 
 <p>In the first phase, the location-aware rebalancing process tries to
 reestablish the placement policy. If that’s not possible, the tool
-terminates. Use the <code>--disable_policy_fixer</code> flag to skip this phase and
+terminates. Use the <code class="language-plaintext highlighter-rouge">--disable_policy_fixer</code> flag to skip this phase and
 continue to the cross-location rebalancing phase.</p>
 
 <p>The second phase is cross-location rebalancing, i.e. moving tablet replicas
@@ -449,11 +457,11 @@ locations evenly, equalizing the loads of locations throughout the cluster.
 If the benefits of spreading the load among locations do not justify the cost
 of the cross-location replica movement, the tool can be instructed to skip the
 second phase of the location-aware rebalancing. Use the
-<code>--disable_cross_location_rebalancing</code> command line flag for that.</p>
+<code class="language-plaintext highlighter-rouge">--disable_cross_location_rebalancing</code> command line flag for that.</p>
 
 <p>The third phase is intra-location rebalancing, i.e. balancing the distribution
 of tablet replicas within each location as if each location is a cluster on its
-own. Use the <code>--disable_intra_location_rebalancing</code> flag to skip this phase.</p>
+own. Use the <code class="language-plaintext highlighter-rouge">--disable_intra_location_rebalancing</code> flag to skip this phase.</p>
 
 <h1 id="future-work">Future work</h1>
 <p>Having a CLI tool to reinstate placement policy is nice, but it would be great
@@ -485,6 +493,8 @@ request is tracked by KUDU-2604 in Apache JIRA, see
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
       <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
@@ -512,8 +522,6 @@ request is tracked by KUDU-2604 in Apache JIRA, see
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

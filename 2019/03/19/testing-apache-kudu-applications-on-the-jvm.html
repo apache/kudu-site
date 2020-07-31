@@ -172,40 +172,40 @@ the JVM testing utilities see the
 <p>In order to use the Kudu testing utilities, add two dependencies to your classpath:</p>
 
 <ul>
-  <li>The <code>kudu-test-utils</code> dependency</li>
-  <li>The <code>kudu-binary</code> dependency</li>
+  <li>The <code class="language-plaintext highlighter-rouge">kudu-test-utils</code> dependency</li>
+  <li>The <code class="language-plaintext highlighter-rouge">kudu-binary</code> dependency</li>
 </ul>
 
-<p>The <code>kudu-test-utils</code> dependency has useful utilities for testing applications that use Kudu.
+<p>The <code class="language-plaintext highlighter-rouge">kudu-test-utils</code> dependency has useful utilities for testing applications that use Kudu.
 Primarily, it provides the
 <a href="https://github.com/apache/kudu/blob/master/java/kudu-test-utils/src/main/java/org/apache/kudu/test/KuduTestHarness.java">KuduTestHarness class</a>
-to manage the lifecycle of a Kudu cluster for each test. The <code>KuduTestHarness</code> is a
+to manage the lifecycle of a Kudu cluster for each test. The <code class="language-plaintext highlighter-rouge">KuduTestHarness</code> is a
 <a href="https://junit.org/junit4/javadoc/4.12/org/junit/rules/TestRule.html">JUnit TestRule</a>
 that not only starts and stops a Kudu cluster for each test, but also has methods to manage the
-cluster and get pre-configured <code>KuduClient</code> instances for use while testing.</p>
+cluster and get pre-configured <code class="language-plaintext highlighter-rouge">KuduClient</code> instances for use while testing.</p>
 
-<p>The <code>kudu-binary</code> dependency contains the native Kudu (server and command-line tool) binaries for
+<p>The <code class="language-plaintext highlighter-rouge">kudu-binary</code> dependency contains the native Kudu (server and command-line tool) binaries for
 the specified operating system. In order to download the right artifact for the running operating
 system it is easiest to use a plugin, such as the
 <a href="https://github.com/trustin/os-maven-plugin">os-maven-plugin</a> or
 <a href="https://github.com/google/osdetector-gradle-plugin">osdetector-gradle-plugin</a>, to detect the
-current runtime environment. The <code>KuduTestHarness</code> will automatically find and use the <code>kudu-binary</code>
+current runtime environment. The <code class="language-plaintext highlighter-rouge">KuduTestHarness</code> will automatically find and use the <code class="language-plaintext highlighter-rouge">kudu-binary</code>
 jar on the classpath.</p>
 
-<p>WARNING: The <code>kudu-binary</code> module should only be used to run Kudu for integration testing purposes.
+<p>WARNING: The <code class="language-plaintext highlighter-rouge">kudu-binary</code> module should only be used to run Kudu for integration testing purposes.
 It should never be used to run an actual Kudu service, in production or development, because the
-<code>kudu-binary</code> module includes native security-related dependencies that have been copied from the
+<code class="language-plaintext highlighter-rouge">kudu-binary</code> module includes native security-related dependencies that have been copied from the
 build system and will not be patched when the operating system on the runtime host is patched.</p>
 
 <h4 id="maven-configuration">Maven Configuration</h4>
 
 <p>If you are using Maven to build your project, add the following entries to your project’s
-<code>pom.xml</code> file:</p>
+<code class="language-plaintext highlighter-rouge">pom.xml</code> file:</p>
 
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
   <span class="nt">&lt;extensions&gt;</span>
-    <span class="c">&lt;!-- Used to find the right kudu-binary artifact with the Maven</span>
-<span class="c">         property ${os.detected.classifier} --&gt;</span>
+    <span class="c">&lt;!-- Used to find the right kudu-binary artifact with the Maven
+         property ${os.detected.classifier} --&gt;</span>
     <span class="nt">&lt;extension&gt;</span>
       <span class="nt">&lt;groupId&gt;</span>kr.motd.maven<span class="nt">&lt;/groupId&gt;</span>
       <span class="nt">&lt;artifactId&gt;</span>os-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
@@ -228,37 +228,37 @@ build system and will not be patched when the operating system on the runtime ho
     <span class="nt">&lt;classifier&gt;</span>${os.detected.classifier}<span class="nt">&lt;/classifier&gt;</span>
     <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
   <span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span></code></pre></div>
+<span class="nt">&lt;/dependencies&gt;</span></code></pre></figure>
 
 <h4 id="gradle-configuration">Gradle Configuration</h4>
 
 <p>If you are using Gradle to build your project, add the following entries to your project’s
-<code>build.gradle</code> file:</p>
+<code class="language-plaintext highlighter-rouge">build.gradle</code> file:</p>
 
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">plugins</span> <span class="o">{</span>
   <span class="c1">// Used to find the right kudu-binary artifact with the Gradle</span>
   <span class="c1">// property ${osdetector.classifier}</span>
-  <span class="n">id</span> <span class="s2">&quot;com.google.osdetector&quot;</span> <span class="n">version</span> <span class="s2">&quot;1.6.2&quot;</span>
+  <span class="n">id</span> <span class="s2">"com.google.osdetector"</span> <span class="n">version</span> <span class="s2">"1.6.2"</span>
 <span class="o">}</span>
 
 <span class="n">dependencies</span> <span class="o">{</span>
-   <span class="n">testCompile</span> <span class="s2">&quot;org.apache.kudu:kudu-test-utils:1.9.0&quot;</span>
-   <span class="n">testCompile</span> <span class="s2">&quot;org.apache.kudu:kudu-binary:1.9.0:${osdetector.classifier}&quot;</span>
-<span class="o">}</span></code></pre></div>
+   <span class="n">testCompile</span> <span class="s2">"org.apache.kudu:kudu-test-utils:1.9.0"</span>
+   <span class="n">testCompile</span> <span class="s2">"org.apache.kudu:kudu-binary:1.9.0:${osdetector.classifier}"</span>
+<span class="o">}</span></code></pre></figure>
 
 <h2 id="test-setup">Test Setup</h2>
 
-<p>Once your project is configured correctly, you can start writing tests using the <code>kudu-test-utils</code>
-and <code>kudu-binary</code> artifacts. One line of code will ensure that each test automatically starts and
-stops a real Kudu cluster and that cluster logging is output through <code>slf4j</code>:</p>
+<p>Once your project is configured correctly, you can start writing tests using the <code class="language-plaintext highlighter-rouge">kudu-test-utils</code>
+and <code class="language-plaintext highlighter-rouge">kudu-binary</code> artifacts. One line of code will ensure that each test automatically starts and
+stops a real Kudu cluster and that cluster logging is output through <code class="language-plaintext highlighter-rouge">slf4j</code>:</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Rule</span> <span class="kd">public</span> <span class="n">KuduTestHarness</span> <span class="n">harness</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">KuduTestHarness</span><span class="o">();</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Rule</span> <span class="kd">public</span> <span class="nc">KuduTestHarness</span> <span class="n">harness</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">KuduTestHarness</span><span class="o">();</span></code></pre></figure>
 
 <p>The <a href="https://github.com/apache/kudu/blob/master/java/kudu-test-utils/src/main/java/org/apache/kudu/test/KuduTestHarness.java">KuduTestHarness</a>
 has methods to get pre-configured clients, start and stop servers, and more. Below is an example
 test to showcase some of the capabilities:</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.apache.kudu.*</span><span class="o">;</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.apache.kudu.*</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.apache.kudu.client.*</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.apache.kudu.test.KuduTestHarness</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">org.junit.*</span><span class="o">;</span>
@@ -269,18 +269,18 @@ test to showcase some of the capabilities:</p>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyKuduTest</span> <span class="o">{</span>
 
     <span class="nd">@Rule</span>
-    <span class="kd">public</span> <span class="n">KuduTestHarness</span> <span class="n">harness</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">KuduTestHarness</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="nc">KuduTestHarness</span> <span class="n">harness</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">KuduTestHarness</span><span class="o">();</span>
 
     <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
         <span class="c1">// Get a KuduClient configured to talk to the running mini cluster.</span>
-        <span class="n">KuduClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getClient</span><span class="o">();</span>
+        <span class="nc">KuduClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getClient</span><span class="o">();</span>
 
         <span class="c1">// Some of the other most common KuduTestHarness methods include:</span>
-        <span class="n">AsyncKuduClient</span> <span class="n">asyncClient</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getAsyncClient</span><span class="o">();</span>
-        <span class="n">String</span> <span class="n">masterAddresses</span><span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getMasterAddressesAsString</span><span class="o">();</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">HostAndPort</span><span class="o">&gt;</span> <span class="n">masterServers</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getMasterServers</span><span class="o">();</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">HostAndPort</span><span class="o">&gt;</span> <span class="n">tabletServers</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getTabletServers</span><span class="o">();</span>
+        <span class="nc">AsyncKuduClient</span> <span class="n">asyncClient</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getAsyncClient</span><span class="o">();</span>
+        <span class="nc">String</span> <span class="n">masterAddresses</span><span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getMasterAddressesAsString</span><span class="o">();</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">HostAndPort</span><span class="o">&gt;</span> <span class="n">masterServers</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getMasterServers</span><span class="o">();</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">HostAndPort</span><span class="o">&gt;</span> <span class="n">tabletServers</span> <span class="o">=</span> <span class="n">harness</span><span class="o">.</span><span class="na">getTabletServers</span><span class="o">();</span>
         <span class="n">harness</span><span class="o">.</span><span class="na">killLeaderMasterServer</span><span class="o">();</span>
         <span class="n">harness</span><span class="o">.</span><span class="na">killAllMasterServers</span><span class="o">();</span>
         <span class="n">harness</span><span class="o">.</span><span class="na">startAllMasterServers</span><span class="o">();</span>
@@ -288,34 +288,34 @@ test to showcase some of the capabilities:</p>
         <span class="n">harness</span><span class="o">.</span><span class="na">startAllTabletServers</span><span class="o">();</span>
 
         <span class="c1">// Create a new Kudu table.</span>
-        <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="s">&quot;myTable&quot;</span><span class="o">;</span>
-        <span class="n">Schema</span> <span class="n">schema</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Schema</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
-            <span class="k">new</span> <span class="n">ColumnSchema</span><span class="o">.</span><span class="na">ColumnSchemaBuilder</span><span class="o">(</span><span class="s">&quot;key&quot;</span><span class="o">,</span> <span class="n">Type</span><span class="o">.</span><span class="na">INT32</span><span class="o">).</span><span class="na">key</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">build</span><span class="o">(),</span>
-            <span class="k">new</span> <span class="n">ColumnSchema</span><span class="o">.</span><span class="na">ColumnSchemaBuilder</span><span class="o">(</span><span class="s">&quot;value&quot;</span><span class="o">,</span> <span class="n">Type</span><span class="o">.</span><span class="na">STRING</span><span class="o">).</span><span class="na">key</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">build</span><span class="o">()</span>
+        <span class="nc">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="s">"myTable"</span><span class="o">;</span>
+        <span class="nc">Schema</span> <span class="n">schema</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Schema</span><span class="o">(</span><span class="nc">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+            <span class="k">new</span> <span class="nc">ColumnSchema</span><span class="o">.</span><span class="na">ColumnSchemaBuilder</span><span class="o">(</span><span class="s">"key"</span><span class="o">,</span> <span class="nc">Type</span><span class="o">.</span><span class="na">INT32</span><span class="o">).</span><span class="na">key</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">build</span><span class="o">(),</span>
+            <span class="k">new</span> <span class="nc">ColumnSchema</span><span class="o">.</span><span class="na">ColumnSchemaBuilder</span><span class="o">(</span><span class="s">"value"</span><span class="o">,</span> <span class="nc">Type</span><span class="o">.</span><span class="na">STRING</span><span class="o">).</span><span class="na">key</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">build</span><span class="o">()</span>
         <span class="o">));</span>
-        <span class="n">CreateTableOptions</span> <span class="n">opts</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">CreateTableOptions</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">setRangePartitionColumns</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">(</span><span class="s">&quot;key&quot;</span><span class="o">));</span>
+        <span class="nc">CreateTableOptions</span> <span class="n">opts</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CreateTableOptions</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">setRangePartitionColumns</span><span class="o">(</span><span class="nc">Collections</span><span class="o">.</span><span class="na">singletonList</span><span class="o">(</span><span class="s">"key"</span><span class="o">));</span>
         <span class="n">client</span><span class="o">.</span><span class="na">createTable</span><span class="o">(</span><span class="n">tableName</span><span class="o">,</span> <span class="n">schema</span><span class="o">,</span> <span class="n">opts</span><span class="o">);</span>
-        <span class="n">KuduTable</span> <span class="n">table</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">openTable</span><span class="o">(</span><span class="n">tableName</span><span class="o">);</span>
+        <span class="nc">KuduTable</span> <span class="n">table</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">openTable</span><span class="o">(</span><span class="n">tableName</span><span class="o">);</span>
 
         <span class="c1">// Write a few rows to the table</span>
-        <span class="n">KuduSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">newSession</span><span class="o">();</span>
+        <span class="nc">KuduSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">newSession</span><span class="o">();</span>
         <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="n">Insert</span> <span class="n">insert</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="na">newInsert</span><span class="o">();</span>
-            <span class="n">PartialRow</span> <span class="n">row</span> <span class="o">=</span> <span class="n">insert</span><span class="o">.</span><span class="na">getRow</span><span class="o">();</span>
-            <span class="n">row</span><span class="o">.</span><span class="na">addInt</span><span class="o">(</span><span class="s">&quot;key&quot;</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
-            <span class="n">row</span><span class="o">.</span><span class="na">addString</span><span class="o">(</span><span class="s">&quot;value&quot;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+            <span class="nc">Insert</span> <span class="n">insert</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="na">newInsert</span><span class="o">();</span>
+            <span class="nc">PartialRow</span> <span class="n">row</span> <span class="o">=</span> <span class="n">insert</span><span class="o">.</span><span class="na">getRow</span><span class="o">();</span>
+            <span class="n">row</span><span class="o">.</span><span class="na">addInt</span><span class="o">(</span><span class="s">"key"</span><span class="o">,</span> <span class="n">i</span><span class="o">);</span>
+            <span class="n">row</span><span class="o">.</span><span class="na">addString</span><span class="o">(</span><span class="s">"value"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
             <span class="n">session</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">insert</span><span class="o">);</span>
         <span class="o">}</span>
         <span class="n">session</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
 
         <span class="c1">// ... Continue the test. Read and validate the rows, alter the table, etc.</span>
     <span class="o">}</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
-<p>For a complete example of a project using the <code>KuduTestHarness</code>, see the
+<p>For a complete example of a project using the <code class="language-plaintext highlighter-rouge">KuduTestHarness</code>, see the
 <a href="https://github.com/apache/kudu/tree/master/examples/java/java-example">java-example</a> project in
-the Kudu source code repository. The Kudu project itself uses the <code>KuduTestHarness</code> for all of its
+the Kudu source code repository. The Kudu project itself uses the <code class="language-plaintext highlighter-rouge">KuduTestHarness</code> for all of its
 own integration tests. For more complex examples, you can explore the various
 <a href="https://github.com/apache/kudu/tree/master/java/kudu-client/src/test/java/org/apache/kudu/client">Kudu integration</a>
 tests in the Kudu source code repository.</p>
@@ -330,8 +330,8 @@ and we will try to incorporate your feedback quickly. See the
 
 <h2 id="thank-you">Thank You</h2>
 
-<p>We would like to give a special thank you to everyone who helped contribute to the <code>kudu-test-utils</code>
-and <code>kudu-binary</code> artifacts. We would especially like to thank
+<p>We would like to give a special thank you to everyone who helped contribute to the <code class="language-plaintext highlighter-rouge">kudu-test-utils</code>
+and <code class="language-plaintext highlighter-rouge">kudu-binary</code> artifacts. We would especially like to thank
 <a href="https://www.linkedin.com/in/brian-mcdevitt-1136a08/">Brian McDevitt</a> at <a href="https://www.phdata.io/">phData</a>
 and
 <a href="https://twitter.com/timrobertson100">Tim Robertson</a> at <a href="https://www.gbif.org/">GBIF</a> who helped us
@@ -345,6 +345,8 @@ tremendously.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -373,8 +375,6 @@ tremendously.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

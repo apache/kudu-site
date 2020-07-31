@@ -137,8 +137,8 @@ new name and status.</li>
 
 <ul>
   <li>
-    <p>Dan Burkert contributed a few patches that repackage the Java client under <code>org.apache.kudu</code>
-in place of <code>org.kududb</code>. This was done in a <strong>backward-incompatible</strong> way, meaning that import
+    <p>Dan Burkert contributed a few patches that repackage the Java client under <code class="language-plaintext highlighter-rouge">org.apache.kudu</code>
+in place of <code class="language-plaintext highlighter-rouge">org.kududb</code>. This was done in a <strong>backward-incompatible</strong> way, meaning that import
 statements will have to be modified in existing Java code to compile against a newer Kudu JAR
 version (from 0.10.0 onward). This stems from <a href="http://mail-archives.apache.org/mod_mbox/kudu-dev/201605.mbox/%3CCAGpTDNcJohQBgjzXafXJQdqmBB4sL495p5V_BJRXk_nAGWbzhA@mail.gmail.com%3E">a discussion</a>
 initiated in May. It won’t have an impact on C++ or Python users, and it isn’t affecting wire
@@ -148,12 +148,12 @@ compatibility.</p>
     <p>Still on the Java-side, J-D Cryans pushed <a href="https://gerrit.cloudera.org/#/c/3055/">a patch</a>
 that completely changes how Exceptions are managed. Before this change, users had to introspect
 generic Exception objects, making it a guessing game and discouraging good error handling.
-Now, the synchronous client’s methods throw <code>KuduException</code> which packages a <code>Status</code> object
+Now, the synchronous client’s methods throw <code class="language-plaintext highlighter-rouge">KuduException</code> which packages a <code class="language-plaintext highlighter-rouge">Status</code> object
 that can be interrogated. This is very similar to how the C++ API works.</p>
 
     <p>Existing code that uses the new Kudu JAR should still compile since this change replaces generic
-<code>Exception</code> with a more specific <code>KuduException</code>. Error handling done by string-matching the
-exception messages should now use the provided <code>Status</code> object.</p>
+<code class="language-plaintext highlighter-rouge">Exception</code> with a more specific <code class="language-plaintext highlighter-rouge">KuduException</code>. Error handling done by string-matching the
+exception messages should now use the provided <code class="language-plaintext highlighter-rouge">Status</code> object.</p>
   </li>
   <li>
     <p>Alexey Serbin’s <a href="https://gerrit.cloudera.org/#/c/3619/">patch</a> that adds Doxygen-based
@@ -161,11 +161,11 @@ documentation was pushed and the new API documentation for C++ developers will b
 with the next release.</p>
   </li>
   <li>
-    <p>Todd has made many improvements to the <code>ksck</code> tool over the last week. Building upon Will
-Berkeley’s <a href="https://gerrit.cloudera.org/#/c/3632/">WIP patch for KUDU-1516</a>, <code>ksck</code> can
+    <p>Todd has made many improvements to the <code class="language-plaintext highlighter-rouge">ksck</code> tool over the last week. Building upon Will
+Berkeley’s <a href="https://gerrit.cloudera.org/#/c/3632/">WIP patch for KUDU-1516</a>, <code class="language-plaintext highlighter-rouge">ksck</code> can
 now detect more problematic situations like if a tablet doesn’t have a majority of replicas on
 live tablet servers, or if those replicas aren’t in a good state.
-<code>ksck</code> is also <a href="https://gerrit.cloudera.org/#/c/3705/">now faster</a> when run against a large
+<code class="language-plaintext highlighter-rouge">ksck</code> is also <a href="https://gerrit.cloudera.org/#/c/3705/">now faster</a> when run against a large
 cluster with a lot of tablets, among other improvements.</p>
   </li>
   <li>
@@ -183,7 +183,7 @@ getting near the finish line.</p>
 </ul>
 
 <p>Want to learn more about a specific topic from this blog post? Shoot an email to the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#105;&#110;&#099;&#117;&#098;&#097;&#116;&#111;&#114;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
+<a href="mailto:user@kudu.incubator.apache.org">kudu-user mailing list</a> or
 tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.</p>
@@ -196,6 +196,8 @@ a future post.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -224,8 +226,6 @@ a future post.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

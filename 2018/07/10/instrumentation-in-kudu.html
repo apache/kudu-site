@@ -128,16 +128,18 @@ it does have quite a lot of other types of instrumentation, metrics, and
 diagnostics logging. The OpenTracing team was interested to hear about some of
 the approaches that Kudu has used, and so I gave a brief introduction to topics
 including:
-<!--more-->
-- The Kudu <a href="/docs/administration.html#_diagnostics_logging">diagnostics log</a>
-  which periodically logs metrics and stack traces.
-- The <a href="/docs/troubleshooting.html#kudu_tracing">process-wide tracing</a>
-  support based on the open source tracing framework implemented by Google Chrome.
-- The <a href="/docs/troubleshooting.html#kudu_tracing">stack watchdog</a>
-  which helps us find various latency outliers and issues in our libraries and
-  the Linux kernel.
-- <a href="/docs/troubleshooting.html#heap_sampling">Heap sampling</a> support
-  which helps us understand unexpected memory usage.</p>
+<!--more--></p>
+<ul>
+  <li>The Kudu <a href="/docs/administration.html#_diagnostics_logging">diagnostics log</a>
+which periodically logs metrics and stack traces.</li>
+  <li>The <a href="/docs/troubleshooting.html#kudu_tracing">process-wide tracing</a>
+support based on the open source tracing framework implemented by Google Chrome.</li>
+  <li>The <a href="/docs/troubleshooting.html#kudu_tracing">stack watchdog</a>
+which helps us find various latency outliers and issues in our libraries and
+the Linux kernel.</li>
+  <li><a href="/docs/troubleshooting.html#heap_sampling">Heap sampling</a> support
+which helps us understand unexpected memory usage.</li>
+</ul>
 
 <p>If you’re interested in learning about these topics and more, check out the video recording
 below. My talk spans the first 34 minutes.</p>
@@ -156,6 +158,8 @@ below. My talk spans the first 34 minutes.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -184,8 +188,6 @@ below. My talk spans the first 34 minutes.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

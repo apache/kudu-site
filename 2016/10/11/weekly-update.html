@@ -190,14 +190,14 @@ look and leave your comments! Similarly, if you are interested in contributing
 in any of these areas, please feel free to volunteer on the mailing list.
 Help of all kinds (coding, documentation, testing, etc) is welcomed.</p>
   </li>
-  <li>Adar Dembo spent a chunk of time re-working the <code>thirdparty</code> directory
+  <li>Adar Dembo spent a chunk of time re-working the <code class="language-plaintext highlighter-rouge">thirdparty</code> directory
 that contains most of Kudu’s native dependencies. The major resulting
 changes are:
     <ul>
       <li>Build directories are now cleanly isolated from source directories,
 improving cleanliness of re-builds.</li>
-      <li>ThreadSanitizer (TSAN) builds now use <code>libc++</code> instead of <code>libstdcxx</code>
-for C++ library support. The <code>libc++</code> library has better support for
+      <li>ThreadSanitizer (TSAN) builds now use <code class="language-plaintext highlighter-rouge">libc++</code> instead of <code class="language-plaintext highlighter-rouge">libstdcxx</code>
+for C++ library support. The <code class="language-plaintext highlighter-rouge">libc++</code> library has better support for
 sanitizers, is easier to build in isolation, and solves some compatibility
 issues that Adar was facing with GCC 5 on Ubuntu Xenial.</li>
       <li>All of the thirdparty dependencies now build with TSAN instrumentation,
@@ -237,14 +237,14 @@ to increase.</p>
   <li>
     <p>Dan Burkert picked up work originally started by Sameer Abhyankar on
 <a href="https://issues.apache.org/jira/browse/KUDU-1363">KUDU-1363</a>, which adds
-support for adding <code>IN (...)</code> predicates to scanners. Dan committed the
+support for adding <code class="language-plaintext highlighter-rouge">IN (...)</code> predicates to scanners. Dan committed the
 <a href="http://gerrit.cloudera.org:8080/2986">main patch</a> as well as corresponding
 <a href="http://gerrit.cloudera.org:8080/4530">support in the Java client</a>.
 Jordan Birdsell quickly added corresponding support in <a href="http://gerrit.cloudera.org:8080/4548">Python</a>.
 This new feature will be available in an upcoming release.</p>
   </li>
   <li>
-    <p>Work continues on the <code>kudu</code> command line tool. Dinesh Bhat added
+    <p>Work continues on the <code class="language-plaintext highlighter-rouge">kudu</code> command line tool. Dinesh Bhat added
 the ability to ask a tablet’s leader to <a href="http://gerrit.cloudera.org:8080/4533">step down</a>
 and Alexey Serbin added a <a href="http://gerrit.cloudera.org:8080/4412">tool to insert random data into a
 table</a>.</p>
@@ -274,7 +274,7 @@ formatting on the Kudu web UI.</li>
 </ul>
 
 <p>Want to learn more about a specific topic from this blog post? Shoot an email to the
-<a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#117;&#115;&#101;&#114;&#064;&#107;&#117;&#100;&#117;&#046;&#097;&#112;&#097;&#099;&#104;&#101;&#046;&#111;&#114;&#103;">kudu-user mailing list</a> or
+<a href="mailto:user@kudu.apache.org">kudu-user mailing list</a> or
 tweet at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
 aware of some Kudu news we missed, let us know so we can cover it in
 a future post.</p>
@@ -287,6 +287,8 @@ a future post.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -315,8 +317,6 @@ a future post.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

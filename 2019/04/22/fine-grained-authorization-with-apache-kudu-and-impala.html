@@ -137,19 +137,19 @@ achieve a secure multi-tenant deployment.</p>
 <h2 id="sample-workflow">Sample Workflow</h2>
 
 <p>The examples in this post enable a workflow that uses Apache Spark to ingest data directly into
-Kudu and Impala to run analytic queries on that data. The Spark job, run as the <code>etl_service</code> user,
+Kudu and Impala to run analytic queries on that data. The Spark job, run as the <code class="language-plaintext highlighter-rouge">etl_service</code> user,
 is permitted to access the Kudu data via coarse-grained authorization. Even though this gives
-access to all the data in Kudu, the <code>etl_service</code> user is only used for scheduled jobs or by an
+access to all the data in Kudu, the <code class="language-plaintext highlighter-rouge">etl_service</code> user is only used for scheduled jobs or by an
 administrator. All queries on the data, from a wide array of users, will use Impala and leverage
 Impala’s fine-grained authorization. Impala’s 
-<a href="https://impala.apache.org/docs/build/html/topics/impala_grant.html"><code>GRANT</code> statements</a>
+<a href="https://impala.apache.org/docs/build/html/topics/impala_grant.html"><code class="language-plaintext highlighter-rouge">GRANT</code> statements</a>
 allow you to flexibly control the privileges on the Kudu storage tables. Impala’s fine-grained
 privileges along with support for
-<a href="https://impala.apache.org/docs/build/html/topics/impala_select.html"><code>SELECT</code></a>,
-<a href="https://impala.apache.org/docs/build/html/topics/impala_insert.html"><code>INSERT</code></a>,
-<a href="https://impala.apache.org/docs/build/html/topics/impala_update.html"><code>UPDATE</code></a>,
-<a href="https://impala.apache.org/docs/build/html/topics/impala_upsert.html"><code>UPSERT</code></a>,
-and <a href="https://impala.apache.org/docs/build/html/topics/impala_delete.html"><code>DELETE</code></a>
+<a href="https://impala.apache.org/docs/build/html/topics/impala_select.html"><code class="language-plaintext highlighter-rouge">SELECT</code></a>,
+<a href="https://impala.apache.org/docs/build/html/topics/impala_insert.html"><code class="language-plaintext highlighter-rouge">INSERT</code></a>,
+<a href="https://impala.apache.org/docs/build/html/topics/impala_update.html"><code class="language-plaintext highlighter-rouge">UPDATE</code></a>,
+<a href="https://impala.apache.org/docs/build/html/topics/impala_upsert.html"><code class="language-plaintext highlighter-rouge">UPSERT</code></a>,
+and <a href="https://impala.apache.org/docs/build/html/topics/impala_delete.html"><code class="language-plaintext highlighter-rouge">DELETE</code></a>
 statements, allow you to finely control who can read and write data to your Kudu tables while
 using Impala. Below is a diagram showing the workflow described:</p>
 
@@ -174,23 +174,23 @@ update, and delete data.</li>
 
 <p>Access levels are granted using whitelist-style Access Control Lists (ACLs), one for each of the
 two levels. Each access control list either specifies a comma-separated list of users, or may be
-set to <code>*</code> to indicate that all authenticated users are able to gain access at the specified level.</p>
+set to <code class="language-plaintext highlighter-rouge">*</code> to indicate that all authenticated users are able to gain access at the specified level.</p>
 
-<p><em>Note</em>: The default value for the User ACL is <code>*</code>, which allows all users access to the cluster.</p>
+<p><em>Note</em>: The default value for the User ACL is <code class="language-plaintext highlighter-rouge">*</code>, which allows all users access to the cluster.</p>
 
 <h3 id="example-configuration">Example Configuration</h3>
 
-<p>The first and most important step is to remove the default ACL of <code>*</code> from Kudu’s 
-<a href="https://kudu.apache.org/docs/configuration_reference.html#kudu-master_user_acl"><code>–user_acl</code> configuration</a>.
+<p>The first and most important step is to remove the default ACL of <code class="language-plaintext highlighter-rouge">*</code> from Kudu’s 
+<a href="https://kudu.apache.org/docs/configuration_reference.html#kudu-master_user_acl"><code class="language-plaintext highlighter-rouge">–user_acl</code> configuration</a>.
 This will ensure only the users you list will have access to the Kudu cluster. Then, to allow the
 Impala service to access all of the data in Kudu, the Impala service user, usually impala, should
-be added to the Kudu <code>–user_acl</code> configuration. Any user that is not using Impala will also need
+be added to the Kudu <code class="language-plaintext highlighter-rouge">–user_acl</code> configuration. Any user that is not using Impala will also need
 to be added to this list. For example, an Apache Spark job might be used to load data directly
 into Kudu. Generally, a single user is used to run scheduled jobs of applications that do not
-support fine-grained authorization on their own. For this example, that user is <code>etl_service</code>. The
-full <code>–user_acl</code> configuration is:</p>
+support fine-grained authorization on their own. For this example, that user is <code class="language-plaintext highlighter-rouge">etl_service</code>. The
+full <code class="language-plaintext highlighter-rouge">–user_acl</code> configuration is:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">--user_acl<span class="o">=</span>impala,etl_service</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nt">--user_acl</span><span class="o">=</span>impala,etl_service</code></pre></figure>
 
 <p>For more details see the Kudu
 <a href="https://kudu.apache.org/docs/security.html#_coarse_grained_authorization">authorization documentation</a>.</p>
@@ -200,22 +200,22 @@ full <code>–user_acl</code> configuration is:</p>
 <p>Follow Impala’s
 <a href="https://impala.apache.org/docs/build/html/topics/impala_authorization.html">authorization documentation</a>
 to configure fine-grained authorization. Once configured, you can use Impala’s
-<a href="https://impala.apache.org/docs/build/html/topics/impala_grant.html"><code>GRANT</code> statements</a>
+<a href="https://impala.apache.org/docs/build/html/topics/impala_grant.html"><code class="language-plaintext highlighter-rouge">GRANT</code> statements</a>
 to control the privileges of Kudu tables. These fine-grained privileges can be set at the database,
-table and column level. Additionally you can individually control <code>SELECT</code>, <code>INSERT</code>, <code>CREATE</code>,
-<code>ALTER</code>, and <code>DROP</code> privileges.</p>
+table and column level. Additionally you can individually control <code class="language-plaintext highlighter-rouge">SELECT</code>, <code class="language-plaintext highlighter-rouge">INSERT</code>, <code class="language-plaintext highlighter-rouge">CREATE</code>,
+<code class="language-plaintext highlighter-rouge">ALTER</code>, and <code class="language-plaintext highlighter-rouge">DROP</code> privileges.</p>
 
-<p><em>Note</em>: A user needs the <code>ALL</code> privilege in order to run <code>DELETE</code>, <code>UPDATE</code>, or <code>UPSERT</code>
+<p><em>Note</em>: A user needs the <code class="language-plaintext highlighter-rouge">ALL</code> privilege in order to run <code class="language-plaintext highlighter-rouge">DELETE</code>, <code class="language-plaintext highlighter-rouge">UPDATE</code>, or <code class="language-plaintext highlighter-rouge">UPSERT</code>
 statements against a Kudu table.</p>
 
 <p>Below is a brief example with a couple tables stored in Kudu:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">messages</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">messages</span>
 <span class="p">(</span>  
   <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
-  <span class="n">time</span> <span class="k">TIMESTAMP</span><span class="p">,</span>
+  <span class="nb">time</span> <span class="nb">TIMESTAMP</span><span class="p">,</span>
   <span class="n">message</span> <span class="n">STRING</span><span class="p">,</span>
-  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">time</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">HASH</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="n">PARTITIONS</span> <span class="mi">4</span>
 <span class="n">STORED</span> <span class="k">AS</span> <span class="n">KUDU</span><span class="p">;</span>
@@ -225,13 +225,13 @@ statements against a Kudu table.</p>
 <span class="p">(</span>
   <span class="k">host</span> <span class="n">STRING</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
   <span class="n">metric</span> <span class="n">STRING</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="n">time</span> <span class="n">INT64</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="n">value</span> <span class="n">DOUBLE</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="k">host</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+  <span class="nb">time</span> <span class="n">INT64</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">value</span> <span class="nb">DOUBLE</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="k">host</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="nb">time</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">HASH</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="n">PARTITIONS</span> <span class="mi">4</span>
 <span class="n">STORED</span> <span class="k">AS</span> <span class="n">KUDU</span><span class="p">;</span>
-<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="k">TABLE</span> <span class="n">messages</span> <span class="k">TO</span> <span class="n">userB</span><span class="p">;</span></code></pre></div>
+<span class="k">GRANT</span> <span class="k">ALL</span> <span class="k">ON</span> <span class="k">TABLE</span> <span class="n">messages</span> <span class="k">TO</span> <span class="n">userB</span><span class="p">;</span></code></pre></figure>
 
 <h2 id="conclusion">Conclusion</h2>
 
@@ -251,6 +251,8 @@ Apache Sentry and Apache Ranger.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -279,8 +281,6 @@ Apache Sentry and Apache Ranger.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

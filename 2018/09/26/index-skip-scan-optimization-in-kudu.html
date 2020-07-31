@@ -129,25 +129,25 @@ my experience and the progress we’ve made so far on the approach.</p>
 <p>Let’s begin with discussing the current query flow in Kudu.
 Consider the following table:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">metrics</span> <span class="p">(</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">metrics</span> <span class="p">(</span>
     <span class="k">host</span> <span class="n">STRING</span><span class="p">,</span>
     <span class="n">tstamp</span> <span class="nb">INT</span><span class="p">,</span>
     <span class="n">clusterid</span> <span class="nb">INT</span><span class="p">,</span>
     <span class="k">role</span> <span class="n">STRING</span><span class="p">,</span>
     <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="k">host</span><span class="p">,</span> <span class="n">tstamp</span><span class="p">,</span> <span class="n">clusterid</span><span class="p">)</span>
-<span class="p">);</span></code></pre></div>
+<span class="p">);</span></code></pre></figure>
 
 <p><img src="/img/index-skip-scan/example-table.png" alt="png" class="img-responsive" />
-<em>Sample rows of table <code>metrics</code> (sorted by key columns).</em></p>
+<em>Sample rows of table <code class="language-plaintext highlighter-rouge">metrics</code> (sorted by key columns).</em></p>
 
 <p>In this case, by default, Kudu internally builds a primary key index (implemented as a
-<a href="https://en.wikipedia.org/wiki/B-tree">B-tree</a>) for the table <code>metrics</code>.
+<a href="https://en.wikipedia.org/wiki/B-tree">B-tree</a>) for the table <code class="language-plaintext highlighter-rouge">metrics</code>.
 As shown in the table above, the index data is sorted by the composite of all key columns.
-When the user query contains the first key column (<code>host</code>), Kudu uses the index (as the index data is
+When the user query contains the first key column (<code class="language-plaintext highlighter-rouge">host</code>), Kudu uses the index (as the index data is
 primarily sorted on the first key column).</p>
 
-<p>Now, what if the user query does not contain the first key column and instead only contains the <code>tstamp</code> column?
-In the above case, the <code>tstamp</code> column values are sorted with respect to <code>host</code>,
+<p>Now, what if the user query does not contain the first key column and instead only contains the <code class="language-plaintext highlighter-rouge">tstamp</code> column?
+In the above case, the <code class="language-plaintext highlighter-rouge">tstamp</code> column values are sorted with respect to <code class="language-plaintext highlighter-rouge">host</code>,
 but are not globally sorted, and as such, it’s non-trivial to use the index to filter rows.
 Instead, a full tablet scan is done by default. Other databases may optimize such scans by building secondary indexes
 (though it might be redundant to build one on one of the primary keys). However, this isn’t an option for Kudu,
@@ -155,22 +155,22 @@ given its lack of secondary index support.</p>
 
 <p>The question is, can Kudu do better than a full tablet scan here?</p>
 
-<p>The answer is yes! Let’s observe the column preceding the <code>tstamp</code> column. We will refer to it as the
-“prefix column” and its specific value as the “prefix key”. In this example, <code>host</code> is the prefix column.
+<p>The answer is yes! Let’s observe the column preceding the <code class="language-plaintext highlighter-rouge">tstamp</code> column. We will refer to it as the
+“prefix column” and its specific value as the “prefix key”. In this example, <code class="language-plaintext highlighter-rouge">host</code> is the prefix column.
 Note that the prefix keys are sorted in the index and that all rows of a given prefix key are also sorted by the
 remaining key columns. Therefore, we can use the index to skip to the rows that have distinct prefix keys,
-and also satisfy the predicate on the <code>tstamp</code> column.
+and also satisfy the predicate on the <code class="language-plaintext highlighter-rouge">tstamp</code> column.
 For example, consider the query:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">clusterid</span> <span class="k">FROM</span> <span class="n">metrics</span> <span class="k">WHERE</span> <span class="n">tstamp</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">clusterid</span> <span class="k">FROM</span> <span class="n">metrics</span> <span class="k">WHERE</span> <span class="n">tstamp</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span></code></pre></figure>
 
 <p><img src="/img/index-skip-scan/skip-scan-example-table.png" alt="png" class="img-responsive" />
 <em>Skip scan flow illustration. The rows in green are scanned and the rest are skipped.</em></p>
 
-<p>The tablet server can use the index to <strong>skip</strong> to the first row with a distinct prefix key (<code>host = helium</code>) that
-matches the predicate (<code>tstamp = 100</code>) and then <strong>scan</strong> through the rows until the predicate no longer matches. At that
-point we would know that no more rows with <code>host = helium</code> will satisfy the predicate, and we can skip to the next
-prefix key. This holds true for all distinct keys of <code>host</code>. Hence, this method is popularly known as
+<p>The tablet server can use the index to <strong>skip</strong> to the first row with a distinct prefix key (<code class="language-plaintext highlighter-rouge">host = helium</code>) that
+matches the predicate (<code class="language-plaintext highlighter-rouge">tstamp = 100</code>) and then <strong>scan</strong> through the rows until the predicate no longer matches. At that
+point we would know that no more rows with <code class="language-plaintext highlighter-rouge">host = helium</code> will satisfy the predicate, and we can skip to the next
+prefix key. This holds true for all distinct keys of <code class="language-plaintext highlighter-rouge">host</code>. Hence, this method is popularly known as
 <strong>skip scan optimization</strong>[2, 3].</p>
 
 <h1 id="performance">Performance</h1>
@@ -197,7 +197,7 @@ to dynamically disable skip scan.</p>
 data in Kudu tablets. This is a work-in-progress <a href="https://gerrit.cloudera.org/#/c/10983/">patch</a>.
 The implementation in the patch works only for equality predicates on the non-first primary key
 columns. An important point to note is that although, in the above specific example, the number of prefix
-columns is one (<code>host</code>), this approach is generalized to work with any number of prefix columns.</p>
+columns is one (<code class="language-plaintext highlighter-rouge">host</code>), this approach is generalized to work with any number of prefix columns.</p>
 
 <p>This work also lays the groundwork to leverage the skip scan approach and optimize query processing time in the
 following use cases:</p>
@@ -231,6 +231,8 @@ Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
       <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
@@ -258,8 +260,6 @@ Geo-replicated, near real-time, scalable data warehousing.” Proceedings of the
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

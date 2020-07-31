@@ -344,8 +344,8 @@ enforcing “external consistency” in two different ways: one that optimizes f
 requires the user to perform additional work and another that requires no additional
 work but can result in some additional latency.</li>
   <li>Scans have “Read Committed” consistency by default. If the user requires strict-serializable
-scans it can choose the <code>READ_AT_SNAPSHOT</code> mode and, optionally, provide a timestamp. The default
-option is non-blocking but the <code>READ_AT_SNAPSHOT</code> option may block when reading from non-leader
+scans it can choose the <code class="language-plaintext highlighter-rouge">READ_AT_SNAPSHOT</code> mode and, optionally, provide a timestamp. The default
+option is non-blocking but the <code class="language-plaintext highlighter-rouge">READ_AT_SNAPSHOT</code> option may block when reading from non-leader
 replicas.</li>
 </ul>
 
@@ -368,14 +368,14 @@ further information and caveats.</p>
 
 <p>Kudu provides direct access via Java and C++ APIs. An experimental Python API is
 also available and is expected to be fully supported in the future. The easiest
-way to load data into Kudu is to use a <code>CREATE TABLE ... AS SELECT * FROM ...</code>
+way to load data into Kudu is to use a <code class="language-plaintext highlighter-rouge">CREATE TABLE ... AS SELECT * FROM ...</code>
 statement in Impala. Additionally, data is commonly ingested into Kudu using
 Spark, Nifi, and Flume.</p>
 
 <h4 id="whats-the-most-efficient-way-to-bulk-load-data-into-kudu">What’s the most efficient way to bulk load data into Kudu?</h4>
 
 <p>The easiest way to load data into Kudu is if the data is already managed by Impala.
-In this case, a simple <code>INSERT INTO TABLE some_kudu_table SELECT * FROM some_csv_table</code>
+In this case, a simple <code class="language-plaintext highlighter-rouge">INSERT INTO TABLE some_kudu_table SELECT * FROM some_csv_table</code>
 does the trick.</p>
 
 <p>You can also use Kudu’s Spark integration to load data from or
@@ -531,8 +531,8 @@ See the <a href="docs/administration.html">administration documentation</a> for 
 help if you have it available. You can use it to copy your data into Parquet
 format using a statement like:</p>
 
-<pre><code>INSERT INTO TABLE some_parquet_table SELECT * FROM kudu_table
-</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>INSERT INTO TABLE some_parquet_table SELECT * FROM kudu_table
+</code></pre></div></div>
 
 <p>then use <a href="http://hadoop.apache.org/docs/current/hadoop-distcp/DistCp.html">distcp</a>
 to copy the Parquet data to another cluster.</p>

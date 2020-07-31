@@ -144,13 +144,13 @@ implementation was complete.</p>
 <p>The Consensus API has the following main responsibilities:</p>
 
 <ol>
-  <li>Support acting as a Raft <code>LEADER</code> and replicate writes to a local
+  <li>Support acting as a Raft <code class="language-plaintext highlighter-rouge">LEADER</code> and replicate writes to a local
 write-ahead log (WAL) as well as followers in the Raft configuration. For
 each operation written to the leader, a Raft implementation must keep track
 of how many nodes have written a copy of the operation being replicated, and
 whether or not that constitutes a majority. Once a majority of the nodes
 have written a copy of the data, it is considered committed.</li>
-  <li>Support acting as a Raft <code>FOLLOWER</code> by accepting writes from the leader and
+  <li>Support acting as a Raft <code class="language-plaintext highlighter-rouge">FOLLOWER</code> by accepting writes from the leader and
 preparing them to be eventually committed.</li>
   <li>Support voting in and initiating leader elections.</li>
   <li>Support participating in and initiating configuration changes (such as going
@@ -216,6 +216,8 @@ dissertation, which you can find linked from the above web site.</p>
     <h3>Recent posts</h3>
     <ul>
     
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
       <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
@@ -243,8 +245,6 @@ dissertation, which you can find linked from the above web site.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

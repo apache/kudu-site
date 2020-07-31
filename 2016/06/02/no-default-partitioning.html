@@ -162,45 +162,45 @@ advanced configurations.</p>
 <h1 id="c-client">C++ Client</h1>
 
 <p>With the C++ client, creating a new table with hash partitions is as simple as
-calling <code>KuduTableCreator:add_hash_partitions</code> with the columns to hash and the
+calling <code class="language-plaintext highlighter-rouge">KuduTableCreator:add_hash_partitions</code> with the columns to hash and the
 number of buckets to use:</p>
 
-<div class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">KuduTableCreator</span><span class="o">&gt;</span> <span class="n">table_creator</span><span class="p">(</span><span class="n">my_client</span><span class="o">-&gt;</span><span class="n">NewTableCreator</span><span class="p">());</span>
-<span class="n">Status</span> <span class="n">create_status</span> <span class="o">=</span> <span class="n">table_creator</span><span class="o">-&gt;</span><span class="n">table_name</span><span class="p">(</span><span class="s">&quot;my-table&quot;</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">KuduTableCreator</span><span class="o">&gt;</span> <span class="n">table_creator</span><span class="p">(</span><span class="n">my_client</span><span class="o">-&gt;</span><span class="n">NewTableCreator</span><span class="p">());</span>
+<span class="n">Status</span> <span class="n">create_status</span> <span class="o">=</span> <span class="n">table_creator</span><span class="o">-&gt;</span><span class="n">table_name</span><span class="p">(</span><span class="s">"my-table"</span><span class="p">)</span>
                                      <span class="p">.</span><span class="n">schema</span><span class="p">(</span><span class="n">my_schema</span><span class="p">)</span>
-                                     <span class="p">.</span><span class="n">add_hash_partitions</span><span class="p">({</span> <span class="s">&quot;key_column_a&quot;</span><span class="p">,</span> <span class="s">&quot;key_column_b&quot;</span> <span class="p">},</span> <span class="mi">16</span><span class="p">)</span>
+                                     <span class="p">.</span><span class="n">add_hash_partitions</span><span class="p">({</span> <span class="s">"key_column_a"</span><span class="p">,</span> <span class="s">"key_column_b"</span> <span class="p">},</span> <span class="mi">16</span><span class="p">)</span>
                                      <span class="p">.</span><span class="n">Create</span><span class="p">();</span>
-<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">create_status</span><span class="p">.</span><span class="n">ok</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* handle error */</span> <span class="p">}</span></code></pre></div>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">create_status</span><span class="p">.</span><span class="n">ok</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* handle error */</span> <span class="p">}</span></code></pre></figure>
 
 <h1 id="java-client">Java Client</h1>
 
 <p>And similarly, in Java:</p>
 
-<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">hashColumns</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-<span class="n">hashColumns</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;key_column_a&quot;</span><span class="o">);</span>
-<span class="n">hashColumn</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;key_column_b&quot;</span><span class="o">);</span>
-<span class="n">CreateTableOptions</span> <span class="n">options</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">CreateTableOptions</span><span class="o">().</span><span class="na">addHashPartitions</span><span class="o">(</span><span class="n">hashColumns</span><span class="o">,</span> <span class="mi">16</span><span class="o">);</span>
-<span class="n">myClient</span><span class="o">.</span><span class="na">createTable</span><span class="o">(</span><span class="s">&quot;my-table&quot;</span><span class="o">,</span> <span class="n">my_schema</span><span class="o">,</span> <span class="n">options</span><span class="o">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">hashColumns</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">hashColumns</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"key_column_a"</span><span class="o">);</span>
+<span class="n">hashColumn</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"key_column_b"</span><span class="o">);</span>
+<span class="nc">CreateTableOptions</span> <span class="n">options</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CreateTableOptions</span><span class="o">().</span><span class="na">addHashPartitions</span><span class="o">(</span><span class="n">hashColumns</span><span class="o">,</span> <span class="mi">16</span><span class="o">);</span>
+<span class="n">myClient</span><span class="o">.</span><span class="na">createTable</span><span class="o">(</span><span class="s">"my-table"</span><span class="o">,</span> <span class="n">my_schema</span><span class="o">,</span> <span class="n">options</span><span class="o">);</span></code></pre></figure>
 
 <p>In the examples above, if the hash partition configuration is omitted the create
-table operation will fail with the error <code>Table partitioning must be specified
+table operation will fail with the error <code class="language-plaintext highlighter-rouge">Table partitioning must be specified
 using setRangePartitionColumns or addHashPartitions</code>. In the Java client this
-manifests as a thrown <code>IllegalArgumentException</code>, while in the C++ client it is
-returned as a <code>Status::InvalidArgument</code>.</p>
+manifests as a thrown <code class="language-plaintext highlighter-rouge">IllegalArgumentException</code>, while in the C++ client it is
+returned as a <code class="language-plaintext highlighter-rouge">Status::InvalidArgument</code>.</p>
 
 <h1 id="impala">Impala</h1>
 
-<p>When creating Kudu tables with Impala, the formerly optional <code>DISTRIBUTE BY</code>
+<p>When creating Kudu tables with Impala, the formerly optional <code class="language-plaintext highlighter-rouge">DISTRIBUTE BY</code>
 clause is now required:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">key_column_a</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">key_column_b</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">other_column</span> <span class="n">STRING</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table</span> <span class="p">(</span><span class="n">key_column_a</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">key_column_b</span> <span class="n">STRING</span><span class="p">,</span> <span class="n">other_column</span> <span class="n">STRING</span><span class="p">)</span>
 <span class="n">DISTRIBUTE</span> <span class="k">BY</span> <span class="n">HASH</span> <span class="p">(</span><span class="n">key_column_a</span><span class="p">,</span> <span class="n">key_column_b</span><span class="p">)</span> <span class="k">INTO</span> <span class="mi">16</span> <span class="n">BUCKETS</span>
 <span class="n">TBLPROPERTIES</span><span class="p">(</span>
-    <span class="s1">&#39;storage_handler&#39;</span> <span class="o">=</span> <span class="s1">&#39;com.cloudera.kudu.hive.KuduStorageHandler&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;kudu.table_name&#39;</span> <span class="o">=</span> <span class="s1">&#39;my_table&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;kudu.master_addresses&#39;</span> <span class="o">=</span> <span class="s1">&#39;kudu-master.example.com:7051&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;kudu.key_columns&#39;</span> <span class="o">=</span> <span class="s1">&#39;key_column_a,key_column_b&#39;</span>
-<span class="p">);</span></code></pre></div>
+    <span class="s1">'storage_handler'</span> <span class="o">=</span> <span class="s1">'com.cloudera.kudu.hive.KuduStorageHandler'</span><span class="p">,</span>
+    <span class="s1">'kudu.table_name'</span> <span class="o">=</span> <span class="s1">'my_table'</span><span class="p">,</span>
+    <span class="s1">'kudu.master_addresses'</span> <span class="o">=</span> <span class="s1">'kudu-master.example.com:7051'</span><span class="p">,</span>
+    <span class="s1">'kudu.key_columns'</span> <span class="o">=</span> <span class="s1">'key_column_a,key_column_b'</span>
+<span class="p">);</span></code></pre></figure>
 
 
   </div>
@@ -211,6 +211,8 @@ clause is now required:</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -239,8 +241,6 @@ clause is now required:</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

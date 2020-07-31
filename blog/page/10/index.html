@@ -118,6 +118,30 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2016/06/17/raft-consensus-single-node.html">Using Raft Consensus on a Single Node</a></h1>
+    <p class="meta">Posted 17 Jun 2016 by Mike Percy</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>As Kudu marches toward its 1.0 release, which will include support for
+multi-master operation, we are working on removing old code that is no longer
+needed. One such piece of code is called LocalConsensus. Once LocalConsensus is
+removed, we will be using Raft consensus even on Kudu tables that have a
+replication factor of 1.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2016/06/17/raft-consensus-single-node.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2016/06/13/weekly-update.html">Apache Kudu (incubating) Weekly Update June 13, 2016</a></h1>
     <p class="meta">Posted 13 Jun 2016 by Jean-Daniel Cryans</p>
   </header>
@@ -156,7 +180,6 @@ the specification of a partitioning scheme for new tables.</p>
   <li>Read the detailed <a href="http://kudu.apache.org/releases/0.9.0/docs/release_notes.html">Kudu 0.9.0 release notes</a></li>
   <li>Download the <a href="http://kudu.apache.org/releases/0.9.0/">Kudu 0.9.0 source release</a></li>
 </ul>
-
 
     
   </div>
@@ -211,27 +234,6 @@ with the new release.</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/06/01/weekly-update.html">Apache Kudu (incubating) Weekly Update June 1, 2016</a></h1>
-    <p class="meta">Posted 01 Jun 2016 by Jean-Daniel Cryans</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the eleventh edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/06/01/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -251,6 +253,8 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -279,8 +283,6 @@ covers ongoing development and news in the Apache Kudu (incubating) project.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>

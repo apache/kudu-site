@@ -57,7 +57,7 @@
                 <li >
                   <a href="/docs/">Documentation</a>
                 </li>
-                <li >
+                <li class="active">
                   <a href="/releases/">Releases</a>
                 </li>
                 <li >
@@ -143,18 +143,18 @@ under the License.
 <p>To verify the integrity of the release, check the following:</p>
 
 <ul>
-  <li>Verify the checksum by downloading the release and the <code>.sha512</code> file, and
+  <li>Verify the checksum by downloading the release and the <code class="language-plaintext highlighter-rouge">.sha512</code> file, and
 running the following command:
     <ul>
-      <li>On Linux: <code>sha512sum -c apache-kudu-1.11.0.tar.gz.sha512</code></li>
-      <li>On MacOS: <code>shasum -a 512 -c apache-kudu-1.11.0.tar.gz.sha512</code></li>
+      <li>On Linux: <code class="language-plaintext highlighter-rouge">sha512sum -c apache-kudu-1.11.0.tar.gz.sha512</code></li>
+      <li>On MacOS: <code class="language-plaintext highlighter-rouge">shasum -a 512 -c apache-kudu-1.11.0.tar.gz.sha512</code></li>
     </ul>
   </li>
-  <li>Verify the signature by downloading the release and the <code>.asc</code> file, and
+  <li>Verify the signature by downloading the release and the <code class="language-plaintext highlighter-rouge">.asc</code> file, and
 doing the following:
     <ul>
-      <li>Import the KEYS file to the GPG keychain by running <code>gpg --import KEYS</code></li>
-      <li>Run <code>gpg --verify apache-kudu-1.11.0.tar.gz.asc apache-kudu-1.11.0.tar.gz</code></li>
+      <li>Import the KEYS file to the GPG keychain by running <code class="language-plaintext highlighter-rouge">gpg --import KEYS</code></li>
+      <li>Run <code class="language-plaintext highlighter-rouge">gpg --verify apache-kudu-1.11.0.tar.gz.asc apache-kudu-1.11.0.tar.gz</code></li>
     </ul>
   </li>
 </ul>

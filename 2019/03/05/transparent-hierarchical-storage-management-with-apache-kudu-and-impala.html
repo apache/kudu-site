@@ -159,11 +159,11 @@ useful solution.</p>
 <p>In this pattern, matching Kudu and Parquet formatted HDFS tables are created in Impala.
 These tables are partitioned by a unit of time based on how frequently the data is
 moved between the Kudu and HDFS table. It is common to use daily, monthly, or yearly
-partitions. A unified view is created and a <code>WHERE</code> clause is used to define a boundary
+partitions. A unified view is created and a <code class="language-plaintext highlighter-rouge">WHERE</code> clause is used to define a boundary
 that separates which data is read from the Kudu table and which is read from the HDFS
 table. The defined boundary is important so that you can move data between Kudu and
 HDFS without exposing duplicate records to the view. Once the data is moved, an atomic
-<code>ALTER VIEW</code> statement can be used to move the boundary forward.</p>
+<code class="language-plaintext highlighter-rouge">ALTER VIEW</code> statement can be used to move the boundary forward.</p>
 
 <p><img src="/img/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/sliding-window-pattern.png" alt="png" class="img-responsive" /></p>
 
@@ -233,14 +233,14 @@ A few examples are shown further below where the sliding window pattern is illus
 <p>Once the tables are created, moving the data is as simple as an
 <a href="https://impala.apache.org/docs/build/html/topics/impala_insert.html">INSERT…SELECT</a> statement:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">table_foo</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table_bar</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">table_foo</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">table_bar</span><span class="p">;</span></code></pre></figure>
 
 <p>All of the features of the
 <a href="https://impala.apache.org/docs/build/html/topics/impala_select.html">SELECT</a>
 statement can be used to select the specific data you would like to move.</p>
 
-<p>Note: If moving data to Kudu, an <code>UPSERT INTO</code> statement can be used to handle
+<p>Note: If moving data to Kudu, an <code class="language-plaintext highlighter-rouge">UPSERT INTO</code> statement can be used to handle
 duplicate keys.</p>
 
 <h3 id="unified-querying">Unified Querying</h3>
@@ -251,29 +251,29 @@ not described. However, see Impala’s
 <a href="https://impala.apache.org/docs/build/html/topics/impala_create_view.html">CREATE VIEW documentation</a>
 for more in-depth details.</p>
 
-<p>Creating a view for unified querying is as simple as a <code>CREATE VIEW</code> statement using
-two <code>SELECT</code> clauses combined with a <code>UNION ALL</code>:</p>
+<p>Creating a view for unified querying is as simple as a <code class="language-plaintext highlighter-rouge">CREATE VIEW</code> statement using
+two <code class="language-plaintext highlighter-rouge">SELECT</code> clauses combined with a <code class="language-plaintext highlighter-rouge">UNION ALL</code>:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">foo_view</span> <span class="k">AS</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">foo_view</span> <span class="k">AS</span>
 <span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="k">FROM</span> <span class="n">foo_parquet</span>
 <span class="k">UNION</span> <span class="k">ALL</span>
-<span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="k">FROM</span> <span class="n">foo_kudu</span><span class="p">;</span></code></pre></div>
+<span class="k">SELECT</span> <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="k">FROM</span> <span class="n">foo_kudu</span><span class="p">;</span></code></pre></figure>
 
-<p>WARNING: Be sure to use <code>UNION ALL</code> and not <code>UNION</code>. The <code>UNION</code> keyword by itself
-is the same as <code>UNION DISTINCT</code> and can have significant performance impact.
+<p>WARNING: Be sure to use <code class="language-plaintext highlighter-rouge">UNION ALL</code> and not <code class="language-plaintext highlighter-rouge">UNION</code>. The <code class="language-plaintext highlighter-rouge">UNION</code> keyword by itself
+is the same as <code class="language-plaintext highlighter-rouge">UNION DISTINCT</code> and can have significant performance impact.
 More information can be found in the Impala
 <a href="https://impala.apache.org/docs/build/html/topics/impala_union.html">UNION documentation</a>.</p>
 
 <p>All of the features of the
 <a href="https://impala.apache.org/docs/build/html/topics/impala_select.html">SELECT</a>
 statement can be used to expose the correct data and columns from each of the
-underlying tables. It is important to use the <code>WHERE</code> clause to pass through and
+underlying tables. It is important to use the <code class="language-plaintext highlighter-rouge">WHERE</code> clause to pass through and
 pushdown any predicates that need special handling or transformations. More examples
 will follow below in the discussion of the sliding window pattern.</p>
 
 <p>Additionally, views can be altered via the
 <a href="https://impala.apache.org/docs/build/html/topics/impala_alter_view.html">ALTER VIEW</a>
-statement. This is useful when combined with the <code>SELECT</code> statement because it can be
+statement. This is useful when combined with the <code class="language-plaintext highlighter-rouge">SELECT</code> statement because it can be
 used to atomically update what data is being accessed by the view.</p>
 
 <h2 id="an-example-implementation">An Example Implementation</h2>
@@ -288,7 +288,7 @@ offloaded to HDFS using the Parquet format.</p>
 The table is range partitioned by the time column with each range containing one
 period of data. It is important to have partitions that match the period because
 dropping Kudu partitions is much more efficient than removing the data via the
-<code>DELETE</code> clause. The table is also hash partitioned by the other key column to ensure
+<code class="language-plaintext highlighter-rouge">DELETE</code> clause. The table is also hash partitioned by the other key column to ensure
 that all of the data is not written to a single partition.</p>
 
 <p>Note: Your schema design should vary based on your data and read/write performance
@@ -300,22 +300,22 @@ partitioning if your
 data input rate is low. Alternatively, you may need more hash buckets if your data
 input rate is very high.</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table_kudu</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table_kudu</span>
 <span class="p">(</span>
   <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
-  <span class="n">time</span> <span class="k">TIMESTAMP</span><span class="p">,</span>
+  <span class="nb">time</span> <span class="nb">TIMESTAMP</span><span class="p">,</span>
   <span class="n">message</span> <span class="n">STRING</span><span class="p">,</span>
-  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">time</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">PARTITION</span> <span class="k">BY</span>
    <span class="n">HASH</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="n">PARTITIONS</span> <span class="mi">4</span><span class="p">,</span>
-   <span class="n">RANGE</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="p">(</span>
-      <span class="n">PARTITION</span> <span class="s1">&#39;2018-01-01&#39;</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">&#39;2018-02-01&#39;</span><span class="p">,</span> <span class="c1">--January</span>
-      <span class="n">PARTITION</span> <span class="s1">&#39;2018-02-01&#39;</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">&#39;2018-03-01&#39;</span><span class="p">,</span> <span class="c1">--February</span>
-      <span class="n">PARTITION</span> <span class="s1">&#39;2018-03-01&#39;</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">&#39;2018-04-01&#39;</span><span class="p">,</span> <span class="c1">--March</span>
-      <span class="n">PARTITION</span> <span class="s1">&#39;2018-04-01&#39;</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">&#39;2018-05-01&#39;</span>  <span class="c1">--April</span>
+   <span class="n">RANGE</span><span class="p">(</span><span class="nb">time</span><span class="p">)</span> <span class="p">(</span>
+      <span class="n">PARTITION</span> <span class="s1">'2018-01-01'</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">'2018-02-01'</span><span class="p">,</span> <span class="c1">--January</span>
+      <span class="n">PARTITION</span> <span class="s1">'2018-02-01'</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">'2018-03-01'</span><span class="p">,</span> <span class="c1">--February</span>
+      <span class="n">PARTITION</span> <span class="s1">'2018-03-01'</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">'2018-04-01'</span><span class="p">,</span> <span class="c1">--March</span>
+      <span class="n">PARTITION</span> <span class="s1">'2018-04-01'</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="s1">'2018-05-01'</span>  <span class="c1">--April</span>
 <span class="p">)</span>
-<span class="n">STORED</span> <span class="k">AS</span> <span class="n">KUDU</span><span class="p">;</span></code></pre></div>
+<span class="n">STORED</span> <span class="k">AS</span> <span class="n">KUDU</span><span class="p">;</span></code></pre></figure>
 
 <p>Note: There is an extra month partition to provide a buffer of time for the data to
 be moved into the immutable table.</p>
@@ -329,62 +329,62 @@ the view step below. See Impala’s
 <a href="https://impala.apache.org/docs/build/html/topics/impala_partitioning.html">partitioning documentation</a>
 for more details.</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table_parquet</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">my_table_parquet</span>
 <span class="p">(</span>
   <span class="n">name</span> <span class="n">STRING</span><span class="p">,</span>
-  <span class="n">time</span> <span class="k">TIMESTAMP</span><span class="p">,</span>
+  <span class="nb">time</span> <span class="nb">TIMESTAMP</span><span class="p">,</span>
   <span class="n">message</span> <span class="n">STRING</span>
 <span class="p">)</span>
-<span class="n">PARTITIONED</span> <span class="k">BY</span> <span class="p">(</span><span class="k">year</span> <span class="nb">int</span><span class="p">,</span> <span class="k">month</span> <span class="nb">int</span><span class="p">,</span> <span class="k">day</span> <span class="nb">int</span><span class="p">)</span>
-<span class="n">STORED</span> <span class="k">AS</span> <span class="n">PARQUET</span><span class="p">;</span></code></pre></div>
+<span class="n">PARTITIONED</span> <span class="k">BY</span> <span class="p">(</span><span class="nb">year</span> <span class="nb">int</span><span class="p">,</span> <span class="k">month</span> <span class="nb">int</span><span class="p">,</span> <span class="k">day</span> <span class="nb">int</span><span class="p">)</span>
+<span class="n">STORED</span> <span class="k">AS</span> <span class="n">PARQUET</span><span class="p">;</span></code></pre></figure>
 
 <h3 id="create-the-unified-view">Create the Unified View</h3>
 
 <p>Now create the unified view which will be used to query all of the data seamlessly:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">my_table_view</span> <span class="k">AS</span>
-<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">message</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">VIEW</span> <span class="n">my_table_view</span> <span class="k">AS</span>
+<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="nb">time</span><span class="p">,</span> <span class="n">message</span>
 <span class="k">FROM</span> <span class="n">my_table_kudu</span>
-<span class="k">WHERE</span> <span class="n">time</span> <span class="o">&gt;=</span> <span class="ss">&quot;2018-01-01&quot;</span>
+<span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&gt;=</span> <span class="nv">"2018-01-01"</span>
 <span class="k">UNION</span> <span class="k">ALL</span>
-<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">message</span>
+<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="nb">time</span><span class="p">,</span> <span class="n">message</span>
 <span class="k">FROM</span> <span class="n">my_table_parquet</span>
-<span class="k">WHERE</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="ss">&quot;2018-01-01&quot;</span>
-<span class="k">AND</span> <span class="k">year</span> <span class="o">=</span> <span class="k">year</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="k">AND</span> <span class="k">month</span> <span class="o">=</span> <span class="k">month</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="k">AND</span> <span class="k">day</span> <span class="o">=</span> <span class="k">day</span><span class="p">(</span><span class="n">time</span><span class="p">);</span></code></pre></div>
+<span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&lt;</span> <span class="nv">"2018-01-01"</span>
+<span class="k">AND</span> <span class="nb">year</span> <span class="o">=</span> <span class="nb">year</span><span class="p">(</span><span class="nb">time</span><span class="p">)</span>
+<span class="k">AND</span> <span class="k">month</span> <span class="o">=</span> <span class="k">month</span><span class="p">(</span><span class="nb">time</span><span class="p">)</span>
+<span class="k">AND</span> <span class="k">day</span> <span class="o">=</span> <span class="k">day</span><span class="p">(</span><span class="nb">time</span><span class="p">);</span></code></pre></figure>
 
-<p>Each <code>SELECT</code> clause explicitly lists all of the columns to expose. This ensures that
+<p>Each <code class="language-plaintext highlighter-rouge">SELECT</code> clause explicitly lists all of the columns to expose. This ensures that
 the year, month, and day columns that are unique to the Parquet table are not exposed.
 If needed, it also allows any necessary column or type mapping to be handled.</p>
 
-<p>The initial <code>WHERE</code> clauses applied to both my_table_kudu and my_table_parquet define
+<p>The initial <code class="language-plaintext highlighter-rouge">WHERE</code> clauses applied to both my_table_kudu and my_table_parquet define
 the boundary between Kudu and HDFS to ensure duplicate data is not read while in the
 process of offloading data.</p>
 
-<p>The additional <code>AND</code> clauses applied to my_table_parquet are used to ensure good
+<p>The additional <code class="language-plaintext highlighter-rouge">AND</code> clauses applied to my_table_parquet are used to ensure good
 predicate pushdown on the individual year, month, and day columns.</p>
 
-<p>WARNING: As stated earlier, be sure to use <code>UNION ALL</code> and not <code>UNION</code>. The <code>UNION</code>
-keyword by itself is the same as <code>UNION DISTINCT</code> and can have significant performance
+<p>WARNING: As stated earlier, be sure to use <code class="language-plaintext highlighter-rouge">UNION ALL</code> and not <code class="language-plaintext highlighter-rouge">UNION</code>. The <code class="language-plaintext highlighter-rouge">UNION</code>
+keyword by itself is the same as <code class="language-plaintext highlighter-rouge">UNION DISTINCT</code> and can have significant performance
 impact. More information can be found in the Impala
-<a href="https://impala.apache.org/docs/build/html/topics/impala_union.html"><code>UNION</code> documentation</a>.</p>
+<a href="https://impala.apache.org/docs/build/html/topics/impala_union.html"><code class="language-plaintext highlighter-rouge">UNION</code> documentation</a>.</p>
 
 <h3 id="ongoing-steps">Ongoing Steps</h3>
 
 <p>Now that the base tables and view are created, prepare the ongoing steps to maintain
 the sliding window. Because these ongoing steps should be scheduled to run on a
-regular basis, the examples below are shown using <code>.sql</code> files that take variables
+regular basis, the examples below are shown using <code class="language-plaintext highlighter-rouge">.sql</code> files that take variables
 which can be passed from your scripts and scheduling tool of choice.</p>
 
-<p>Create the <code>window_data_move.sql</code> file to move the data from the oldest partition to HDFS:</p>
+<p>Create the <code class="language-plaintext highlighter-rouge">window_data_move.sql</code> file to move the data from the oldest partition to HDFS:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">hdfs_table</span><span class="err">}</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="k">year</span><span class="p">,</span> <span class="k">month</span><span class="p">,</span> <span class="k">day</span><span class="p">)</span>
-<span class="k">SELECT</span> <span class="o">*</span><span class="p">,</span> <span class="k">year</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="k">month</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="k">day</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">hdfs_table</span><span class="err">}</span> <span class="n">PARTITION</span> <span class="p">(</span><span class="nb">year</span><span class="p">,</span> <span class="k">month</span><span class="p">,</span> <span class="k">day</span><span class="p">)</span>
+<span class="k">SELECT</span> <span class="o">*</span><span class="p">,</span> <span class="nb">year</span><span class="p">(</span><span class="nb">time</span><span class="p">),</span> <span class="k">month</span><span class="p">(</span><span class="nb">time</span><span class="p">),</span> <span class="k">day</span><span class="p">(</span><span class="nb">time</span><span class="p">)</span>
 <span class="k">FROM</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">kudu_table</span><span class="err">}</span>
-<span class="k">WHERE</span> <span class="n">time</span> <span class="o">&gt;=</span> <span class="n">add_months</span><span class="p">(</span><span class="ss">&quot;${var:new_boundary_time}&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="k">AND</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="ss">&quot;${var:new_boundary_time}&quot;</span><span class="p">;</span>
-<span class="n">COMPUTE</span> <span class="n">INCREMENTAL</span> <span class="n">STATS</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">hdfs_table</span><span class="err">}</span><span class="p">;</span></code></pre></div>
+<span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&gt;=</span> <span class="n">add_months</span><span class="p">(</span><span class="nv">"${var:new_boundary_time}"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">AND</span> <span class="nb">time</span> <span class="o">&lt;</span> <span class="nv">"${var:new_boundary_time}"</span><span class="p">;</span>
+<span class="n">COMPUTE</span> <span class="n">INCREMENTAL</span> <span class="n">STATS</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">hdfs_table</span><span class="err">}</span><span class="p">;</span></code></pre></figure>
 
 <p>Note: The
 <a href="https://impala.apache.org/docs/build/html/topics/impala_compute_stats.html">COMPUTE INCREMENTAL STATS</a>
@@ -393,59 +393,59 @@ clause is not required but helps Impala to optimize queries.</p>
 <p>To run the SQL statement, use the Impala shell and pass the required variables.
 Below is an example:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell -i &lt;impalad:port&gt; -f window_data_move.sql
---var<span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
---var<span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
---var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell <span class="nt">-i</span> &lt;impalad:port&gt; <span class="nt">-f</span> window_data_move.sql
+<span class="nt">--var</span><span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
+<span class="nt">--var</span><span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
+<span class="nt">--var</span><span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">"2018-02-01"</span></code></pre></figure>
 
-<p>Note: You can adjust the <code>WHERE</code> clause to match the given period and cadence of your
+<p>Note: You can adjust the <code class="language-plaintext highlighter-rouge">WHERE</code> clause to match the given period and cadence of your
 offload. Here the add_months function is used with an argument of -1 to move one month
 of data in the past from the new boundary time.</p>
 
-<p>Create the <code>window_view_alter.sql</code> file to shift the time boundary forward by altering
+<p>Create the <code class="language-plaintext highlighter-rouge">window_view_alter.sql</code> file to shift the time boundary forward by altering
 the unified view:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">VIEW</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">view_name</span><span class="err">}</span> <span class="k">AS</span>
-<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">message</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">VIEW</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">view_name</span><span class="err">}</span> <span class="k">AS</span>
+<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="nb">time</span><span class="p">,</span> <span class="n">message</span>
 <span class="k">FROM</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">kudu_table</span><span class="err">}</span>
-<span class="k">WHERE</span> <span class="n">time</span> <span class="o">&gt;=</span> <span class="ss">&quot;${var:new_boundary_time}&quot;</span>
+<span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&gt;=</span> <span class="nv">"${var:new_boundary_time}"</span>
 <span class="k">UNION</span> <span class="k">ALL</span>
-<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">message</span>
+<span class="k">SELECT</span> <span class="n">name</span><span class="p">,</span> <span class="nb">time</span><span class="p">,</span> <span class="n">message</span>
 <span class="k">FROM</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">hdfs_table</span><span class="err">}</span>
-<span class="k">WHERE</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="ss">&quot;${var:new_boundary_time}&quot;</span>
-<span class="k">AND</span> <span class="k">year</span> <span class="o">=</span> <span class="k">year</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="k">AND</span> <span class="k">month</span> <span class="o">=</span> <span class="k">month</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="k">AND</span> <span class="k">day</span> <span class="o">=</span> <span class="k">day</span><span class="p">(</span><span class="n">time</span><span class="p">);</span></code></pre></div>
+<span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&lt;</span> <span class="nv">"${var:new_boundary_time}"</span>
+<span class="k">AND</span> <span class="nb">year</span> <span class="o">=</span> <span class="nb">year</span><span class="p">(</span><span class="nb">time</span><span class="p">)</span>
+<span class="k">AND</span> <span class="k">month</span> <span class="o">=</span> <span class="k">month</span><span class="p">(</span><span class="nb">time</span><span class="p">)</span>
+<span class="k">AND</span> <span class="k">day</span> <span class="o">=</span> <span class="k">day</span><span class="p">(</span><span class="nb">time</span><span class="p">);</span></code></pre></figure>
 
 <p>To run the SQL statement, use the Impala shell and pass the required variables.
 Below is an example:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell -i &lt;impalad:port&gt; -f window_view_alter.sql
---var<span class="o">=</span><span class="nv">view_name</span><span class="o">=</span>my_table_view
---var<span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
---var<span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
---var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell <span class="nt">-i</span> &lt;impalad:port&gt; <span class="nt">-f</span> window_view_alter.sql
+<span class="nt">--var</span><span class="o">=</span><span class="nv">view_name</span><span class="o">=</span>my_table_view
+<span class="nt">--var</span><span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
+<span class="nt">--var</span><span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
+<span class="nt">--var</span><span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">"2018-02-01"</span></code></pre></figure>
 
-<p>Create the <code>window_partition_shift.sql</code> file to shift the Kudu partitions forward:</p>
+<p>Create the <code class="language-plaintext highlighter-rouge">window_partition_shift.sql</code> file to shift the Kudu partitions forward:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">kudu_table</span><span class="err">}</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">ALTER</span> <span class="k">TABLE</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">kudu_table</span><span class="err">}</span>
 
-<span class="k">ADD</span> <span class="n">RANGE</span> <span class="n">PARTITION</span> <span class="n">add_months</span><span class="p">(</span><span class="ss">&quot;${var:new_boundary_time}&quot;</span><span class="p">,</span>
-<span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">window_length</span><span class="err">}</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="n">add_months</span><span class="p">(</span><span class="ss">&quot;${var:new_boundary_time}&quot;</span><span class="p">,</span>
+<span class="k">ADD</span> <span class="n">RANGE</span> <span class="n">PARTITION</span> <span class="n">add_months</span><span class="p">(</span><span class="nv">"${var:new_boundary_time}"</span><span class="p">,</span>
+<span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">window_length</span><span class="err">}</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="n">add_months</span><span class="p">(</span><span class="nv">"${var:new_boundary_time}"</span><span class="p">,</span>
 <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">window_length</span><span class="err">}</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
 
 <span class="k">ALTER</span> <span class="k">TABLE</span> <span class="err">${</span><span class="n">var</span><span class="p">:</span><span class="n">kudu_table</span><span class="err">}</span>
 
-<span class="k">DROP</span> <span class="n">RANGE</span> <span class="n">PARTITION</span> <span class="n">add_months</span><span class="p">(</span><span class="ss">&quot;${var:new_boundary_time}&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="ss">&quot;${var:new_boundary_time}&quot;</span><span class="p">;</span></code></pre></div>
+<span class="k">DROP</span> <span class="n">RANGE</span> <span class="n">PARTITION</span> <span class="n">add_months</span><span class="p">(</span><span class="nv">"${var:new_boundary_time}"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&lt;=</span> <span class="k">VALUES</span> <span class="o">&lt;</span> <span class="nv">"${var:new_boundary_time}"</span><span class="p">;</span></code></pre></figure>
 
 <p>To run the SQL statement, use the Impala shell and pass the required variables.
 Below is an example:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell -i &lt;impalad:port&gt; -f window_partition_shift.sql
---var<span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
---var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span>
---var<span class="o">=</span><span class="nv">window_length</span><span class="o">=</span>3</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell <span class="nt">-i</span> &lt;impalad:port&gt; <span class="nt">-f</span> window_partition_shift.sql
+<span class="nt">--var</span><span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
+<span class="nt">--var</span><span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">"2018-02-01"</span>
+<span class="nt">--var</span><span class="o">=</span><span class="nv">window_length</span><span class="o">=</span>3</code></pre></figure>
 
 <p>Note: You should periodically run
 <a href="https://impala.apache.org/docs/build/html/topics/impala_compute_stats.html">COMPUTE STATS</a>
@@ -459,62 +459,62 @@ ranges and running the scripts to move the window forward through time.</p>
 
 <p>Insert some sample values into the Kudu table:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">my_table_kudu</span> <span class="k">VALUES</span>
-<span class="p">(</span><span class="s1">&#39;joey&#39;</span><span class="p">,</span> <span class="s1">&#39;2018-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;hello&#39;</span><span class="p">),</span>
-<span class="p">(</span><span class="s1">&#39;ross&#39;</span><span class="p">,</span> <span class="s1">&#39;2018-02-01&#39;</span><span class="p">,</span> <span class="s1">&#39;goodbye&#39;</span><span class="p">),</span>
-<span class="p">(</span><span class="s1">&#39;rachel&#39;</span><span class="p">,</span> <span class="s1">&#39;2018-03-01&#39;</span><span class="p">,</span> <span class="s1">&#39;hi&#39;</span><span class="p">);</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">my_table_kudu</span> <span class="k">VALUES</span>
+<span class="p">(</span><span class="s1">'joey'</span><span class="p">,</span> <span class="s1">'2018-01-01'</span><span class="p">,</span> <span class="s1">'hello'</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">'ross'</span><span class="p">,</span> <span class="s1">'2018-02-01'</span><span class="p">,</span> <span class="s1">'goodbye'</span><span class="p">),</span>
+<span class="p">(</span><span class="s1">'rachel'</span><span class="p">,</span> <span class="s1">'2018-03-01'</span><span class="p">,</span> <span class="s1">'hi'</span><span class="p">);</span></code></pre></figure>
 
 <p>Show the data in each table/view:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_parquet</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></div>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></figure>
 
 <p>Move the January data into HDFS:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell -i &lt;impalad:port&gt; -f window_data_move.sql
---var<span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
---var<span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
---var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell <span class="nt">-i</span> &lt;impalad:port&gt; <span class="nt">-f</span> window_data_move.sql
+<span class="nt">--var</span><span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
+<span class="nt">--var</span><span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
+<span class="nt">--var</span><span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">"2018-02-01"</span></code></pre></figure>
 
 <p>Confirm the data is in both places, but not duplicated in the view:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_parquet</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></div>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></figure>
 
 <p>Alter the view to shift the time boundary forward to February:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell -i &lt;impalad:port&gt; -f window_view_alter.sql
---var<span class="o">=</span><span class="nv">view_name</span><span class="o">=</span>my_table_view
---var<span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
---var<span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
---var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell <span class="nt">-i</span> &lt;impalad:port&gt; <span class="nt">-f</span> window_view_alter.sql
+<span class="nt">--var</span><span class="o">=</span><span class="nv">view_name</span><span class="o">=</span>my_table_view
+<span class="nt">--var</span><span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
+<span class="nt">--var</span><span class="o">=</span><span class="nv">hdfs_table</span><span class="o">=</span>my_table_parquet
+<span class="nt">--var</span><span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">"2018-02-01"</span></code></pre></figure>
 
 <p>Confirm the data is still in both places, but not duplicated in the view:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_parquet</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></div>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></figure>
 
 <p>Shift the Kudu partitions forward:</p>
 
-<div class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell -i &lt;impalad:port&gt; -f window_partition_shift.sql
---var<span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
---var<span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">&quot;2018-02-01&quot;</span>
---var<span class="o">=</span><span class="nv">window_length</span><span class="o">=</span>3</code></pre></div>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">impala-shell <span class="nt">-i</span> &lt;impalad:port&gt; <span class="nt">-f</span> window_partition_shift.sql
+<span class="nt">--var</span><span class="o">=</span><span class="nv">kudu_table</span><span class="o">=</span>my_table_kudu
+<span class="nt">--var</span><span class="o">=</span><span class="nv">new_boundary_time</span><span class="o">=</span><span class="s2">"2018-02-01"</span>
+<span class="nt">--var</span><span class="o">=</span><span class="nv">window_length</span><span class="o">=</span>3</code></pre></figure>
 
 <p>Confirm the January data is now only in HDFS:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_kudu</span><span class="p">;</span>
 <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_parquet</span><span class="p">;</span>
-<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></div>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span></code></pre></figure>
 
 <p>Confirm predicate push down with Impala’s EXPLAIN statement:</p>
 
-<div class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span>
-<span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span> <span class="k">WHERE</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="ss">&quot;2018-02-01&quot;</span><span class="p">;</span>
-<span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span> <span class="k">WHERE</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="ss">&quot;2018-02-01&quot;</span><span class="p">;</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span><span class="p">;</span>
+<span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span> <span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&lt;</span> <span class="nv">"2018-02-01"</span><span class="p">;</span>
+<span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">my_table_view</span> <span class="k">WHERE</span> <span class="nb">time</span> <span class="o">&gt;</span> <span class="nv">"2018-02-01"</span><span class="p">;</span></code></pre></figure>
 
 <p>In the explain output you should see “kudu predicates” which include the time column
 filters in the “SCAN KUDU” section and “predicates” which include the time, day, month,
@@ -528,6 +528,8 @@ and year columns in the “SCAN HDFS” section.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
@@ -556,8 +558,6 @@ and year columns in the “SCAN HDFS” section.</p>
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
     
       <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
-    
-      <li> <a href="/2018/07/10/instrumentation-in-kudu.html">Instrumentation in Apache Kudu</a> </li>
     
     </ul>
   </div>
