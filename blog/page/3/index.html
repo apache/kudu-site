@@ -118,6 +118,36 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">Transparent Hierarchical Storage Management with Apache Kudu and Impala</a></h1>
+    <p class="meta">Posted 05 Mar 2019 by Grant Henke</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>Note: This is a cross-post from the Cloudera Engineering Blog
+<a href="https://blog.cloudera.com/blog/2019/03/transparent-hierarchical-storage-management-with-apache-kudu-and-impala/">Transparent Hierarchical Storage Management with Apache Kudu and Impala</a></p>
+
+<p>When picking a storage option for an application it is common to pick a single
+storage option which has the most applicable features to your use case. For mutability
+and real-time analytics workloads you may want to use Apache Kudu, but for massive
+scalability at a low cost you may want to use HDFS. For that reason, there is a need
+for a solution that allows you to leverage the best features of multiple storage
+options. This post describes the sliding window pattern using Apache Impala with data
+stored in Apache Kudu and Apache HDFS. With this pattern you get all of the benefits
+of multiple storage layers in a way that is transparent to users.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2018/12/11/call-for-posts.html">Call for Posts</a></h1>
     <p class="meta">Posted 11 Dec 2018 by Attila Bukor</p>
   </header>
@@ -206,34 +236,6 @@ structured manner using tables.</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a></h1>
-    <p class="meta">Posted 06 Aug 2018 by Brock Noland</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The following article by Brock Noland was reposted from the
-<a href="https://www.phdata.io/getting-started-with-kudu/">phData</a>
-blog with their permission.</p>
-
-<p>Five years ago, enabling Data Science and Advanced Analytics on the
-Hadoop platform was hard. Organizations required strong Software Engineering
-capabilities to successfully implement complex Lambda architectures or even
-simply implement continuous ingest. Updating or deleting data, were simply a
-nightmare. General Data Protection Regulation (GDPR) would have been an extreme
-challenge at that time.</p>
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -253,6 +255,8 @@ challenge at that time.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
     
       <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
@@ -281,8 +285,6 @@ challenge at that time.</p>
       <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
     
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
-    
-      <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
     
     </ul>
   </div>

@@ -118,6 +118,43 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a></h1>
+    <p class="meta">Posted 11 Aug 2020 by Attila Bukor</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>When Apache Kudu was first released in September 2016, it didn’t support any
+kind of authorization. Anyone who could access the cluster could do anything
+they wanted. To remedy this, coarse-grained authorization was added along with
+authentication in Kudu 1.3.0. This meant allowing only certain users to access
+Kudu, but those who were allowed access could still do whatever they wanted. The
+only way to achieve finer-grained access control was to limit access to Apache
+Impala where access control <a href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">could be enforced</a> by
+fine-grained policies in Apache Sentry. This method limited how Kudu could be
+accessed, so we saw a need to implement fine-grained access control in a way
+that wouldn’t limit access to Impala only.</p>
+
+<p>Kudu 1.10.0 integrated with Apache Sentry to enable finer-grained authorization
+policies. This integration was rather short-lived as it was deprecated in Kudu
+1.12.0 and will be completely removed in Kudu 1.13.0.</p>
+
+<p>Most recently, since 1.12.0 Kudu supports fine-grained authorization by
+integrating with Apache Ranger 2.1 and later. In this post, we’ll cover how this
+works and how to set it up.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2020/08/11/fine-grained-authz-ranger.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a></h1>
     <p class="meta">Posted 30 Jul 2020 by Boris Tyukin</p>
   </header>
@@ -210,29 +247,6 @@ Kudu 1.10.0 are encouraged to upgrade to 1.10.1 as soon as possible. See the
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2019/07/09/apache-kudu-1-10-0-release.html">Apache Kudu 1.10.0 Released</a></h1>
-    <p class="meta">Posted 09 Jul 2019 by Grant Henke</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.10.0!</p>
-
-<p>The new release adds several new features and improvements, including the
-following:</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2019/07/09/apache-kudu-1-10-0-release.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -250,6 +264,8 @@ following:</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
     
       <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
     
@@ -278,8 +294,6 @@ following:</p>
       <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
     
       <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
-    
-      <li> <a href="/2018/08/06/getting-started-with-kudu-an-oreilly-title.html">Getting Started with Kudu - an O'Reilly Title</a> </li>
     
     </ul>
   </div>

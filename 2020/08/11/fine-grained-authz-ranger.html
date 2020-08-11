@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Fine-Grained Authorization with Apache Kudu and Apache Ranger</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png"
+                srcset="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png 1x, //d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://getkudu-slack.herokuapp.com/">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Fine-Grained Authorization with Apache Kudu and Apache Ranger</h1>
+    <p class="meta">Posted 11 Aug 2020 by Attila Bukor</p>
+  </header>
+  <div class="entry-content">
+    <p>When Apache Kudu was first released in September 2016, it didn’t support any
+kind of authorization. Anyone who could access the cluster could do anything
+they wanted. To remedy this, coarse-grained authorization was added along with
+authentication in Kudu 1.3.0. This meant allowing only certain users to access
+Kudu, but those who were allowed access could still do whatever they wanted. The
+only way to achieve finer-grained access control was to limit access to Apache
+Impala where access control <a href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">could be enforced</a> by
+fine-grained policies in Apache Sentry. This method limited how Kudu could be
+accessed, so we saw a need to implement fine-grained access control in a way
+that wouldn’t limit access to Impala only.</p>
+
+<p>Kudu 1.10.0 integrated with Apache Sentry to enable finer-grained authorization
+policies. This integration was rather short-lived as it was deprecated in Kudu
+1.12.0 and will be completely removed in Kudu 1.13.0.</p>
+
+<p>Most recently, since 1.12.0 Kudu supports fine-grained authorization by
+integrating with Apache Ranger 2.1 and later. In this post, we’ll cover how this
+works and how to set it up.</p>
+
+<!--more-->
+
+<h2 id="how-it-works">How it works</h2>
+
+<p>Ranger supports a wide range of software across the Apache Hadoop ecosystem, but
+unlike Sentry, it doesn’t depend on any of them for fine-grained authorization,
+making it an ideal choice for Kudu.</p>
+
+<p>Ranger consists of an Admin server that has a web UI and a REST API where admins
+can create policies. The policies are stored in a database (supported database
+systems are Microsoft SQL Server, MySQL, Oracle, PostgreSQL, and SQL Anywhere)
+and are periodically fetched and cached by the Ranger plugin that runs on the
+Kudu Masters. The Ranger plugin is responsible for authorizing the requests
+against the cached policies. At the time of writing this post, the Ranger plugin
+base is available only in Java, as most Hadoop ecosystem projects, including
+Ranger, are written in Java.</p>
+
+<p>Unlike Sentry’s client which we reimplemented in C++, the Ranger plugin is a fat
+client that handles the evaluation of the policies (which are much richer and
+more complex than Sentry policies) locally, so we decided not to reimplement it
+in C++.</p>
+
+<p>Each Kudu Master spawns a JVM child process that is effectively a wrapper around
+the Ranger plugin and communicates with it via named pipes.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>This post assumes the Admin Tool of a compatible Ranger version is
+<a href="https://ranger.apache.org/quick_start_guide.html">installed</a> on a host that is
+reachable by both you and by all Kudu Master servers.</p>
+
+<p><em>Note</em>: At the time of writing this post, Ranger 2.0 is the most recent release
+which does NOT support Kudu yet. Ranger 2.1 will be the first version that
+supports Kudu. If you wish to use Kudu with Ranger before this is released, you
+either need to build Ranger from the <code class="language-plaintext highlighter-rouge">master</code> branch or use a distribution that
+has already backported the relevant bits
+(<a href="https://issues.apache.org/jira/browse/RANGER-2684">RANGER-2684</a>:
+0b23df7801062cc7836f2e162e1775101898add4).</p>
+
+<p>To enable Ranger integration in Kudu, Java 8 or later has to be available on the
+Master servers.</p>
+
+<p>You can build the Ranger subprocess by navigating to the <code class="language-plaintext highlighter-rouge">java/</code> inside the Kudu
+source directory, then running the below command:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>./gradlew :kudu-subprocess:jar</code></pre></figure>
+
+<p>This will build the subprocess JAR which you can find in the
+<code class="language-plaintext highlighter-rouge">kudu-subprocess/build/libs</code> directory.</p>
+
+<h2 id="setting-up-kudu-with-ranger">Setting up Kudu with Ranger</h2>
+
+<p>The first step is to add Kudu in Ranger Admin and set <code class="language-plaintext highlighter-rouge">tag.download.auth.users</code>
+and <code class="language-plaintext highlighter-rouge">policy.download.auth.users</code> to the user or service principal name running
+the Kudu process (typically <code class="language-plaintext highlighter-rouge">kudu</code>). The former is for downloading tag-based
+policies which Kudu doesn’t currently support, so this is only for forward
+compatibility and can be safely omitted.</p>
+
+<p><img src="/img/blog-ranger/create-service.png" alt="create-service" class="img-responsive" /></p>
+
+<p>Next, you’ll have to configure the Ranger plugin. As it’s written in Java and is
+part of the Hadoop ecosystem, it expects to find a <code class="language-plaintext highlighter-rouge">core-site.xml</code> in its
+classpath that at a minimum configures the authentication types (simple or
+Kerberos) and the group mapping. If your Kudu is co-located with a Hadoop
+cluster, you can simply use your Hadoop’s <code class="language-plaintext highlighter-rouge">core-site.xml</code> and it should work.
+Otherwise, you can use the below sample <code class="language-plaintext highlighter-rouge">core-site.xml</code> assuming you have
+Kerberos enabled and shell-based groups mapping works for you:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>hadoop.security.authentication<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>kerberos<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>hadoop.security.group.mapping<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>org.apache.hadoop.security.ShellBasedUnixGroupsMapping<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span></code></pre></figure>
+
+<p>In addition to the <code class="language-plaintext highlighter-rouge">core-site.xml</code> file, you’ll also need a
+<code class="language-plaintext highlighter-rouge">ranger-kudu-security.xml</code> in the same directory that looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>ranger.plugin.kudu.policy.cache.dir<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>/path/to/policy/cache/<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>ranger.plugin.kudu.service.name<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>kudu<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>ranger.plugin.kudu.policy.rest.url<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>http://ranger-admin:6080<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>ranger.plugin.kudu.policy.source.impl<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>org.apache.ranger.admin.client.RangerAdminRESTClient<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>ranger.plugin.kudu.policy.pollIntervalMs<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>30000<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;property&gt;</span>
+    <span class="nt">&lt;name&gt;</span>ranger.plugin.kudu.access.cluster.name<span class="nt">&lt;/name&gt;</span>
+    <span class="nt">&lt;value&gt;</span>Cluster 1<span class="nt">&lt;/value&gt;</span>
+  <span class="nt">&lt;/property&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span></code></pre></figure>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ranger.plugin.kudu.policy.cache.dir</code> - A directory that is writable by the
+user running the Master process where the plugin will cache the policies it
+fetches from Ranger Admin.</li>
+  <li><code class="language-plaintext highlighter-rouge">ranger.plugin.kudu.service.name</code> - This needs to be set to whatever the
+service name was set to on Ranger Admin.</li>
+  <li><code class="language-plaintext highlighter-rouge">ranger.plugin.kudu.policiy.rest.url</code> - The URL of the Ranger Admin REST API.</li>
+  <li><code class="language-plaintext highlighter-rouge">ranger.plugin.kudu.policy.source.impl</code> - This should always be
+<code class="language-plaintext highlighter-rouge">org.apache.ranger.admin.client.RangerAdminRESTClient</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">ranger.plugin.kudu.policy.pollIntervalMs</code> - This is the interval at which the
+plugin will fetch policies from the Ranger Admin.</li>
+  <li><code class="language-plaintext highlighter-rouge">ranger.plugin.kudu.access.cluster.name</code> - The name of the cluster.</li>
+</ul>
+
+<p><em>Note</em>: This is a minimal config. For more options refer to the <a href="https://cwiki.apache.org/confluence/display/RANGER/Index">Ranger
+documentation</a></p>
+
+<p>Once these files are created, you need to point Kudu Masters to the directory
+containing them with the <code class="language-plaintext highlighter-rouge">-ranger_config_path</code> flag. In addition,
+<code class="language-plaintext highlighter-rouge">-ranger_jar_path</code> and <code class="language-plaintext highlighter-rouge">-ranger_java_path</code> should be configured. The Java path
+defaults to <code class="language-plaintext highlighter-rouge">$JAVA_HOME/bin/java</code> if <code class="language-plaintext highlighter-rouge">$JAVA_HOME</code> is set and falls back to
+<code class="language-plaintext highlighter-rouge">java</code> in <code class="language-plaintext highlighter-rouge">$PATH</code> if not. The JAR path defaults to <code class="language-plaintext highlighter-rouge">kudu-subprocess.jar</code> in the
+directory containing the <code class="language-plaintext highlighter-rouge">kudu-master</code> binary.</p>
+
+<p>As the last step, you need to set <code class="language-plaintext highlighter-rouge">-tserver_enforce_access_control</code> to <code class="language-plaintext highlighter-rouge">true</code> on
+the Tablet Servers to make sure access control is respected across the cluster.</p>
+
+<h2 id="creating-policies">Creating policies</h2>
+
+<p>After setting up the integration it’s time to create some policies, as now only
+trusted users are allowed to perform any action, everyone else is locked out.</p>
+
+<p>To create your first policy, log in to Ranger Admin, click on the Kudu service
+you created in the first step of setup, then on the “Add New Policy” button in
+the top right corner. You’ll need to name the policy and set the resource it
+will apply to. Kudu doesn’t support databases, but with Ranger integration
+enabled, it will treat the part of the table name before the first period as the
+database name, or default to “default” if the table name doesn’t contain a
+period (configurable with the <code class="language-plaintext highlighter-rouge">-ranger_default_database</code> flag on the
+<code class="language-plaintext highlighter-rouge">kudu-master</code>).</p>
+
+<p>There is no implicit hierarchy in the resources, which means that granting
+privileges on <code class="language-plaintext highlighter-rouge">db=foo</code> won’t imply privileges on <code class="language-plaintext highlighter-rouge">foo.bar</code>. To create a policy
+that applies to all tables and all columns in the <code class="language-plaintext highlighter-rouge">foo</code> database you need to
+create a policy for <code class="language-plaintext highlighter-rouge">db=foo-&gt;tbl=*-&gt;col=*</code>.</p>
+
+<p><img src="/img/blog-ranger/create-policy.png" alt="create-policy" class="img-responsive" /></p>
+
+<p>For a list of the required privileges to perform operations please refer to our
+<a href="/docs/security.html#policy-for-kudu-masters">documentation</a>.</p>
+
+<h2 id="table-ownership">Table ownership</h2>
+
+<p>Kudu 1.13 will introduce table ownership, which enhances the authorization
+experience when Ranger integration is enabled. Tables are automatically owned by
+the users creating the table and it’s possible to change the owner as a part of
+an alter table operation.</p>
+
+<p>Ranger supports granting privileges to the table owners via a special <code class="language-plaintext highlighter-rouge">{OWNER}</code>
+user. You can, for example, grant the <code class="language-plaintext highlighter-rouge">ALL</code> privilege and delegate admin (this
+is required to change the owner of a table) to <code class="language-plaintext highlighter-rouge">{OWNER}</code> on
+<code class="language-plaintext highlighter-rouge">db=*-&gt;table=*-&gt;column=*</code>. This way your users will be able to perform any
+actions on the tables they created without having to explicitly assign
+privileges per table. They will, of course, need to be granted the <code class="language-plaintext highlighter-rouge">CREATE</code>
+privilege on <code class="language-plaintext highlighter-rouge">db=*</code> or on a specific database to actually be able to create
+their own tables.</p>
+
+<p><img src="/img/blog-ranger/allow-conditions.png" alt="allow-conditions" class="img-responsive" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this post we’ve covered how to set up and use the newest Kudu integration,
+Apache Ranger, and a sneak peek into the table ownership feature. Please try
+them out if you have a chance, and let us know what you think on our <a href="mailto:user@kudu.apache.org">mailing
+list</a> or <a href="https://getkudu.slack.com">Slack</a>. If you
+run into any issues, feel free to reach out to us on either platform, or open a
+<a href="https://issues.apache.org/jira/projects/KUDU">bug report</a>.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-10-1-release.html">Apache Kudu 1.10.1 released</a> </li>
+    
+      <li> <a href="/2019/07/09/apache-kudu-1-10-0-release.html">Apache Kudu 1.10.0 Released</a> </li>
+    
+      <li> <a href="/2019/04/30/location-awareness.html">Location Awareness in Kudu</a> </li>
+    
+      <li> <a href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">Fine-Grained Authorization with Apache Kudu and Impala</a> </li>
+    
+      <li> <a href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">Testing Apache Kudu Applications on the JVM</a> </li>
+    
+      <li> <a href="/2019/03/15/apache-kudu-1-9-0-release.html">Apache Kudu 1.9.0 Released</a> </li>
+    
+      <li> <a href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">Transparent Hierarchical Storage Management with Apache Kudu and Impala</a> </li>
+    
+      <li> <a href="/2018/12/11/call-for-posts.html">Call for Posts</a> </li>
+    
+      <li> <a href="/2018/10/26/apache-kudu-1-8-0-released.html">Apache Kudu 1.8.0 Released</a> </li>
+    
+      <li> <a href="/2018/09/26/index-skip-scan-optimization-in-kudu.html">Index Skip Scan Optimization in Kudu</a> </li>
+    
+      <li> <a href="/2018/09/11/simplified-pipelines-with-kudu.html">Simplified Data Pipelines with Kudu</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2019 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+
