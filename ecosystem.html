@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Ecosystem</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png"
+                srcset="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png 1x, //d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li >
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown active">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://getkudu-slack.herokuapp.com/">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+
+<div class="row-fluid">
+  <div class="col-lg-12 ecosystem">
+
+<h2 id="apache-kudu-ecosystem">Apache Kudu Ecosystem</h2>
+
+<p>While the Apache Kudu project provides client bindings that allow users to
+mutate and fetch data, more complex access patterns are often written via SQL
+and compute engines. This is a non-exhaustive list of projects that integrate
+with Kudu to enhance ingest, querying capabilities, and orchestration.</p>
+
+<h3 id="frequently-used">Frequently used</h3>
+
+<p>The following integrations are among the most commonly used with Apache Kudu
+(sorted alphabetically).</p>
+
+<ul>
+  <li><a href="#apache-impala">Apache Impala</a></li>
+  <li><a href="#apache-nifi">Apache Nifi</a></li>
+  <li><a href="#apache-spark-sql">Apache Spark SQL</a></li>
+  <li><a href="#presto">Presto</a></li>
+</ul>
+
+<h3 id="sql">SQL</h3>
+
+<h4 id="apache-drill"><a href="https://drill.apache.org/">Apache Drill</a></h4>
+<p>Apache Drill provides schema-free SQL Query Engine for Hadoop, NoSQL and Cloud
+Storage. See the <a href="https://drill.apache.org/apidocs/org/apache/drill/exec/store/kudu/package-summary.html">Drill Kudu API
+documentation</a>
+for more details.</p>
+
+<h4 id="apache-hive"><a href="https://hive.apache.org/">Apache Hive</a></h4>
+<p>The Apache Hive ™ data warehouse software facilitates reading, writing, and
+managing large datasets residing in distributed storage using SQL. See the
+<a href="https://cwiki.apache.org/confluence/display/Hive/Kudu+Integration">Hive Kudu integration
+documentation</a>
+for more details.</p>
+
+<h4 id="apache-impala"><a href="https://impala.apache.org/">Apache Impala</a></h4>
+<p>Apache Impala is the open source, native analytic database for Apache Hadoop.
+See the <a href="https://kudu.apache.org/docs/kudu_impala_integration.html">Kudu Impala integration
+documentation</a> for
+more details.</p>
+
+<h4 id="apache-spark-sql"><a href="https://spark.apache.org/docs/latest/sql-programming-guide.html">Apache Spark SQL</a></h4>
+<p>Spark SQL is a Spark module for structured data processing. See the <a href="https://kudu.apache.org/docs/developing.html#_kudu_integration_with_spark">Kudu Spark
+integration
+documentation</a>
+for more details.</p>
+
+<h4 id="presto"><a href="https://prestodb.io/">Presto</a></h4>
+<p>Presto is an open source distributed SQL query engine for running interactive
+analytic queries against data sources of all sizes ranging from gigabytes to
+petabytes. See the <a href="https://prestodb.io/docs/current/connector/kudu.html">Presto Kudu connector
+documentation</a> for more
+details.</p>
+
+<h3 id="computation">Computation</h3>
+
+<h4 id="apache-beam"><a href="https://beam.apache.org/">Apache Beam</a></h4>
+<p>Apache Beam is a unified model for defining both batch and streaming
+data-parallel processing pipelines, as well as a set of language-specific SDKs
+for constructing pipelines and Runners for executing them on distributed
+processing backends. See the <a href="https://beam.apache.org/releases/javadoc/2.23.0/org/apache/beam/sdk/io/kudu/KuduIO.html">Beam Kudu source and sink
+documentation</a>
+for more details.</p>
+
+<h4 id="apache-spark"><a href="https://spark.apache.org/">Apache Spark</a></h4>
+<p>Apache Spark is a unified analytics engine for large-scale data processing. See
+the <a href="https://kudu.apache.org/docs/developing.html#_kudu_integration_with_spark">Kudu Spark integration
+documentation</a>
+for more details.</p>
+
+<h4 id="pandas"><a href="https://pandas.pydata.org/">Pandas</a></h4>
+<p>Pandas is an open source, BSD-licensed library providing high-performance,
+easy-to-use data structures and data analysis tools for the Python programming
+language. Kudu Python scanners can be converted to Pandas DataFrames. See
+<a href="https://github.com/apache/kudu/blob/master/python/kudu/tests/test_scanner.py">Kudu’s Python
+tests</a>
+for example usage.</p>
+
+<h3 id="talend-big-data"><a href="https://www.talend.com/products/big-data/">Talend Big Data</a></h3>
+<p>Talend simplifies and automates big data integration projects with on demand
+Serverless Spark and machine learning. See <a href="https://help.talend.com/reader/SuRq3Ek0vdlxbl_OV_wVFQ/iC3nZLaM7f49tf0mYTetIA">Talend’s Kudu component
+documentation</a>
+for more details.</p>
+
+<h3 id="ingest">Ingest</h3>
+
+<h4 id="akka"><a href="https://akka.io/">Akka</a></h4>
+<p>Akka facilitates building highly concurrent, distributed, and resilient
+message-driven applications on the JVM. See the <a href="https://doc.akka.io/docs/alpakka/current/kudu.html">Alpakka Kudu connector
+documentation</a> for more
+details.</p>
+
+<h4 id="apache-flink"><a href="https://flink.apache.org/">Apache Flink</a></h4>
+<p>Apache Flink is a framework and distributed processing engine for stateful
+computations over unbounded and bounded data streams.  See the <a href="https://github.com/apache/bahir-flink/tree/master/flink-connector-kudu">Flink Kudu
+connector
+documentation</a>
+for more details.</p>
+
+<h4 id="apache-nifi"><a href="https://nifi.apache.org/">Apache Nifi</a></h4>
+<p>Apache NiFi supports powerful and scalable directed graphs of data routing,
+transformation, and system mediation logic. See the <a href="https://nifi.apache.org/docs/nifi-docs/components/org.apache.nifi/nifi-kudu-nar/1.5.0/org.apache.nifi.processors.kudu.PutKudu/">PutKudu processor
+documentation</a>
+for more details.</p>
+
+<h4 id="apache-spark-streaming"><a href="https://spark.apache.org/docs/latest/streaming-programming-guide.html">Apache Spark Streaming</a></h4>
+<p>Spark Streaming is an extension of the core Spark API that enables scalable,
+high-throughput, fault-tolerant stream processing of live data streams.
+See <a href="https://github.com/apache/kudu/blob/master/java/kudu-spark/src/test/scala/org/apache/kudu/spark/kudu/StreamingTest.scala">Kudu’s Spark Streaming
+tests</a>
+for example usage.</p>
+
+<h4 id="confluent-platform-kafka"><a href="https://www.confluent.io/product/confluent-platform">Confluent Platform Kafka</a></h4>
+<p>Apache Kafka is an open-source distributed event streaming platform used by
+thousands of companies for high-performance data pipelines, streaming
+analytics, data integration, and mission-critical applications. See the <a href="https://docs.confluent.io/current/connect/kafka-connect-kudu/index.html">Kafka
+Kudu connector
+documentation</a>
+for more details.</p>
+
+<h4 id="streamsets-data-collector"><a href="https://streamsets.com/products/dataops-platform/data-collector/">StreamSets Data Collector</a></h4>
+<p>StreamSets Data Collector is a lightweight, powerful engine that streams data
+in real time. See the <a href="https://streamsets.com/documentation/datacollector/latest/help/datacollector/UserGuide/Destinations/Kudu.html">StreamSets Data Collector Kudu destination
+documentation</a>.</p>
+
+<h4 id="striim"><a href="https://www.striim.com/">Striim</a></h4>
+<p>Striim is real-time data integration software that enables continuous data
+ingestion, in-flight stream processing, and delivery. See the <a href="https://www.striim.com/docs/archive/390/en/kuduwriter.html">Striim Kudu
+Writer
+documentation</a> for
+more details.</p>
+
+<h4 id="tibco-streambase"><a href="https://www.tibco.com/resources/datasheet/tibco-streambase">TIBCO StreamBase</a></h4>
+<p>TIBCO StreamBase® is an event processing platform for applying mathematical and
+relational processing to real-time data streams. See the <a href="https://docs.tibco.com/pub/sfire-sfds/latest/doc/html/authoring/kuduoperator.html">StreamBase Kudu
+operator
+documentation</a>
+for more details.</p>
+
+<h3 id="deployment-and-orchestration">Deployment and Orchestration</h3>
+
+<h4 id="apache-camel"><a href="https://camel.apache.org/">Apache Camel</a></h4>
+<p>Camel is an open source integration framework that empowers you to quickly and
+easily integrate various systems consuming or producing data. See the <a href="https://camel.apache.org/components/latest/kudu-component.html">Camel
+Kudu component
+documentation</a>
+for more details.</p>
+
+<h4 id="cloudera-manager"><a href="https://www.cloudera.com/products/product-components/cloudera-manager.html">Cloudera Manager</a></h4>
+<p>Cloudera Manager is an end-to-end application for managing CDH clusters. See
+the <a href="https://docs.cloudera.com/runtime/latest/administering-kudu/topics/kudu-managing-kudu.html">Cloudera Manager documentation for
+Kudu</a>
+for more details.</p>
+
+<h4 id="docker"><a href="https://www.docker.com/">Docker</a></h4>
+<p>Docker facilitates packaging software into standardized units for development,
+shipment, and deployment. See the official <a href="https://hub.docker.com/r/apache/kudu">Apache Kudu
+Dockerhub</a> and the <a href="https://kudu.apache.org/docs/quickstart.html">Apache Kudu Docker
+Quickstart</a> for more details.</p>
+
+<h4 id="wavefront"><a href="https://docs.wavefront.com/wavefront_introduction.html">Wavefront</a></h4>
+<p>Wavefront is a high-performance streaming analytics platform that supports 3D
+observability. See the <a href="https://docs.wavefront.com/kudu.html">Wavefront Kudu integration
+documentation</a> for more details.</p>
+
+<h3 id="visualization">Visualization</h3>
+
+<h4 id="zoomdata"><a href="https://www.zoomdata.com/">Zoomdata</a></h4>
+<p>Zoomdata provides a high-performance BI engine and visually engaging,
+interactive dashboards. See <a href="https://www.zoomdata.com/product/big-data/big-data-analytics-kudu/">Zoomdata’s Kudu
+page</a> for
+more details.</p>
+
+<h2 id="distribution-and-support">Distribution and Support</h2>
+
+<p>While Kudu is an Apache-licensed open source project, software vendors may
+package and license it with other components to facilitate consumption. These
+offerings are typically bundled with support to tune and facilitate
+administration.</p>
+
+<ul>
+  <li><a href="https://www.cloudera.com/products/open-source/apache-hadoop/apache-kudu.html">Cloudera CDH</a></li>
+  <li><a href="https://www.phdata.io/getting-started-with-kudu/">phData</a></li>
+</ul>
+
+
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2020 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html>
+  <head i18n-values="dir:textdirection;">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Kudu tracing</title>
+  <template id="overlay-template">
+  <style>
+    overlay-mask {
+      left: 0;
+      padding: 8px;
+      position: absolute;
+      top: 0;
+      z-index: 1000;
+      font-family: sans-serif;
+      -webkit-justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      display: -webkit-flex;
+      height: 100%;
+      left: 0;
+      position: fixed;
+      top: 0;
+      width: 100%;
+    }
+    overlay-mask:focus {
+      outline: none;
+    }
+    overlay-vertical-centering-container {
+      -webkit-justify-content: center;
+      -webkit-flex-direction: column;
+      display: -webkit-flex;
+    }
+    overlay-frame {
+      z-index: 1100;
+      background: rgb(255, 255, 255);
+      border: 1px solid #ccc;
+      margin: 75px;
+      display: -webkit-flex;
+      -webkit-flex-direction: column;
+      min-height: 0;
+    }
+    title-bar {
+      -webkit-align-items: center;
+      -webkit-flex-direction: row;
+      border-bottom: 1px solid #ccc;
+      background-color: #ddd;
+      display: -webkit-flex;
+      padding: 5px;
+      -webkit-flex: 0 0 auto;
+    }
+    title {
+      display: inline;
+      font-weight: bold;
+      -webkit-box-flex: 1;
+      -webkit-flex: 1 1 auto;
+    }
+    close-button {
+      -webkit-align-self: flex-end;
+      border: 1px solid #eee;
+      background-color: #999;
+      font-size: 10pt;
+      font-weight: bold;
+      padding: 2px;
+      text-align: center;
+      width: 16px;
+    }
+    close-button:hover {
+      background-color: #ddd;
+      border-color: black;
+      cursor: pointer;
+    }
+    overlay-content {
+      display: -webkit-flex;
+      -webkit-flex: 1 1 auto;
+      -webkit-flex-direction: column;
+      overflow-y: auto;
+      padding: 10px;
+      min-width: 300px;
+      min-height: 0;
+    }
+    button-bar {
+      -webkit-align-items: baseline;
+      border-top: 1px solid #ccc;
+      display: -webkit-flex;
+      -webkit-flex: 0 0 auto;
+      -webkit-flex-direction: row-reverse;
+      padding: 4px;
+    }
+  </style>
+
+  <overlay-mask>
+    <overlay-vertical-centering-container>
+      <overlay-frame>
+        <title-bar>
+          <title></title>
+          <close-button>✕</close-button>
+        </title-bar>
+        <overlay-content>
+          <content></content>
+        </overlay-content>
+        <button-bar></button-bar>
+      </overlay-frame>
+    </overlay-vertical-centering-container>
+  </overlay-mask>
+</template><style>
+* /deep/ .labeled-checkbox {
+  display: flex;
+  white-space: nowrap;
+}
+</style><dom-module id="tr-ui-a-analysis-link">
+  <template>
+    <style>
+    :host {
+      display: inline;
+      cursor: pointer;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    a {
+      text-decoration: underline;
+    }
+    </style>
+    <a href="{{href}}" on-click="onClicked_" on-mouseenter="onMouseEnter_" on-mouseleave="onMouseLeave_"><content></content></a>
+
+  </template>
+</dom-module><dom-module id="tr-ui-b-table">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      table {
+        flex: 1 1 auto;
+        align-self: stretch;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-width: 0;
+        -webkit-user-select: initial;
+      }
+
+      tr > td {
+        padding: 2px 4px 2px 4px;
+        vertical-align: top;
+      }
+
+      table > tbody:focus {
+        outline: none;
+      }
+      table > tbody:focus[selection-mode="row"] > tr[selected],
+      table > tbody:focus[selection-mode="cell"] > tr > td[selected],
+      table > tbody:focus > tr.empty-row > td {
+        outline: 1px dotted #666666;
+        outline-offset: -1px;
+      }
+
+      button.toggle-button {
+        height: 15px;
+        line-height: 60%;
+        vertical-align: middle;
+        width: 100%;
+      }
+
+      button > * {
+        height: 15px;
+        vertical-align: middle;
+      }
+
+      td.button-column {
+        width: 30px;
+      }
+
+      table > thead > tr > td.sensitive:hover {
+        background-color: #fcfcfc;
+      }
+
+      table > thead > tr > td {
+        font-weight: bold;
+        text-align: left;
+
+        background-color: #eee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        border-top: 1px solid #ffffff;
+        border-bottom: 1px solid #aaa;
+      }
+
+      table > tfoot {
+        background-color: #eee;
+        font-weight: bold;
+      }
+
+      /* Light row and cell highlight. */
+      table > tbody[row-highlight-style="light"] > tr[selected],
+      table > tbody[cell-highlight-style="light"] > tr > td[selected] {
+        background-color: rgb(213, 236, 229);  /* light turquoise */
+      }
+      table > tbody[row-highlight-style="light"] >
+          tr:not(.empty-row):not([selected]):hover,
+      table > tbody[cell-highlight-style="light"] >
+          tr:not(.empty-row):not([selected]) > td:hover {
+        background-color: #f6f6f6;  /* light grey */
+      }
+
+      /* Dark row and cell highlight. */
+      table > tbody[row-highlight-style="dark"] > tr[selected],
+      table > tbody[cell-highlight-style="dark"] > tr > td[selected] {
+        background-color: rgb(103, 199, 165);  /* turquoise */
+      }
+      table > tbody[row-highlight-style="dark"] >
+          tr:not(.empty-row):not([selected]):hover,
+      table > tbody[cell-highlight-style="dark"] >
+          tr:not(.empty-row):not([selected]) > td:hover {
+        background-color: #e6e6e6;  /* grey */
+      }
+      table > tbody[row-highlight-style="dark"] > tr:hover[selected],
+      table > tbody[cell-highlight-style="dark"] > tr[selected] > td:hover {
+        background-color: rgb(171, 217, 202);  /* semi-light turquoise */
+      }
+
+      table > colgroup > col[selected] {
+        background-color: #e6e6e6;  /* grey */
+      }
+
+      table > tbody > tr.empty-row > td {
+        color: #666;
+        font-style: italic;
+        text-align: center;
+      }
+
+      table > tbody.has-footer > tr:last-child > td {
+        border-bottom: 1px solid #aaa;
+      }
+
+      table > tfoot > tr:first-child > td {
+        border-top: 1px solid #ffffff;
+      }
+
+      :host([zebra]) table tbody tr:nth-child(even) {
+        background-color: #f4f4f4;
+      }
+
+      expand-button {
+        -webkit-user-select: none;
+        display: inline-block;
+        cursor: pointer;
+        font-size: 9px;
+        min-width: 8px;
+        max-width: 8px;
+      }
+
+      .button-expanded {
+        transform: rotate(90deg);
+      }
+    </style>
+    <table>
+      <colgroup id="cols">
+      </colgroup>
+      <thead id="head">
+      </thead>
+      <tbody id="body">
+      </tbody>
+      <tfoot id="foot">
+      </tfoot>
+    </table>
+  </template>
+</dom-module><dom-module id="tr-ui-b-table-header-cell">
+  <template>
+  <style>
+    :host {
+      -webkit-user-select: none;
+      display: flex;
+    }
+
+    span {
+      flex: 0 1 auto;
+    }
+
+    #side {
+      -webkit-user-select: none;
+      flex: 0 0 auto;
+      padding-left: 2px;
+      padding-right: 2px;
+      vertical-align: top;
+      font-size: 15px;
+      font-family: sans-serif;
+      line-height: 85%;
+      margin-left: 5px;
+    }
+
+    #side.disabled {
+      color: rgb(140, 140, 140);
+    }
+
+    #title:empty, #side:empty {
+      display: none;
+    }
+  </style>
+
+    <span id="title"></span>
+    <span id="side"></span>
+  </template>
+</dom-module><dom-module id="tr-ui-a-alert-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table">
+    </tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-v-ui-scalar-context-controller">
+  <template></template>
+</dom-module><dom-module id="tr-v-ui-scalar-span">
+  <template>
+    <style>
+    :host {
+      display: block;
+      position: relative;
+      /* Limit the sparkline's negative z-index to the span only. */
+      isolation: isolate;
+    }
+
+    #sparkline {
+      width: 0%;
+      position: absolute;
+      bottom: 0;
+      display: none;
+      height: 100%;
+      background-color: hsla(216, 100%, 94.5%, .75);
+      border-color: hsl(216, 100%, 89%);
+      box-sizing: border-box;
+      z-index: -1;
+    }
+    #sparkline.positive {
+      border-right-style: solid;
+      /* The border width must be kept in sync with buildSparklineStyle_(). */
+      border-right-width: 1px;
+    }
+    #sparkline:not(.positive) {
+      border-left-style: solid;
+      /* The border width must be kept in sync with buildSparklineStyle_(). */
+      border-left-width: 1px;
+    }
+    #sparkline.better {
+      background-color: hsla(115, 100%, 93%, .75);
+      border-color: hsl(118, 60%, 80%);
+    }
+    #sparkline.worse {
+      background-color: hsla(0, 100%, 88%, .75);
+      border-color: hsl(0, 100%, 80%);
+    }
+
+    #content.right-align {
+      text-align: right;
+      position: relative;
+      display: block;
+    }
+    #content.better {
+      color: green;
+    }
+    #content.worse {
+      color: red;
+    }
+
+    #significance svg {
+      display: none;
+      height: 1em;
+      vertical-align: text-top;
+      stroke-width: 4;
+      fill: rgba(0, 0, 0, 0);
+    }
+    #significance #insignificant {
+      stroke: black;
+    }
+    #significance #significantly_better {
+      stroke: green;
+    }
+    #significance #significantly_worse {
+      stroke: red;
+    }
+
+    #warning {
+      display: none;
+      margin-left: 4px;
+      height: 1em;
+      vertical-align: text-top;
+      stroke-width: 0;
+    }
+    #warning path {
+      fill: rgb(255, 185, 185);
+    }
+    #warning rect {
+      fill: red;
+    }
+    </style>
+
+    <span id="sparkline"></span>
+
+    <span id="content"></span>
+
+    <span id="significance">
+      
+      <svg id="insignificant" viewBox="0 0 128 128">
+        <circle cx="64" cy="64" r="60"></circle>
+        <circle cx="44" cy="44" r="4"></circle>
+        <circle cx="84" cy="44" r="4"></circle>
+        <line x1="36" x2="92" y1="80" y2="80"></line>
+      </svg>
+
+      
+      <svg id="significantly_better" viewBox="0 0 128 128">
+        <circle cx="64" cy="64" r="60"></circle>
+        <circle cx="44" cy="44" r="4"></circle>
+        <circle cx="84" cy="44" r="4"></circle>
+        <path d="M 28 64 Q 64 128 100 64"></path>
+      </svg>
+
+      
+      <svg id="significantly_worse" viewBox="0 0 128 128">
+        <circle cx="64" cy="64" r="60"></circle>
+        <circle cx="44" cy="44" r="4"></circle>
+        <circle cx="84" cy="44" r="4"></circle>
+        <path d="M 36 96 Q 64 48 92 96"></path>
+      </svg>
+    </span>
+
+    <svg id="warning" viewBox="0 0 128 128">
+      <path d="M 64 0 L 128 128 L 0 128 L 64 0"></path>
+      <rect height="84" width="8" x="60" y="0"></rect>
+      <rect height="24" width="8" x="60" y="100"></rect>
+    </svg>
+  </template>
+</dom-module><dom-module id="tr-ui-b-tab-view">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #selection_description, #tabs {
+        font-size: 12px;
+      }
+
+      #selection_description {
+        display: inline-block;
+        font-weight: bold;
+        margin: 9px 0px 4px 20px;
+      }
+
+      #tabs {
+        flex: 0 0 auto;
+        border-top: 1px solid #8e8e8e;
+        border-bottom: 1px solid #8e8e8e;
+        background-color: #ececec;
+        overflow: hidden;
+        margin: 0;
+      }
+
+      #tabs input[type=radio] {
+        display: none;
+      }
+
+      #tabs tab label {
+        cursor: pointer;
+        display: inline-block;
+        border: 1px solid #ececec;
+        margin: 5px 0px 0px 15px;
+        padding: 3px 10px 3px 10px;
+      }
+
+      #tabs tab label span {
+        font-weight: bold;
+      }
+
+      #tabs:focus input[type=radio]:checked ~ label {
+        outline: dotted 1px #8e8e8e;
+        outline-offset: -2px;
+      }
+
+      #tabs input[type=radio]:checked ~ label {
+        background-color: white;
+        border: 1px solid #8e8e8e;
+        border-bottom: 1px solid white;
+      }
+
+      #subView {
+        flex: 1 1 auto;
+        overflow: auto;
+      }
+    </style>
+    <div hidden="[[tabsHidden]]" id="tabs">
+      <label id="selection_description">[[label_]]</label>
+      <template is="dom-repeat" items="[[subViews_]]">
+        <tab>
+          <input checked$="[[isChecked_(item)]]" id$="[[computeRadioId_(item)]]" name="tabs" on-change="onTabChanged_" type="radio"/>
+          <label for$="[[computeRadioId_(item)]]">
+            <template if="[[item.tabIcon]]" is="dom-if">
+              <span style$="[[item.tabIcon.style]]">[[item.tabIcon.text]]</span>
+            </template>
+            [[item.tabLabel]]
+          </label>
+        </tab>
+      </template>
+    </div>
+    <div id="subView"></div>
+    <content>
+    </content>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-heap-details-breakdown-view">
+  <template>
+    <tr-ui-b-tab-view id="tabs"></tr-ui-b-tab-view>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-heap-details-breakdown-view-tab">
+  <template>
+    <tr-v-ui-scalar-context-controller></tr-v-ui-scalar-context-controller>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-heap-details-path-view">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+    <tr-v-ui-scalar-context-controller></tr-v-ui-scalar-context-controller>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-b-drag-handle">
+  <template>
+    <style>
+    :host {
+      -webkit-user-select: none;
+      box-sizing: border-box;
+      display: block;
+    }
+
+    :host(.horizontal-drag-handle) {
+      background-image: -webkit-gradient(linear,
+                                         0 0, 0 100%,
+                                         from(#E5E5E5),
+                                         to(#D1D1D1));
+      border-bottom: 1px solid #8e8e8e;
+      border-top: 1px solid white;
+      cursor: ns-resize;
+      flex: 0 0 auto;
+      height: 7px;
+      position: relative;
+    }
+
+    :host(.vertical-drag-handle) {
+      background-image: -webkit-gradient(linear,
+                                         0 0, 100% 0,
+                                         from(#E5E5E5),
+                                         to(#D1D1D1));
+      border-left: 1px solid white;
+      border-right: 1px solid #8e8e8e;
+      cursor: ew-resize;
+      flex: 0 0 auto;
+      position: relative;
+      width: 7px;
+    }
+    </style>
+    <div></div>
+  </template>
+</dom-module><dom-module id="tr-ui-b-info-bar">
+  <template>
+    <style>
+    :host {
+      align-items: center;
+      flex: 0 0 auto;
+      background-color: rgb(252, 235, 162);
+      border-bottom: 1px solid #A3A3A3;
+      border-left: 1px solid white;
+      border-right: 1px solid #A3A3A3;
+      border-top: 1px solid white;
+      display: flex;
+      height: 26px;
+      padding: 0 3px 0 3px;
+    }
+
+    :host(.info-bar-hidden) {
+      display: none;
+    }
+
+    #message { flex: 1 1 auto; }
+    </style>
+
+    <span id="message"></span>
+    <span id="buttons"></span>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-heap-details-pane">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #header {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        background-color: #eee;
+        border-bottom: 1px solid #8e8e8e;
+        border-top: 1px solid white;
+      }
+
+      #label {
+        flex: 1 1 auto;
+        padding: 8px;
+        font-size: 15px;
+        font-weight: bold;
+      }
+
+      #view_mode_container {
+        display: none;
+        flex: 0 0 auto;
+        padding: 5px;
+        font-size: 15px;
+      }
+
+      #contents {
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+      }
+
+      #info_text {
+        padding: 8px;
+        color: #666;
+        font-style: italic;
+        text-align: center;
+      }
+
+      #split_view {
+        display: none;  /* Hide until memory allocator dumps are set. */
+        flex: 1 0 auto;
+        align-self: stretch;
+        flex-direction: row;
+      }
+
+      #path_view {
+        width: 50%;
+      }
+
+      #breakdown_view {
+        flex: 1 1 auto;
+        width: 0;
+      }
+
+      #path_view, #breakdown_view {
+        overflow-x: auto;  /* Show scrollbar if necessary. */
+      }
+    </style>
+    <div id="header">
+      <div id="label">Heap details</div>
+      <div id="view_mode_container">
+        <span>View mode:</span>
+        
+      </div>
+    </div>
+    <div id="contents">
+      <tr-ui-b-info-bar class="info-bar-hidden" id="info_bar">
+      </tr-ui-b-info-bar>
+
+      <div id="info_text">No heap dump selected</div>
+
+      <div id="split_view">
+        <tr-ui-a-memory-dump-heap-details-path-view id="path_view">
+        </tr-ui-a-memory-dump-heap-details-path-view>
+        <tr-ui-b-drag-handle id="drag_handle"></tr-ui-b-drag-handle>
+        <tr-ui-a-memory-dump-heap-details-breakdown-view id="breakdown_view">
+        </tr-ui-a-memory-dump-heap-details-breakdown-view>
+      </div>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-allocator-details-pane">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #label {
+        flex: 0 0 auto;
+        padding: 8px;
+
+        background-color: #eee;
+        border-bottom: 1px solid #8e8e8e;
+        border-top: 1px solid white;
+
+        font-size:  15px;
+        font-weight: bold;
+      }
+
+      #contents {
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+      }
+
+      #info_text {
+        padding: 8px;
+        color: #666;
+        font-style: italic;
+        text-align: center;
+      }
+
+      #table {
+        display: none;  /* Hide until memory allocator dumps are set. */
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+      }
+    </style>
+    <div id="label">Component details</div>
+    <div id="contents">
+      <div id="info_text">No memory allocator dump selected</div>
+      <tr-ui-b-table id="table"></tr-ui-b-table>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-vm-regions-details-pane">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #label {
+        flex: 0 0 auto;
+        padding: 8px;
+
+        background-color: #eee;
+        border-bottom: 1px solid #8e8e8e;
+        border-top: 1px solid white;
+
+        font-size:  15px;
+        font-weight: bold;
+      }
+
+      #contents {
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+      }
+
+      #info_text {
+        padding: 8px;
+        color: #666;
+        font-style: italic;
+        text-align: center;
+      }
+
+      #table {
+        display: none;  /* Hide until memory dumps are set. */
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+      }
+    </style>
+    <div id="label">Memory maps</div>
+    <div id="contents">
+      <div id="info_text">No memory maps selected</div>
+      <tr-ui-b-table id="table"></tr-ui-b-table>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-b-color-legend">
+  <template>
+    <style>
+    :host {
+      display: inline-block;
+    }
+
+    #square {
+      font-size: 150%;  /* Make the square bigger. */
+      line-height: 0%;  /* Prevent the square from increasing legend height. */
+    }
+    </style>
+    <span id="square"></span>
+    <span id="label"></span>
+  </template>
+</dom-module><dom-module id="tr-ui-b-view-specific-brushing-state">
+  <template></template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-overview-pane">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #label {
+        flex: 0 0 auto;
+        padding: 8px;
+
+        background-color: #eee;
+        border-bottom: 1px solid #8e8e8e;
+        border-top: 1px solid white;
+
+        font-size:  15px;
+        font-weight: bold;
+      }
+
+      #contents {
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+        overflow: auto;
+      }
+
+      #info_text {
+        padding: 8px;
+        color: #666;
+        font-style: italic;
+        text-align: center;
+      }
+
+      #table {
+        display: none;  /* Hide until memory dumps are set. */
+        flex: 1 0 auto;
+        align-self: stretch;
+        font-size: 12px;
+      }
+    </style>
+    <tr-ui-b-view-specific-brushing-state id="state" view-id="analysis.memory_dump_overview_pane">
+    </tr-ui-b-view-specific-brushing-state>
+    <div id="label">Overview</div>
+    <div id="contents">
+      <div id="info_text">No memory memory dumps selected</div>
+      <tr-ui-b-table id="table"></tr-ui-b-table>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-memory-dump-header-pane">
+  <template>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        background-color: #d0d0d0;
+        border-bottom: 1px solid #8e8e8e;
+        border-top: 1px solid white;
+      }
+
+      #label {
+        flex: 1 1 auto;
+        padding: 6px;
+        font-size: 15px;
+      }
+
+      #aggregation_mode_container {
+        display: none;
+        flex: 0 0 auto;
+        padding: 5px;
+        font-size: 15px;
+      }
+    </style>
+    
+    <div id="label"></div>
+    <div id="aggregation_mode_container">
+      <span>Metric aggregation:</span>
+      
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-stacked-pane-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #pane_container > * {
+      flex: 0 0 auto;
+    }
+    </style>
+    <div id="pane_container">
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-container-memory-dump-sub-view">
+  <template>
+    <style>
+    tr-ui-b-table {
+      font-size: 12px;
+    }
+    </style>
+    <div id="content"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-counter-sample-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    tr-ui-b-table {
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-event-summary-table">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table">
+    </tr-ui-b-table>
+    
+  </template>
+</dom-module><dom-module id="tr-ui-a-selection-summary-table">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table">
+    </tr-ui-b-table>
+    
+  </template>
+</dom-module><dom-module id="tr-ui-b-radio-picker">
+  <template>
+    <style>
+    :host([vertical]) #container {
+      flex-direction: column;
+    }
+    :host(:not[vertical]) #container {
+      flex-direction: row;
+    }
+    #container {
+      display: flex;
+    }
+    #container > div {
+      padding-left: 1em;
+      padding-bottom: 0.5em;
+    }
+    </style>
+    <div id="container"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-event-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      overflow: auto;
+    }
+    #content {
+      display: flex;
+      flex-direction: column;
+      flex: 0 1 auto;
+      align-self: stretch;
+    }
+    #content > * {
+      flex: 0 0 auto;
+      align-self: stretch;
+    }
+    #histogramContainer {
+      display: flex;
+    }
+
+    tr-ui-a-multi-event-summary-table {
+      border-bottom: 1px solid #aaa;
+    }
+
+    tr-ui-a-selection-summary-table  {
+      margin-top: 1.25em;
+      border-top: 1px solid #aaa;
+      background-color: #eee;
+      font-weight: bold;
+      margin-bottom: 1.25em;
+      border-bottom: 1px solid #aaa;
+    }
+    </style>
+    <div id="content">
+      <tr-ui-a-multi-event-summary-table id="eventSummaryTable">
+      </tr-ui-a-multi-event-summary-table>
+      <tr-ui-a-selection-summary-table id="selectionSummaryTable">
+      </tr-ui-a-selection-summary-table>
+      <tr-ui-b-radio-picker id="radioPicker">
+      </tr-ui-b-radio-picker>
+      <div id="histogramContainer">
+        <tr-v-ui-histogram-span id="histogramSpan">
+        </tr-v-ui-histogram-span>
+      </div>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-related-events">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-async-slice-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #container {
+      display: flex;
+      flex: 1 1 auto;
+    }
+    #events {
+      margin-left: 8px;
+      flex: 0 1 200px;
+    }
+    </style>
+    <div id="container">
+      <tr-ui-a-multi-event-sub-view id="content"></tr-ui-a-multi-event-sub-view>
+      <div id="events">
+        <tr-ui-a-related-events id="relatedEvents"></tr-ui-a-related-events>
+      </div>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-cpu-slice-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #content {
+      flex: 1 1 auto;
+    }
+    </style>
+    <tr-ui-a-multi-event-sub-view id="content"></tr-ui-a-multi-event-sub-view>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-flow-event-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    </style>
+    <tr-ui-a-multi-event-sub-view id="content"></tr-ui-a-multi-event-sub-view>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-instant-event-sub-view">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+    <div id="content"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-object-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="content"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-b-chart-legend-key">
+  <template>
+    <style>
+      #checkbox {
+        margin: 0;
+        visibility: hidden;
+        vertical-align: text-top;
+      }
+      #label, #link {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: inline-block;
+      }
+    </style>
+
+    <input checked="" id="checkbox" type="checkbox"/>
+    <tr-ui-a-analysis-link id="link"></tr-ui-a-analysis-link>
+    <label id="label"></label>
+  </template>
+</dom-module><style>
+  * /deep/ .chart-base #title {
+    font-size: 16pt;
+  }
+
+  * /deep/ .chart-base {
+    -webkit-user-select: none;
+    cursor: default;
+  }
+
+  * /deep/ .chart-base .axis path,
+  * /deep/ .chart-base .axis line {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: #000;
+  }
+
+  * /deep/ .chart-base .legend body {
+    margin: 0;
+  }
+</style><template id="chart-base-template">
+  <svg> 
+    <g id="chart-area" xmlns="http://www.w3.org/2000/svg">
+      <g class="x axis"></g>
+      <g class="y axis"></g>
+      <text id="title"></text>
+    </g>
+  </svg>
+</template><style>
+  * /deep/ .chart-base-2d.updating-brushing-state #brushes > * {
+    fill: rgb(103, 199, 165)
+  }
+
+  * /deep/ .chart-base-2d #brushes {
+    fill: rgb(213, 236, 229)
+  }
+</style><style>
+* /deep/ .line-chart .line{fill:none;stroke-width:1.5px}* /deep/ .line-chart #brushes>rect{fill:rgb(192,192,192)}
+</style><dom-module id="tr-ui-a-frame-power-usage-chart">
+  <template>
+    <div id="content"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-power-sample-summary-table">
+  <template>
+    <style>
+    tr-ui-b-table {
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-power-sample-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+    }
+    #tables {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+    }
+    #chart {
+      width: 50%;
+    }
+    </style>
+    <div id="tables">
+      <tr-ui-a-power-sample-summary-table id="summaryTable">
+      </tr-ui-a-power-sample-summary-table>
+    </div>
+    <tr-ui-a-frame-power-usage-chart id="chart">
+    </tr-ui-a-frame-power-usage-chart>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-sample-sub-view">
+  <template>
+    <style>
+    :host { display: block; }
+    #control {
+      background-color: #e6e6e6;
+      background-image: -webkit-gradient(linear, 0 0, 0 100%,
+                                         from(#E5E5E5), to(#D1D1D1));
+      flex: 0 0 auto;
+      overflow-x: auto;
+    }
+    #control::-webkit-scrollbar { height: 0px; }
+    #control {
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      margin: 1px;
+      margin-right: 2px;
+    }
+    tr-ui-b-table {
+      font-size: 12px;
+    }
+    </style>
+    <div id="control">
+      Sample View Option
+    </div>
+    <tr-ui-b-table id="table">
+    </tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-thread-slice-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #content {
+      display: flex;
+      flex: 1 1 auto;
+    }
+    #content > tr-ui-a-related-events {
+      margin-left: 8px;
+      flex: 0 1 200px;
+    }
+    </style>
+    <div id="content"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-thread-time-slice-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+    }
+    #content {
+      flex: 1 1 auto;
+    }
+    </style>
+    <tr-ui-a-multi-event-sub-view id="content"></tr-ui-a-multi-event-sub-view>
+  </template>
+</dom-module><dom-module id="tr-ui-a-user-expectation-related-samples-table">
+  <template>
+    <style>
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-multi-user-expectation-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex: 1 1 auto;
+    }
+    #events {
+      margin-left: 8px;
+      flex: 0 1 200px;
+    }
+    </style>
+    <tr-ui-a-multi-event-sub-view id="realView"></tr-ui-a-multi-event-sub-view>
+    <div id="events">
+      <tr-ui-a-user-expectation-related-samples-table id="relatedSamples"></tr-ui-a-user-expectation-related-samples-table>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-generic-object-view">
+  <template>
+    <style>
+    :host {
+      display: block;
+      font-family: monospace;
+    }
+    </style>
+    <div id="content">
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-generic-object-view-with-label">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+  </template>
+</dom-module><dom-module id="tr-ui-a-stack-frame">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-event-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table">
+    </tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-async-slice-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+    }
+    #events {
+      display:flex;
+      flex-direction: column;
+    }
+    </style>
+    <tr-ui-a-single-event-sub-view id="content"></tr-ui-a-single-event-sub-view>
+    <div id="events">
+      <tr-ui-a-related-events id="relatedEvents"></tr-ui-a-related-events>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-cpu-slice-sub-view">
+  <template>
+    <style>
+    table {
+      border-collapse: collapse;
+      border-width: 0;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    table tr > td:first-child {
+      padding-left: 2px;
+    }
+
+    table tr > td {
+      padding: 2px 4px 2px 4px;
+      vertical-align: text-top;
+      width: 150px;
+    }
+
+    table td td {
+      padding: 0 0 0 0;
+      width: auto;
+    }
+    tr {
+      vertical-align: top;
+    }
+
+    tr:nth-child(2n+0) {
+      background-color: #e2e2e2;
+    }
+    </style>
+    <table>
+      <tbody><tr>
+        <td>Running process:</td><td id="process-name"></td>
+      </tr>
+      <tr>
+        <td>Running thread:</td><td id="thread-name"></td>
+      </tr>
+      <tr>
+        <td>Start:</td>
+        <td>
+          <tr-v-ui-scalar-span id="start">
+          </tr-v-ui-scalar-span>
+        </td>
+      </tr>
+      <tr>
+        <td>Duration:</td>
+        <td>
+          <tr-v-ui-scalar-span id="duration">
+          </tr-v-ui-scalar-span>
+        </td>
+      </tr>
+      <tr>
+        <td>Active slices:</td><td id="running-thread"></td>
+      </tr>
+      <tr>
+        <td>Args:</td>
+        <td>
+          <tr-ui-a-generic-object-view id="args">
+          </tr-ui-a-generic-object-view>
+        </td>
+      </tr>
+    </tbody></table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-flow-event-sub-view">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+    <tr-ui-a-single-event-sub-view id="singleEventSubView">
+    </tr-ui-a-single-event-sub-view>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-frame-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    #asv {
+      flex: 0 0 auto;
+      align-self: stretch;
+    }
+    </style>
+    <tr-ui-a-alert-sub-view id="asv">
+    </tr-ui-a-alert-sub-view>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-instant-event-sub-view">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+    <div id="content"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-object-instance-sub-view">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+
+    #snapshots > * {
+      display: block;
+    }
+
+    :host {
+      overflow: auto;
+      display: block;
+    }
+
+    * {
+      -webkit-user-select: text;
+    }
+
+    .title {
+      border-bottom: 1px solid rgb(128, 128, 128);
+      font-size: 110%;
+      font-weight: bold;
+    }
+
+    td, th {
+      font-family: monospace;
+      vertical-align: top;
+    }
+    </style>
+    <div id="content"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-object-snapshot-sub-view">
+  <template>
+    <style>
+    #args {
+      white-space: pre;
+    }
+
+    :host {
+      overflow: auto;
+      display: flex;
+    }
+
+    ::content * {
+      -webkit-user-select: text;
+    }
+
+    ::content .title {
+      border-bottom: 1px solid rgb(128, 128, 128);
+      font-size: 110%;
+      font-weight: bold;
+    }
+
+    ::content td, th {
+      font-family: monospace;
+      vertical-align: top;
+    }
+    </style>
+    <content></content>
+  </template>
+</dom-module><dom-module id="tr-ui-a-power-sample-table">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-power-sample-sub-view">
+  <template>
+    <style>
+    :host { display: block; }
+    </style>
+    <tr-ui-a-power-sample-table id="samplesTable">
+    </tr-ui-a-power-sample-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-sample-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      font-size: 12px;
+    }
+    </style>
+    <tr-ui-b-table id="content"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-thread-slice-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+    }
+    #events {
+      display: flex;
+      flex-direction: column;
+    }
+
+    </style>
+    <tr-ui-a-single-event-sub-view id="content"></tr-ui-a-single-event-sub-view>
+    <div id="events">
+      <tr-ui-a-related-events id="relatedEvents">
+      </tr-ui-a-related-events>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-thread-time-slice-sub-view">
+  <template>
+    <style>
+    table {
+      border-collapse: collapse;
+      border-width: 0;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    table tr > td:first-child {
+      padding-left: 2px;
+    }
+
+    table tr > td {
+      padding: 2px 4px 2px 4px;
+      vertical-align: text-top;
+      width: 150px;
+    }
+
+    table td td {
+      padding: 0 0 0 0;
+      width: auto;
+    }
+    tr {
+      vertical-align: top;
+    }
+
+    tr:nth-child(2n+0) {
+      background-color: #e2e2e2;
+    }
+    </style>
+    <table>
+      <tbody><tr>
+        <td>Running process:</td><td id="process-name"></td>
+      </tr>
+      <tr>
+        <td>Running thread:</td><td id="thread-name"></td>
+      </tr>
+      <tr>
+        <td>State:</td>
+        <td><b><span id="state"></span></b></td>
+      </tr>
+      <tr>
+        <td>Start:</td>
+        <td>
+          <tr-v-ui-scalar-span id="start">
+          </tr-v-ui-scalar-span>
+        </td>
+      </tr>
+      <tr>
+        <td>Duration:</td>
+        <td>
+          <tr-v-ui-scalar-span id="duration">
+          </tr-v-ui-scalar-span>
+        </td>
+      </tr>
+
+      <tr>
+        <td>On CPU:</td><td id="on-cpu"></td>
+      </tr>
+
+      <tr>
+        <td>Running instead:</td><td id="running-instead"></td>
+      </tr>
+
+      <tr>
+        <td>Args:</td><td id="args"></td>
+      </tr>
+    </tbody></table>
+  </template>
+</dom-module><dom-module id="tr-ui-a-single-user-expectation-sub-view">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: row;
+    }
+    #events {
+      display: flex;
+      flex-direction: column;
+    }
+    </style>
+    <tr-ui-a-single-event-sub-view id="realView"></tr-ui-a-single-event-sub-view>
+    <div id="events">
+      <tr-ui-a-user-expectation-related-samples-table id="relatedSamples"></tr-ui-a-user-expectation-related-samples-table>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-a-analysis-view">
+  <template>
+    <style>
+      :host {
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        height: 275px;
+        overflow: auto;
+      }
+
+      :host(.tall-mode) {
+        height: 525px;
+      }
+    </style>
+    <content></content>
+  </template>
+</dom-module><dom-module id="tr-ui-b-dropdown">
+  <template>
+    <style>
+    :host {
+      position: relative;
+      display: flex;
+    }
+    #outer {
+      display: flex;
+      flex: 0 0 auto;
+      padding: 1px 4px 1px 4px;
+      -webkit-user-select: none;
+      cursor: default;
+    }
+
+    #state {
+      display: flex;
+      flex: 0 0 auto;
+      margin-left: 2px;
+      margin-right: 0px;
+      flex: 0 0 auto;
+    }
+
+    #icon {
+      display: flex;
+      flex: 0 0 auto;
+      flex: 0 0 auto;
+    }
+    dialog {
+      position: absolute;
+      padding: 0;
+      border: 0;
+      margin: 0;
+    }
+    dialog::backdrop {
+      background: rgba(0,0,0,.05);
+    }
+
+    #dialog-frame {
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      padding: 6px;
+      border: 1px solid black;
+      -webkit-user-select: none;
+      cursor: default;
+    }
+    </style>
+    <tr-ui-b-toolbar-button id="outer" on-click="onOuterClick_" on-keydown="onOuterKeyDown_">
+      <div id="icon">⚙</div>
+      <div id="state">▾</div>
+    </tr-ui-b-toolbar-button>
+    <dialog id="dialog" on-cancel="onDialogCancel_" on-click="onDialogClick_">
+      <div id="dialog-frame">
+        <content></content>
+      </div>
+    </dialog>
+  </template>
+</dom-module><dom-module id="tv-ui-b-hotkey-controller">
+  <template>
+    <div></div>
+  </template>
+</dom-module><dom-module id="tr-ui-b-info-bar-group">
+  <template>
+    <style>
+    :host {
+      flex: 0 0 auto;
+      flex-direction: column;
+      display: flex;
+    }
+    </style>
+    <div id="messages"></div>
+  </template>
+</dom-module><dom-module id="tr-ui-b-toolbar-button">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      background-color: #f8f8f8;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-self: stretch;
+      min-width: 23px;
+    }
+
+    :host(:hover) {
+      background-color: rgba(255, 255, 255, 1.0);
+      border-color: rgba(0, 0, 0, 0.8);
+      box-shadow: 0 0 .05em rgba(0, 0, 0, 0.4);
+      color: rgba(0, 0, 0, 1);
+    }
+
+    #aligner {
+      display: flex;
+      flex: 0 0 auto;
+      align-self: center;
+    }
+    </style>
+    <div id="aligner">
+      <content></content>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-b-mouse-mode-icon">
+  <template>
+    <style>
+    :host {
+      display: block;
+      background-image: url(data:image/png;base64,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);
+      width: 27px;
+      height: 30px;
+    }
+    :host.active {
+      cursor: auto;
+    }
+    </style>
+  </template>
+</dom-module><dom-module id="tr-ui-b-mouse-mode-selector">
+  <template>
+    <style>
+    :host {
+
+      -webkit-user-drag: element;
+      -webkit-user-select: none;
+
+      background: #DDD;
+      border: 1px solid #BBB;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      left: calc(100% - 120px);
+      position: absolute;
+      top: 100px;
+      user-select: none;
+      width: 29px;
+      z-index: 20;
+    }
+
+    .drag-handle {
+      background: url(data:image/png;base64,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) 2px 3px no-repeat;
+      background-repeat: no-repeat;
+      border-bottom: 1px solid #BCBCBC;
+      cursor: move;
+      display: block;
+      height: 13px;
+      width: 27px;
+    }
+
+    .tool-button {
+      background-position: center center;
+      background-repeat: no-repeat;
+      border-bottom: 1px solid #BCBCBC;
+      border-top: 1px solid #F1F1F1;
+      cursor: pointer;
+    }
+
+    .buttons > .tool-button:last-child {
+      border-bottom: none;
+    }
+
+    </style>
+    <div class="drag-handle"></div>
+    <div class="buttons">
+    </div>
+  </template>
+</dom-module><style>
+.track-button{background-color:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.1);color:rgba(0,0,0,0.2);font-size:10px;height:12px;text-align:center;width:12px}.track-button:hover{background-color:rgba(255,255,255,1.0);border:1px solid rgba(0,0,0,0.5);box-shadow:0 0 .05em rgba(0,0,0,0.4);color:rgba(0,0,0,1)}.track-close-button{left:2px;position:absolute;top:2px}.track-collapse-button{left:3px;position:absolute;top:2px}
+</style><style>
+.drawing-container{-webkit-box-flex:1;display:inline;overflow:auto;overflow-x:hidden;position:relative}.drawing-container-canvas{-webkit-box-flex:1;display:block;pointer-events:none;position:absolute;top:0}
+</style><dom-module id="tr-ui-heading">
+  <template>
+    <style>
+    :host {
+      background-color: rgb(243, 245, 247);
+      border-right: 1px solid #8e8e8e;
+      display: block;
+      height: 100%;
+      margin: 0;
+      padding: 0 5px 0 0;
+    }
+
+    heading {
+      display: block;
+      overflow-x: hidden;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #arrow {
+      -webkit-flex: 0 0 auto;
+      font-family: sans-serif;
+      margin-left: 5px;
+      margin-right: 5px;
+      width: 8px;
+    }
+
+    #link, #heading_content {
+      display: none;
+    }
+    </style>
+    <heading id="heading" on-click="onHeadingDivClicked_">
+      <span id="arrow"></span>
+      <span id="heading_content"></span>
+      <tr-ui-a-analysis-link id="link"></tr-ui-a-analysis-link>
+    </heading>
+  </template>
+</dom-module><style>
+.letter-dot-track {
+  height: 18px;
+}
+</style><style>
+.chart-track {
+  height: 30px;
+  position: relative;
+}
+</style><style>
+.cpu-usage-track {
+  height: 90px;
+}
+</style><style>
+.power-series-track {
+  height: 90px;
+}
+</style><style>
+.spacing-track{height:4px}
+</style><style>
+.rect-track{height:18px}
+</style><style>
+.object-instance-track{height:18px}
+</style><style>
+.thread-track{-webkit-box-orient:vertical;display:-webkit-box;position:relative}
+</style><style>
+.process-track-header{-webkit-flex:0 0 auto;background-image:-webkit-gradient(linear,0 0,100% 0,from(#E5E5E5),to(#D1D1D1));border-bottom:1px solid #8e8e8e;border-top:1px solid white;font-size:75%}.process-track-name:before{content:'\25B8';padding:0 5px}.process-track-base.expanded .process-track-name:before{content:'\25BE'}
+</style><style>
+.model-track {
+  -webkit-box-flex: 1;
+}
+</style><style>
+.ruler-track{height:12px}.ruler-track.tall-mode{height:30px}
+</style><dom-module id="tr-ui-timeline-track-view">
+  <template>
+    <style>
+    :host {
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
+      position: relative;
+    }
+
+    :host ::content * {
+      -webkit-user-select: none;
+      cursor: default;
+    }
+
+    #drag_box {
+      background-color: rgba(0, 0, 255, 0.25);
+      border: 1px solid rgb(0, 0, 96);
+      font-size: 75%;
+      position: fixed;
+    }
+
+    #hint_text {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      font-size: 8pt;
+    }
+    </style>
+    <content></content>
+
+    <div id="drag_box"></div>
+    <div id="hint_text"></div>
+
+    <tv-ui-b-hotkey-controller id="hotkey_controller">
+    </tv-ui-b-hotkey-controller>
+  </template>
+</dom-module><dom-module id="tr-ui-find-control">
+  <template>
+    <style>
+      :host {
+        -webkit-user-select: none;
+        display: -webkit-flex;
+        position: relative;
+      }
+      input {
+        -webkit-user-select: auto;
+        background-color: #f8f8f8;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        width: 170px;
+      }
+      input:focus {
+        background-color: white;
+      }
+      tr-ui-b-toolbar-button {
+        border-left: none;
+        margin: 0;
+      }
+      #hitCount {
+        left: 0;
+        opacity: 0.25;
+        pointer-events: none;
+        position: absolute;
+        text-align: right;
+        top: 2px;
+        width: 167px;
+        z-index: 1;
+      }
+      #spinner {
+        visibility: hidden;
+        width: 8px;
+        height: 8px;
+        left: 154px;
+        pointer-events: none;
+        position: absolute;
+        top: 4px;
+        z-index: 1;
+
+        border: 2px solid transparent;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.5);
+        border-right: 2px solid rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+
+    <input id="filter" on-blur="filterBlur" on-focus="filterFocus" on-input="filterTextChanged" on-keydown="filterKeyDown" on-mouseup="filterMouseUp" type="text"/>
+    <div id="spinner"></div>
+    <tr-ui-b-toolbar-button on-click="findPrevious">
+      ←
+    </tr-ui-b-toolbar-button>
+    <tr-ui-b-toolbar-button on-click="findNext">
+      →
+    </tr-ui-b-toolbar-button>
+    <div id="hitCount">0 of 0</div>
+  </template>
+</dom-module><dom-module id="tr-ui-scripting-control">
+  <template>
+    <style>
+      :host {
+        flex: 1 1 auto;
+      }
+      .root {
+        font-family: monospace;
+        cursor: text;
+
+        padding: 2px;
+        margin: 2px;
+        border: 1px solid rgba(0, 0, 0, 0.5);
+        background: white;
+
+        height: 100px;
+        overflow-y: auto;
+
+        transition-property: opacity, height, padding, margin;
+        transition-duration: .2s;
+        transition-timing-function: ease-out;
+      }
+      .hidden {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        height: 0px;
+        opacity: 0;
+      }
+      .focused {
+        outline: auto 5px -webkit-focus-ring-color;
+      }
+      #history {
+        -webkit-user-select: text;
+        color: #777;
+      }
+      #prompt {
+        -webkit-user-select: text;
+        -webkit-user-modify: read-write-plaintext-only;
+        text-overflow: clip !important;
+        text-decoration: none !important;
+      }
+      #prompt:focus {
+        outline: none;
+      }
+      #prompt br {
+        display: none;
+      }
+      #prompt ::before {
+        content: ">";
+        color: #468;
+      }
+    </style>
+
+    <div class="root hidden" id="root" on-focus="onConsoleFocus" tabindex="0">
+      <div id="history"></div>
+      <div id="prompt" on-blur="onConsoleBlur" on-keydown="promptKeyDown" on-keypress="promptKeyPress"></div>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-ui-side-panel-container">
+  <template>
+    <style>
+    :host {
+      align-items: stretch;
+      display: -webkit-flex;
+      background-color: white;
+    }
+
+    :host([expanded]) > #side_panel_drag_handle,
+    :host([expanded]) > active-panel-container {
+      -webkit-flex: 1 1 auto;
+      border-left: 1px solid black;
+      display: -webkit-flex;
+    }
+
+    :host(:not([expanded])) > #side_panel_drag_handle,
+    :host(:not([expanded])) > active-panel-container {
+      display: none;
+    }
+
+    active-panel-container {
+      display: flex;
+    }
+
+    tab-strip {
+      -webkit-flex: 0 0 auto;
+      -webkit-flex-direction: column;
+      -webkit-user-select: none;
+      background-color: rgb(236, 236, 236);
+      border-left: 1px solid black;
+      cursor: default;
+      display: -webkit-flex;
+      min-width: 18px; /* workaround for flexbox and writing-mode mixing bug */
+      padding: 10px 0 10px 0;
+      font-size: 12px;
+    }
+
+    tab-strip > tab-strip-label {
+      -webkit-writing-mode: vertical-rl;
+      display: inline;
+      margin-right: 1px;
+      min-height: 20px;
+      padding: 15px 3px 15px 1px;
+    }
+
+    tab-strip >
+        tab-strip-label:not([enabled]) {
+      color: rgb(128, 128, 128);
+    }
+
+    tab-strip > tab-strip-label[selected] {
+      background-color: white;
+      border: 1px solid rgb(163, 163, 163);
+      border-left: none;
+      padding: 14px 2px 14px 1px;
+    }
+
+    #active_panel_container {
+      overflow: auto;
+    }
+    </style>
+
+    <tr-ui-b-drag-handle id="side_panel_drag_handle"></tr-ui-b-drag-handle>
+    <active-panel-container id="active_panel_container">
+    </active-panel-container>
+    <tab-strip id="tab_strip"></tab-strip>
+  </template>
+</dom-module><dom-module id="tr-ui-timeline-view-help-overlay">
+  <template>
+    <style>
+    :host {
+      -webkit-flex: 1 1 auto;
+      -webkit-flex-direction: row;
+      display: -webkit-flex;
+      width: 700px;
+    }
+    .column {
+      width: 50%;
+    }
+    h2 {
+      font-size: 1.2em;
+      margin: 0;
+      margin-top: 5px;
+      text-align: center;
+    }
+    h3 {
+      margin: 0;
+      margin-left: 126px;
+      margin-top: 10px;
+    }
+    .pair {
+      -webkit-flex: 1 1 auto;
+      -webkit-flex-direction: row;
+      display: -webkit-flex;
+    }
+    .command {
+      font-family: monospace;
+      margin-right: 5px;
+      text-align: right;
+      width: 150px;
+    }
+    .action {
+      font-size: 0.9em;
+      text-align: left;
+      width: 200px;
+    }
+    tr-ui-b-mouse-mode-icon {
+      border: 1px solid #888;
+      border-radius: 3px;
+      box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+      display: inline-block;
+      margin-right: 1px;
+      position: relative;
+      top: 4px;
+    }
+    .mouse-mode-icon.pan-mode {
+      background-position: -1px -11px;
+    }
+    .mouse-mode-icon.select-mode {
+      background-position: -1px -41px;
+    }
+    .mouse-mode-icon.zoom-mode {
+      background-position: -1px -71px;
+    }
+    .mouse-mode-icon.timing-mode {
+      background-position: -1px -101px;
+    }
+    </style>
+    <div class="column left">
+      <h2>Navigation</h2>
+      <div class="pair">
+        <div class="command">w/s</div>
+        <div class="action">Zoom in/out (+shift: faster)</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">a/d</div>
+        <div class="action">Pan left/right (+shift: faster)</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">→/shift-TAB</div>
+        <div class="action">Select previous event</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">←/TAB</div>
+        <div class="action">Select next event</div>
+      </div>
+
+      <h2>Mouse Controls</h2>
+      <div class="pair">
+        <div class="command">click</div>
+        <div class="action">Select event</div>
+      </div>
+      <div class="pair">
+        <div class="command">alt-mousewheel</div>
+        <div class="action">Zoom in/out</div>
+      </div>
+
+      <h3>
+        <tr-ui-b-mouse-mode-icon mode-name="SELECTION"></tr-ui-b-mouse-mode-icon>
+        Select mode
+      </h3>
+      <div class="pair">
+        <div class="command">drag</div>
+        <div class="action">Box select</div>
+      </div>
+
+      <div class="pair">
+        <div class="command"><span class="mod"></span>-click/drag</div>
+        <div class="action">Add events to the current selection</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">double click</div>
+        <div class="action">Select all events with same title</div>
+      </div>
+
+      <h3>
+        <tr-ui-b-mouse-mode-icon mode-name="PANSCAN"></tr-ui-b-mouse-mode-icon>
+        Pan mode
+      </h3>
+      <div class="pair">
+        <div class="command">drag</div>
+        <div class="action">Pan the view</div>
+      </div>
+
+      <h3>
+        <tr-ui-b-mouse-mode-icon mode-name="ZOOM"></tr-ui-b-mouse-mode-icon>
+        Zoom mode
+      </h3>
+      <div class="pair">
+        <div class="command">drag</div>
+        <div class="action">Zoom in/out by dragging up/down</div>
+      </div>
+
+      <h3>
+        <tr-ui-b-mouse-mode-icon mode-name="TIMING"></tr-ui-b-mouse-mode-icon>
+        Timing mode
+      </h3>
+      <div class="pair">
+        <div class="command">drag</div>
+        <div class="action">Create or move markers</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">double click</div>
+        <div class="action">Set marker range to slice</div>
+      </div>
+    </div>
+
+    <div class="column right">
+      <h2>General</h2>
+      <div class="pair">
+        <div class="command">1-4</div>
+        <div class="action">Switch mouse mode</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">shift</div>
+        <div class="action">Hold for temporary select</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">space</div>
+        <div class="action">Hold for temporary pan</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">/</div>
+        <div class="action">Search</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">enter</div>
+        <div class="action">Step through search results</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">f</div>
+        <div class="action">Zoom into selection</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">z/0</div>
+        <div class="action">Reset zoom and pan</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">g/G</div>
+        <div class="action">Toggle 60hz grid</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">v</div>
+        <div class="action">Highlight VSync</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">h</div>
+        <div class="action">Toggle low/high details</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">m</div>
+        <div class="action">Mark current selection</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">p</div>
+        <div class="action">Select power samples over current selection interval</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">`</div>
+        <div class="action">Show or hide the scripting console</div>
+      </div>
+
+      <div class="pair">
+        <div class="command">?</div>
+        <div class="action">Show help</div>
+      </div>
+    </div>
+  </template>
+</dom-module><dom-module id="tr-v-ui-array-of-numbers-span">
+  <template>
+  </template>
+</dom-module><dom-module id="tr-v-ui-generic-table-view">
+  <template>
+    <style>
+    :host {
+    display: flex;
+    }
+    #table {
+      flex: 1 1 auto;
+      align-self: stretch;
+    }
+    </style>
+    <tr-ui-b-table id="table"></tr-ui-b-table>
+  </template>
+</dom-module><dom-module id="tr-ui-timeline-view-metadata-overlay">
+  <template>
+    <style>
+    :host {
+      width: 700px;
+
+      overflow: auto;
+    }
+    </style>
+    <tr-v-ui-generic-table-view id="gtv"></tr-v-ui-generic-table-view>
+  </template>
+</dom-module><dom-module id="tr-ui-timeline-view">
+  <template>
+    <style>
+    :host {
+      flex-direction: column;
+      cursor: default;
+      display: flex;
+      font-family: sans-serif;
+      padding: 0;
+    }
+
+    #control {
+      background-color: #e6e6e6;
+      background-image: -webkit-gradient(linear, 0 0, 0 100%,
+          from(#E5E5E5), to(#D1D1D1));
+      flex: 0 0 auto;
+      overflow-x: auto;
+    }
+
+    #control::-webkit-scrollbar { height: 0px; }
+
+    #control > #bar {
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      margin: 1px;
+    }
+
+    #control > #bar > #title {
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      padding-right: 8px;
+      flex: 1 1 auto;
+    }
+
+    #control > #bar > #left_controls,
+    #control > #bar > #right_controls {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    #control > #bar > #left_controls > * { margin-right: 2px; }
+    #control > #bar > #right_controls > * { margin-left: 2px; }
+    #control > #collapsing_controls { display: flex; }
+
+    middle-container {
+      flex: 1 1 auto;
+      flex-direction: row;
+      border-bottom: 1px solid #8e8e8e;
+      display: flex;
+      min-height: 0;
+    }
+
+    middle-container ::content track-view-container {
+      flex: 1 1 auto;
+      display: flex;
+      min-height: 0;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    middle-container ::content track-view-container > * { flex: 1 1 auto; }
+    middle-container > x-timeline-view-side-panel-container { flex: 0 0 auto; }
+    tr-ui-b-drag-handle { flex: 0 0 auto; }
+    tr-ui-a-analysis-view { flex: 0 0 auto; }
+    </style>
+
+    <tv-ui-b-hotkey-controller id="hkc"></tv-ui-b-hotkey-controller>
+    <div id="control">
+      <div id="bar">
+        <div id="left_controls"></div>
+        <div id="title">^_^</div>
+        <div id="right_controls">
+          <tr-ui-b-toolbar-button id="view_metadata_button">
+            M
+          </tr-ui-b-toolbar-button>
+          <tr-ui-b-dropdown id="view_options_dropdown"></tr-ui-b-dropdown>
+          <tr-ui-find-control id="view_find_control"></tr-ui-find-control>
+          <tr-ui-b-toolbar-button id="view_console_button">
+            »
+          </tr-ui-b-toolbar-button>
+          <tr-ui-b-toolbar-button id="view_help_button">
+            ?
+          </tr-ui-b-toolbar-button>
+        </div>
+      </div>
+      <div id="collapsing_controls"></div>
+      <tr-ui-b-info-bar-group id="import-warnings">
+      </tr-ui-b-info-bar-group>
+    </div>
+    <middle-container>
+      <content></content>
+
+      <tr-ui-side-panel-container id="side_panel_container">
+      </tr-ui-side-panel-container>
+    </middle-container>
+    <tr-ui-b-drag-handle id="drag_handle"></tr-ui-b-drag-handle>
+    <tr-ui-a-analysis-view id="analysis"></tr-ui-a-analysis-view>
+
+    <tr-v-ui-preferred-display-unit id="display_unit">
+    </tr-v-ui-preferred-display-unit>
+  </template>
+</dom-module><style>
+* /deep/ .pie-chart .arc-text{font-size:8pt}* /deep/ .pie-chart .label{font-size:10pt}* /deep/ .pie-chart polyline{fill:none;stroke:black}
+</style><dom-module id="tr-ui-e-s-time-summary-side-panel">
+  <template>
+    <style>
+    :host {
+      flex-direction: column;
+      display: flex;
+    }
+    toolbar {
+      flex: 0 0 auto;
+      border-bottom: 1px solid black;
+      display: flex;
+    }
+    result-area {
+      flex: 1 1 auto;
+      display: block;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    </style>
+
+    <toolbar id="toolbar"></toolbar>
+    <result-area id="result_area"></result-area>
+  </template>
+</dom-module><template id="record-selection-dialog-template">
+  <style>
+  .categories-column-view {
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+    font-family: sans-serif;
+    max-width: 640px;
+    min-height: 0;
+    min-width: 0;
+    opacity: 1;
+    transition: max-height 1s ease, max-width 1s ease, opacity 1s ease;
+    will-change: opacity;
+  }
+
+  .categories-column-view-hidden {
+    max-height: 0;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: none;
+  }
+
+  .categories-selection {
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+  }
+
+  .category-presets {
+    padding: 4px;
+  }
+
+  .category-description {
+    color: #aaa;
+    font-size: small;
+    max-height: 1em;
+    opacity: 1;
+    padding-left: 4px;
+    padding-right: 4px;
+    text-align: right;
+    transition: max-height 1s ease, opacity 1s ease;
+    will-change: opacity;
+  }
+
+  .category-description-hidden {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  .default-enabled-categories,
+  .default-disabled-categories {
+    -webkit-flex: 1 1 auto;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+    padding: 4px;
+    width: 300px;
+  }
+
+  .default-enabled-categories > div,
+  .default-disabled-categories > div {
+    padding: 4px;
+  }
+
+  .tracing-modes {
+    -webkit-flex: 1 0 auto;
+    display: -webkit-flex;
+    -webkit-flex-direction: reverse;
+    padding: 4px;
+    border-bottom: 2px solid #ddd;
+    border-top: 2px solid #ddd;
+  }
+
+  .default-disabled-categories {
+    border-left: 2px solid #ddd;
+  }
+
+  .warning-default-disabled-categories {
+    display: inline-block;
+    font-weight: bold;
+    text-align: center;
+    color: #BD2E2E;
+    width: 2.0ex;
+    height: 2.0ex;
+    border-radius: 2.0ex;
+    border: 1px solid #BD2E2E;
+  }
+
+  .categories {
+    font-size: 80%;
+    padding: 10px;
+    -webkit-flex: 1 1 auto;
+  }
+
+  .group-selectors {
+    font-size: 80%;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 6px;
+    -webkit-flex: 0 0 auto;
+  }
+
+  .group-selectors button {
+    padding: 1px;
+  }
+
+  .record-selection-dialog .labeled-option-group {
+    -webkit-flex: 0 0 auto;
+    -webkit-flex-direction: column;
+    display: -webkit-flex;
+  }
+
+  .record-selection-dialog .labeled-option {
+    border-top: 5px solid white;
+    border-bottom: 5px solid white;
+  }
+
+  .record-selection-dialog .edit-categories {
+    padding-left: 6px;
+  }
+
+  .record-selection-dialog .edit-categories:after {
+    padding-left: 15px;
+    font-size: 125%;
+  }
+
+  .record-selection-dialog .labeled-option-group:not(.categories-expanded)
+      .edit-categories:after {
+    content: '\25B8'; /* Right triangle */
+  }
+
+  .record-selection-dialog .labeled-option-group.categories-expanded
+      .edit-categories:after {
+    content: '\25BE'; /* Down triangle */
+  }
+
+  </style>
+
+  <div class="record-selection-dialog">
+    <tr-ui-b-info-bar-group></tr-ui-b-info-bar-group>
+    <div class="category-presets">
+    </div>
+    <div class="category-description"></div>
+    <div class="categories-column-view">
+      <div class="tracing-modes"></div>
+      <div class="categories-selection">
+        <div class="default-enabled-categories">
+          <div>Record Categories</div>
+          <div class="group-selectors">
+            Select
+            <button class="all-btn">All</button>
+            <button class="none-btn">None</button>
+          </div>
+          <div class="categories"></div>
+        </div>
+        <div class="default-disabled-categories">
+          <div>Disabled by Default Categories
+            <a class="warning-default-disabled-categories">!</a>
+          </div>
+          <div class="group-selectors">
+            Select
+            <button class="all-btn">All</button>
+            <button class="none-btn">None</button>
+          </div>
+          <div class="categories"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template><style>
+x-profiling-view {
+  -webkit-flex-direction: column;
+  display: -webkit-flex;
+  padding: 0;
+}
+
+x-profiling-view .controls #save-button {
+  margin-left: 64px !important;
+}
+
+x-profiling-view > tr-ui-timeline-view {
+  -webkit-flex: 1 1 auto;
+  min-height: 0;
+}
+
+.report-id-message {
+  -webkit-user-select: text;
+}
+
+x-timeline-view-buttons {
+  display: flex;
+  align-items: center;
+}
+</style><template id="profiling-view-template">
+  <tr-ui-b-info-bar-group></tr-ui-b-info-bar-group>
+  <x-timeline-view-buttons>
+    <button id="record-button">Record</button>
+    <button id="save-button">Save</button>
+    <button id="load-button">Load</button>
+  </x-timeline-view-buttons>
+  <tr-ui-timeline-view>
+    <track-view-container id="track_view_container"></track-view-container>
+  </tr-ui-timeline-view>
+</template><style>
+html,body{height:100%}body{-webkit-flex-direction:column;display:-webkit-flex;margin:0;padding:0}body>x-profiling-view{-webkit-flex:1 1 auto;min-height:0}body>x-profiling-view>x-timeline-view:focus{outline:0}
+</style><script src="tracing.js"></script>
+</head>
+  <body>
+  </body>
+</html>
