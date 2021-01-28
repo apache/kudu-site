@@ -1,4 +1,77 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-01-28T14:27:14-08:00</updated><id>/feed.xml</id><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00-08:00</published><updated>2021-01-15T00:00:00-08:00</updated><id>/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-01-28T14:57:29-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.14.0 Released</title><link href="/2021/01/28/apache-kudu-1-14-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.14.0 Released" /><published>2021-01-28T00:00:00-08:00</published><updated>2021-01-28T00:00:00-08:00</updated><id>/2021/01/28/apache-kudu-1-14-0-release</id><content type="html" xml:base="/2021/01/28/apache-kudu-1-14-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.14.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the
+following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Full support for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE_IGNORE&lt;/code&gt;, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE_IGNORE&lt;/code&gt; operations
+was added. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt; operation will insert a row if one matching the key
+does not exist and ignore the operation if one already exists. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE_IGNORE&lt;/code&gt;
+operation will update the row if one matching the key exists and ignore the operation
+if one does not exist. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE_IGNORE&lt;/code&gt; operation will delete the row if one matching
+the key exists and ignore the operation if one does not exist. These operations are
+particularly useful in situations where retries or duplicate operations could occur and
+you do not want to handle the errors that could result manually or you do not want to cause
+unnecessary writes and compaction work as a result of using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPSERT&lt;/code&gt; operation.
+The Java client can check if the cluster it is communicating with supports these operations
+by calling the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;supportsIgnoreOperations()&lt;/code&gt; method on the KuduClient.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Spark 3 compatible JARs compiled for Scala 2.12 are now published for the Kudu Spark integration.
+See link:https://issues.apache.org/jira/browse/KUDU-3202[KUDU-3202] for more details.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Every Kudu cluster now has an automatically generated cluster Id that can be used to uniquely
+identify a cluster. The cluster Id is shown in the masters web-UI, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu master list&lt;/code&gt; tool,
+and in master server logs.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Downloading the WAL data and data blocks when copying tablets to another tablet server is now
+parallelized, resulting in much faster tablet copy operations. These operations occur when
+recovering from a down tablet server or when running the cluster rebalancer.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The HMS integration now supports multiple Kudu clusters associated with a single HMS
+including Kudu clusters that do not have HMS synchronization enabled. This is possible,
+because the Kudu master will now leverage the cluster Id to ignore notifications from
+tables in a different cluster. Additionally, the HMS plugin will check if the Kudu cluster
+associated with a table has HMS synchronization enabled.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;DeltaMemStores will now be flushed as long as any DMS in a tablet is older than the point
+defined by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--flush_threshold_secs&lt;/code&gt;, rather than flushing once every &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--flush_threshold_secs&lt;/code&gt;
+period. This can reduce memory pressure under update- or delete-heavy workloads, and lower tablet
+server restart times following such workloads.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.14.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.14.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.14.0&quot;&gt;1.14.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.14.0/docs/installation.html#build_from_source&quot;&gt;1.14.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.14.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
+architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00-08:00</published><updated>2021-01-15T00:00:00-08:00</updated><id>/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/&quot;&gt;Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0&lt;/p&gt;
@@ -1219,126 +1292,4 @@ request is tracked by KUDU-2604 in Apache JIRA, see
 
 &lt;p&gt;[2] A proposal for Kudu tablet server labeling: &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2604&quot;&gt;KUDU-2604&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;[3] Further improvement: &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2780&quot;&gt;automatic cluster rebalancing&lt;/a&gt;.&lt;/p&gt;</content><author><name>Alexey Serbin</name></author><summary type="html">This post is about location awareness in Kudu. It gives an overview of the following: principles of the design restrictions of the current implementation potential future enhancements and extensions</summary></entry><entry><title type="html">Fine-Grained Authorization with Apache Kudu and Impala</title><link href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html" rel="alternate" type="text/html" title="Fine-Grained Authorization with Apache Kudu and Impala" /><published>2019-04-22T00:00:00-07:00</published><updated>2019-04-22T00:00:00-07:00</updated><id>/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala</id><content type="html" xml:base="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
-&lt;a href=&quot;https://blog.cloudera.com/blog/2019/04/fine-grained-authorization-with-apache-kudu-and-impala/&quot;&gt;Fine-Grained Authorization with Apache Kudu and Impala&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Apache Impala supports fine-grained authorization via Apache Sentry on all of the tables it
-manages including Apache Kudu tables. Given Impala is a very common way to access the data stored
-in Kudu, this capability allows users deploying Impala and Kudu to fully secure the Kudu data in
-multi-tenant clusters even though Kudu does not yet have native fine-grained authorization of its
-own. This solution works because Kudu natively supports coarse-grained (all or nothing)
-authorization which enables blocking all access to Kudu directly except for the impala user and
-an optional whitelist of other trusted users. This post will describe how to use Apache Impala’s
-fine-grained authorization support along with Apache Kudu’s coarse-grained authorization to
-achieve a secure multi-tenant deployment.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;sample-workflow&quot;&gt;Sample Workflow&lt;/h2&gt;
-
-&lt;p&gt;The examples in this post enable a workflow that uses Apache Spark to ingest data directly into
-Kudu and Impala to run analytic queries on that data. The Spark job, run as the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;etl_service&lt;/code&gt; user,
-is permitted to access the Kudu data via coarse-grained authorization. Even though this gives
-access to all the data in Kudu, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;etl_service&lt;/code&gt; user is only used for scheduled jobs or by an
-administrator. All queries on the data, from a wide array of users, will use Impala and leverage
-Impala’s fine-grained authorization. Impala’s 
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_grant.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GRANT&lt;/code&gt; statements&lt;/a&gt;
-allow you to flexibly control the privileges on the Kudu storage tables. Impala’s fine-grained
-privileges along with support for
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_select.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SELECT&lt;/code&gt;&lt;/a&gt;,
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_insert.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT&lt;/code&gt;&lt;/a&gt;,
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_update.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE&lt;/code&gt;&lt;/a&gt;,
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_upsert.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPSERT&lt;/code&gt;&lt;/a&gt;,
-and &lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_delete.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE&lt;/code&gt;&lt;/a&gt;
-statements, allow you to finely control who can read and write data to your Kudu tables while
-using Impala. Below is a diagram showing the workflow described:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/fine-grained-authorization-with-apache-kudu.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: The examples below assume that Authorization has already been configured for Kudu, Impala,
-and Spark. For help configuring authorization see the Cloudera 
-&lt;a href=&quot;https://www.cloudera.com/documentation/enterprise/latest/topics/sg_auth_overview.html&quot;&gt;authorization documentation&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;configuring-kudus-coarse-grained-authorization&quot;&gt;Configuring Kudu’s Coarse-Grained Authorization&lt;/h2&gt;
-
-&lt;p&gt;Kudu supports coarse-grained authorization of client requests based on the authenticated client
-Kerberos principal. The two levels of access which can be configured are:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;em&gt;Superuser&lt;/em&gt; – principals authorized as a superuser are able to perform certain administrative
-functionality such as using the kudu command line tool to diagnose or repair cluster issues.&lt;/li&gt;
-  &lt;li&gt;&lt;em&gt;User&lt;/em&gt; – principals authorized as a user are able to access and modify all data in the Kudu
-cluster. This includes the ability to create, drop, and alter tables as well as read, insert, 
-update, and delete data.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Access levels are granted using whitelist-style Access Control Lists (ACLs), one for each of the
-two levels. Each access control list either specifies a comma-separated list of users, or may be
-set to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt; to indicate that all authenticated users are able to gain access at the specified level.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: The default value for the User ACL is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt;, which allows all users access to the cluster.&lt;/p&gt;
-
-&lt;h3 id=&quot;example-configuration&quot;&gt;Example Configuration&lt;/h3&gt;
-
-&lt;p&gt;The first and most important step is to remove the default ACL of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt; from Kudu’s 
-&lt;a href=&quot;https://kudu.apache.org/docs/configuration_reference.html#kudu-master_user_acl&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;–user_acl&lt;/code&gt; configuration&lt;/a&gt;.
-This will ensure only the users you list will have access to the Kudu cluster. Then, to allow the
-Impala service to access all of the data in Kudu, the Impala service user, usually impala, should
-be added to the Kudu &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;–user_acl&lt;/code&gt; configuration. Any user that is not using Impala will also need
-to be added to this list. For example, an Apache Spark job might be used to load data directly
-into Kudu. Generally, a single user is used to run scheduled jobs of applications that do not
-support fine-grained authorization on their own. For this example, that user is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;etl_service&lt;/code&gt;. The
-full &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;–user_acl&lt;/code&gt; configuration is:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nt&quot;&gt;--user_acl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;impala,etl_service&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;For more details see the Kudu
-&lt;a href=&quot;https://kudu.apache.org/docs/security.html#_coarse_grained_authorization&quot;&gt;authorization documentation&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;using-impalas-fine-grained-authorization&quot;&gt;Using Impala’s Fine-Grained Authorization&lt;/h2&gt;
-
-&lt;p&gt;Follow Impala’s
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_authorization.html&quot;&gt;authorization documentation&lt;/a&gt;
-to configure fine-grained authorization. Once configured, you can use Impala’s
-&lt;a href=&quot;https://impala.apache.org/docs/build/html/topics/impala_grant.html&quot;&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GRANT&lt;/code&gt; statements&lt;/a&gt;
-to control the privileges of Kudu tables. These fine-grained privileges can be set at the database,
-table and column level. Additionally you can individually control &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SELECT&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CREATE&lt;/code&gt;,
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ALTER&lt;/code&gt;, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DROP&lt;/code&gt; privileges.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: A user needs the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ALL&lt;/code&gt; privilege in order to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE&lt;/code&gt;, or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPSERT&lt;/code&gt;
-statements against a Kudu table.&lt;/p&gt;
-
-&lt;p&gt;Below is a brief example with a couple tables stored in Kudu:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;messages&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;  
-  &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;TIMESTAMP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;message&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HASH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITIONS&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KUDU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;messages&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;userA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;metrics&lt;/span&gt; 
-&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;host&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;STRING&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;INT64&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;DOUBLE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;metric&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;PARTITION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;BY&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HASH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PARTITIONS&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;STORED&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;AS&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;KUDU&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;GRANT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;ON&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;messages&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;TO&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;userB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;This brief example that combines Kudu’s coarse-grained authorization and Impala’s fine-grained
-authorization should enable you to meet the security needs of your data workflow today. The
-pattern described here can be applied to other services and workflows using Kudu as well. For
-greater authorization flexibility, you can look forward to the near future when Kudu supports
-native fine-grained authorization on its own. The Apache Kudu contributors understand the
-importance of native fine-grained authorization and they are working on integrations with
-Apache Sentry and Apache Ranger.&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Fine-Grained Authorization with Apache Kudu and Impala Apache Impala supports fine-grained authorization via Apache Sentry on all of the tables it manages including Apache Kudu tables. Given Impala is a very common way to access the data stored in Kudu, this capability allows users deploying Impala and Kudu to fully secure the Kudu data in multi-tenant clusters even though Kudu does not yet have native fine-grained authorization of its own. This solution works because Kudu natively supports coarse-grained (all or nothing) authorization which enables blocking all access to Kudu directly except for the impala user and an optional whitelist of other trusted users. This post will describe how to use Apache Impala’s fine-grained authorization support along with Apache Kudu’s coarse-grained authorization to achieve a secure multi-tenant deployment.</summary></entry></feed>
+&lt;p&gt;[3] Further improvement: &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2780&quot;&gt;automatic cluster rebalancing&lt;/a&gt;.&lt;/p&gt;</content><author><name>Alexey Serbin</name></author><summary type="html">This post is about location awareness in Kudu. It gives an overview of the following: principles of the design restrictions of the current implementation potential future enhancements and extensions</summary></entry></feed>
