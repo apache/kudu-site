@@ -1,4 +1,140 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2020-12-14T08:46:45-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.13.0 released</title><link href="/2020/09/21/apache-kudu-1-13-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.13.0 released" /><published>2020-09-21T00:00:00-07:00</published><updated>2020-09-21T00:00:00-07:00</updated><id>/2020/09/21/apache-kudu-1-13-0-release</id><content type="html" xml:base="/2020/09/21/apache-kudu-1-13-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.13.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-01-28T14:27:14-08:00</updated><id>/feed.xml</id><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00-08:00</published><updated>2021-01-15T00:00:00-08:00</updated><id>/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+&lt;a href=&quot;https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/&quot;&gt;Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0&lt;/p&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;In database systems one of the most effective ways to improve performance is to avoid doing
+unnecessary work, such as network transfers and reading data from disk. One of the ways Apache
+Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate
+filters to Kudu allows for optimized execution by skipping reading column values for filtered out
+rows and reducing network IO between a client, like the distributed query engine Apache Impala, and
+Kudu. See the documentation on
+&lt;a href=&quot;https://docs.cloudera.com/runtime/latest/impala-reference/topics/impala-runtime-filtering.html&quot;&gt;runtime filtering in Impala&lt;/a&gt;
+for details.&lt;/p&gt;
+
+&lt;p&gt;CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in
+Kudu and the associated integration in Impala.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;bloom-filter&quot;&gt;Bloom filter&lt;/h2&gt;
+&lt;p&gt;A Bloom filter is a space-efficient probabilistic data structure used to test set membership with a
+possibility of false positive matches. In database systems these are used to determine whether a
+set of data can be ignored when only a subset of the records are required. See the
+&lt;a href=&quot;https://en.wikipedia.org/wiki/Bloom_filter&quot;&gt;wikipedia page&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;p&gt;The implementation used in Kudu is a space, hash, and cache efficient block-based Bloom filter from
+&lt;a href=&quot;https://www.cs.amherst.edu/~ccmcgeoch/cs34/papers/cacheefficientbloomfilters-jea.pdf&quot;&gt;“Cache-, Hash- and Space-Efficient Bloom Filters”&lt;/a&gt;
+by Putze et al. This Bloom filter was taken from the implementation in Impala and further enhanced.
+The block based Bloom filter is designed to fit in CPU cache, and it allows SIMD operations using
+AVX2, when available, for efficient lookup and insertion.&lt;/p&gt;
+
+&lt;p&gt;Consider the case of a broadcast hash join between a small table and a big table where predicate
+push down is not available. This typically involves following steps:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Read the entire small table and construct a hash table from it.&lt;/li&gt;
+  &lt;li&gt;Broadcast the generated hash table to all worker nodes.&lt;/li&gt;
+  &lt;li&gt;On the worker nodes start fetching and iterating on slices of the big table,  check whether the
+key in the big table exists in the hash table, and only return the matched rows.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Step 3 is the heaviest since it involves reading the entire big table, and could involve heavy
+network IO if the worker and the nodes hosting the big table are not on the same server.&lt;/p&gt;
+
+&lt;p&gt;Before 7.1.5, Impala supported pushing down only the Minimum/Maximum (MIN_MAX) runtime filter to
+Kudu which filters out values not within the specified bounds. In addition to the MIN_MAX runtime
+filter, Impala in CDP 7.1.5+ now supports pushing down a runtime Bloom filter to Kudu. With the
+newly introduced Bloom filter predicate support in Kudu, Impala can use this feature to perform
+drastically more efficient joins for data stored in Kudu.
+Performance
+As in the scenario described above, we ran a Impala query which joins a big table stored on Kudu
+and a small table stored as Parquet on HDFS. The small table was created using Parquet on HDFS to
+isolate the new feature, but could also be stored in Kudu just the same. We ran the queries first
+using only the MIN_MAX filter and then using both the MIN_MAX and BLOOM filter
+(ALL runtime filters). For comparison, we created the same big table in Parquet on HDFS. Using
+Parquet on HDFS is a great baseline for comparison because Impala already supports both MIN_MAX and
+BLOOM filters for Parquet on HDFS.&lt;/p&gt;
+
+&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
+&lt;p&gt;The following test was performed on a 6 node cluster with CDP Runtime 7.1.5.&lt;/p&gt;
+
+&lt;p&gt;Hardware Configuration:
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Dell PowerEdge R430, 20c/40t Xeon e5-2630 v4 @ 2.2Ghz, 128GB RAM, 4-2TB HDDs with 1 for WAL and 3
+for data directories.&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;schema&quot;&gt;Schema:&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Big table consists of 260 million rows with randomly generated data hash partitioned by primary
+key across 20 partitions on Kudu. The Kudu table was explicitly rebalanced to ensure a balanced
+layout after the load.&lt;/li&gt;
+  &lt;li&gt;Small table consists of 2000 rows of top 1000 and bottom 1000 keys from the big table stored as
+Parquet on HDFS. This prevents the MIN_MAX filters from doing any filtering on the big table as
+all rows would fall under the range bounds of the MIN_MAX filters.&lt;/li&gt;
+  &lt;li&gt;COMPUTE STATS were run on all tables to help gather information about the table metadata and help
+Impala optimize the query plan.&lt;/li&gt;
+  &lt;li&gt;All queries were run 10 times and the mean query runtime is depicted below.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;join-queries&quot;&gt;Join Queries&lt;/h2&gt;
+&lt;p&gt;For join queries, we saw performance improvements of 3X to 5X in Kudu with Bloom filter predicate
+pushdown. We expect to see even better performance multiples with larger data sizes and more
+selective queries.&lt;/p&gt;
+
+&lt;p&gt;Compared to Parquet on HDFS, Kudu performance is now better by around 17-33%.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/bloom-filter-join-queries.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;update-query&quot;&gt;Update Query&lt;/h2&gt;
+&lt;p&gt;For an update query that basically upserts the entire small table into the existing big table, we
+saw 15X improvement. This is primarily due to the increased query performance when selecting the
+rows to update.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/bloom-filter-update-query.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;See references section below for details on the table schema, loading process, and queries that were
+run.&lt;/p&gt;
+
+&lt;h2 id=&quot;tpc-h&quot;&gt;TPC-H&lt;/h2&gt;
+&lt;p&gt;We also ran the TPC-H benchmark on a single node cluster with a scale factor of 30 and saw
+performance improvements in the range of 19% to 31% with different block cache capacity settings.&lt;/p&gt;
+
+&lt;p&gt;Kudu automatically disables Bloom filter predicates that are not effectively filtering data to avoid
+any performance penalties from the new feature. During development of the feature, query 9 in the
+TPCH benchmark (TPCH-Q9) exhibited regression of 50-96%. On further investigation, the time required
+to scan the rows from Kudu increased by up to 2X. When investigating this regression we found that
+the Bloom filter predicate that was pushed down was filtering out less than 10% of the rows, leading
+to increased CPU usage in Kudu which outweighed the benefit of the filter. To resolve the regression
+we added a heuristic in Kudu wherein if a Bloom filter predicate is not filtering out a sufficient
+percentage of rows then it’s disabled automatically for the remainder of the scan. This is safe
+because Bloom filters can return false positives and hence false matches returned to the client are
+expected to be filtered out using other deterministic filters.&lt;/p&gt;
+
+&lt;h2 id=&quot;feature-availability&quot;&gt;Feature Availability&lt;/h2&gt;
+&lt;p&gt;Users querying Kudu using Impala will have the feature enabled by default from CDP 7.1.5 onward
+and CDP Public Cloud. We highly recommend users upgrade to get this performance enhancement and many
+other performance enhancements in the release. For custom applications that use the Kudu client API
+directly, the Kudu C++ client also has the Bloom filter predicate available from CDP 7.1.5 onward.
+The Kudu Java client does not have the Bloom filter predicate available yet,
+&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3221&quot;&gt;KUDU-3221&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References:&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Performance testing related schema and queries:
+&lt;a href=&quot;https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4&quot;&gt;https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kudu C++ client documentation:
+&lt;a href=&quot;https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94&quot;&gt;https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Example code to create and pass Bloom filter predicate:
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416&quot;&gt;https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Block based Bloom filter:
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51&quot;&gt;https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;acknowledgement&quot;&gt;Acknowledgement&lt;/h2&gt;
+&lt;p&gt;This feature was implemented jointly by Bankim Bhavsar and Wenzhe Zhou with guidance and feedback
+from Tim Armstrong, Adar Dembo, Thomas Tauber-Marshall, Andrew Wong, and Grant Henke. We are also
+grateful for our customers especially Mauricio Aristizabal from Impact for providing us valuable
+feedback and benchmarks.&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0 Introduction In database systems one of the most effective ways to improve performance is to avoid doing unnecessary work, such as network transfers and reading data from disk. One of the ways Apache Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate filters to Kudu allows for optimized execution by skipping reading column values for filtered out rows and reducing network IO between a client, like the distributed query engine Apache Impala, and Kudu. See the documentation on runtime filtering in Impala for details. CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in Kudu and the associated integration in Impala.</summary></entry><entry><title type="html">Apache Kudu 1.13.0 released</title><link href="/2020/09/21/apache-kudu-1-13-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.13.0 released" /><published>2020-09-21T00:00:00-07:00</published><updated>2020-09-21T00:00:00-07:00</updated><id>/2020/09/21/apache-kudu-1-13-0-release</id><content type="html" xml:base="/2020/09/21/apache-kudu-1-13-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.13.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -1205,220 +1341,4 @@ pattern described here can be applied to other services and workflows using Kudu
 greater authorization flexibility, you can look forward to the near future when Kudu supports
 native fine-grained authorization on its own. The Apache Kudu contributors understand the
 importance of native fine-grained authorization and they are working on integrations with
-Apache Sentry and Apache Ranger.&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Fine-Grained Authorization with Apache Kudu and Impala Apache Impala supports fine-grained authorization via Apache Sentry on all of the tables it manages including Apache Kudu tables. Given Impala is a very common way to access the data stored in Kudu, this capability allows users deploying Impala and Kudu to fully secure the Kudu data in multi-tenant clusters even though Kudu does not yet have native fine-grained authorization of its own. This solution works because Kudu natively supports coarse-grained (all or nothing) authorization which enables blocking all access to Kudu directly except for the impala user and an optional whitelist of other trusted users. This post will describe how to use Apache Impala’s fine-grained authorization support along with Apache Kudu’s coarse-grained authorization to achieve a secure multi-tenant deployment.</summary></entry><entry><title type="html">Testing Apache Kudu Applications on the JVM</title><link href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html" rel="alternate" type="text/html" title="Testing Apache Kudu Applications on the JVM" /><published>2019-03-19T00:00:00-07:00</published><updated>2019-03-19T00:00:00-07:00</updated><id>/2019/03/19/testing-apache-kudu-applications-on-the-jvm</id><content type="html" xml:base="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
-&lt;a href=&quot;https://blog.cloudera.com/blog/2019/03/testing-apache-kudu-applications-on-the-jvm/&quot;&gt;Testing Apache Kudu Applications on the JVM&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Although the Kudu server is written in C++ for performance and efficiency, developers can write
-client applications in C++, Java, or Python. To make it easier for Java developers to create
-reliable client applications, we’ve added new utilities in Kudu 1.9.0 that allow you to write tests
-using a Kudu cluster without needing to build Kudu yourself, without any knowledge of C++,
-and without any complicated coordination around starting and stopping Kudu clusters for each test.
-This post describes how the new testing utilities work and how you can use them in your application
-tests.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;user-guide&quot;&gt;User Guide&lt;/h2&gt;
-
-&lt;p&gt;Note: It is possible this blog post could become outdated – for the latest documentation on using
-the JVM testing utilities see the
-&lt;a href=&quot;https://kudu.apache.org/docs/developing.html#_jvm_based_integration_testing&quot;&gt;Kudu documentation&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;requirements&quot;&gt;Requirements&lt;/h3&gt;
-
-&lt;p&gt;In order to use the new testing utilities, the following requirements must be met:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;OS
-    &lt;ul&gt;
-      &lt;li&gt;macOS El Capitan (10.11) or later&lt;/li&gt;
-      &lt;li&gt;CentOS 6.6+, Ubuntu 14.04+, or another recent distribution of Linux
- &lt;a href=&quot;https://kudu.apache.org/docs/installation.html#_prerequisites_and_requirements&quot;&gt;supported by Kudu&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;JVM
-    &lt;ul&gt;
-      &lt;li&gt;Java 8+&lt;/li&gt;
-      &lt;li&gt;Note: Java 7+ is deprecated, but still supported&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Build Tool
-    &lt;ul&gt;
-      &lt;li&gt;Maven 3.1 or later, required to support the
-&lt;a href=&quot;https://github.com/trustin/os-maven-plugin&quot;&gt;os-maven-plugin&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;Gradle 2.1 or later, to support the
-&lt;a href=&quot;https://github.com/google/osdetector-gradle-plugin&quot;&gt;osdetector-gradle-plugin&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;Any other build tool that can download the correct jar from Maven&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;build-configuration&quot;&gt;Build Configuration&lt;/h3&gt;
-
-&lt;p&gt;In order to use the Kudu testing utilities, add two dependencies to your classpath:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-test-utils&lt;/code&gt; dependency&lt;/li&gt;
-  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt; dependency&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-test-utils&lt;/code&gt; dependency has useful utilities for testing applications that use Kudu.
-Primarily, it provides the
-&lt;a href=&quot;https://github.com/apache/kudu/blob/master/java/kudu-test-utils/src/main/java/org/apache/kudu/test/KuduTestHarness.java&quot;&gt;KuduTestHarness class&lt;/a&gt;
-to manage the lifecycle of a Kudu cluster for each test. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KuduTestHarness&lt;/code&gt; is a
-&lt;a href=&quot;https://junit.org/junit4/javadoc/4.12/org/junit/rules/TestRule.html&quot;&gt;JUnit TestRule&lt;/a&gt;
-that not only starts and stops a Kudu cluster for each test, but also has methods to manage the
-cluster and get pre-configured &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KuduClient&lt;/code&gt; instances for use while testing.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt; dependency contains the native Kudu (server and command-line tool) binaries for
-the specified operating system. In order to download the right artifact for the running operating
-system it is easiest to use a plugin, such as the
-&lt;a href=&quot;https://github.com/trustin/os-maven-plugin&quot;&gt;os-maven-plugin&lt;/a&gt; or
-&lt;a href=&quot;https://github.com/google/osdetector-gradle-plugin&quot;&gt;osdetector-gradle-plugin&lt;/a&gt;, to detect the
-current runtime environment. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KuduTestHarness&lt;/code&gt; will automatically find and use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt;
-jar on the classpath.&lt;/p&gt;
-
-&lt;p&gt;WARNING: The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt; module should only be used to run Kudu for integration testing purposes.
-It should never be used to run an actual Kudu service, in production or development, because the
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt; module includes native security-related dependencies that have been copied from the
-build system and will not be patched when the operating system on the runtime host is patched.&lt;/p&gt;
-
-&lt;h4 id=&quot;maven-configuration&quot;&gt;Maven Configuration&lt;/h4&gt;
-
-&lt;p&gt;If you are using Maven to build your project, add the following entries to your project’s
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pom.xml&lt;/code&gt; file:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;extensions&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;c&quot;&gt;&amp;lt;!-- Used to find the right kudu-binary artifact with the Maven
-         property ${os.detected.classifier} --&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;extension&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;kr.motd.maven&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;os-maven-plugin&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.6.2&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/extension&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/extensions&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
-
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;dependencies&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.kudu&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;kudu-test-utils&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.9.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.apache.kudu&lt;span class=&quot;nt&quot;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;kudu-binary&lt;span class=&quot;nt&quot;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.9.0&lt;span class=&quot;nt&quot;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;classifier&amp;gt;&lt;/span&gt;${os.detected.classifier}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/classifier&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;scope&amp;gt;&lt;/span&gt;test&lt;span class=&quot;nt&quot;&gt;&amp;lt;/scope&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/dependencies&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h4 id=&quot;gradle-configuration&quot;&gt;Gradle Configuration&lt;/h4&gt;
-
-&lt;p&gt;If you are using Gradle to build your project, add the following entries to your project’s
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;build.gradle&lt;/code&gt; file:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-groovy&quot; data-lang=&quot;groovy&quot;&gt;&lt;span class=&quot;n&quot;&gt;plugins&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;// Used to find the right kudu-binary artifact with the Gradle&lt;/span&gt;
-  &lt;span class=&quot;c1&quot;&gt;// property ${osdetector.classifier}&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;com.google.osdetector&quot;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;version&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;1.6.2&quot;&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;dependencies&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-   &lt;span class=&quot;n&quot;&gt;testCompile&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.apache.kudu:kudu-test-utils:1.9.0&quot;&lt;/span&gt;
-   &lt;span class=&quot;n&quot;&gt;testCompile&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;org.apache.kudu:kudu-binary:1.9.0:${osdetector.classifier}&quot;&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;test-setup&quot;&gt;Test Setup&lt;/h2&gt;
-
-&lt;p&gt;Once your project is configured correctly, you can start writing tests using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-test-utils&lt;/code&gt;
-and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt; artifacts. One line of code will ensure that each test automatically starts and
-stops a real Kudu cluster and that cluster logging is output through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;slf4j&lt;/code&gt;:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;nd&quot;&gt;@Rule&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KuduTestHarness&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KuduTestHarness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;The &lt;a href=&quot;https://github.com/apache/kudu/blob/master/java/kudu-test-utils/src/main/java/org/apache/kudu/test/KuduTestHarness.java&quot;&gt;KuduTestHarness&lt;/a&gt;
-has methods to get pre-configured clients, start and stop servers, and more. Below is an example
-test to showcase some of the capabilities:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.kudu.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.kudu.client.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.apache.kudu.test.KuduTestHarness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;org.junit.*&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Collections&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MyKuduTest&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Rule&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KuduTestHarness&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;KuduTestHarness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Test&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Get a KuduClient configured to talk to the running mini cluster.&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;KuduClient&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// Some of the other most common KuduTestHarness methods include:&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;AsyncKuduClient&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;asyncClient&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getAsyncClient&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;masterAddresses&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMasterAddressesAsString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;HostAndPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;masterServers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getMasterServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;HostAndPort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tabletServers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getTabletServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;killLeaderMasterServer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;killAllMasterServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startAllMasterServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;killAllTabletServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;harness&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;startAllTabletServers&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// Create a new Kudu table.&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tableName&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;myTable&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;Schema&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;schema&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Schema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ColumnSchema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ColumnSchemaBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;key&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;INT32&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(),&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ColumnSchema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;ColumnSchemaBuilder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;STRING&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;CreateTableOptions&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;CreateTableOptions&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;setRangePartitionColumns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Collections&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;singletonList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;key&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;createTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tableName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;schema&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;opts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;KuduTable&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;openTable&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tableName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// Write a few rows to the table&lt;/span&gt;
-        &lt;span class=&quot;nc&quot;&gt;KuduSession&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newSession&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;nc&quot;&gt;Insert&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInsert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;nc&quot;&gt;PartialRow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getRow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addInt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;key&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;row&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;addString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;valueOf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;insert&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;session&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-        &lt;span class=&quot;c1&quot;&gt;// ... Continue the test. Read and validate the rows, alter the table, etc.&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;For a complete example of a project using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KuduTestHarness&lt;/code&gt;, see the
-&lt;a href=&quot;https://github.com/apache/kudu/tree/master/examples/java/java-example&quot;&gt;java-example&lt;/a&gt; project in
-the Kudu source code repository. The Kudu project itself uses the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;KuduTestHarness&lt;/code&gt; for all of its
-own integration tests. For more complex examples, you can explore the various
-&lt;a href=&quot;https://github.com/apache/kudu/tree/master/java/kudu-client/src/test/java/org/apache/kudu/client&quot;&gt;Kudu integration&lt;/a&gt;
-tests in the Kudu source code repository.&lt;/p&gt;
-
-&lt;h2 id=&quot;feedback&quot;&gt;Feedback&lt;/h2&gt;
-
-&lt;p&gt;Kudu 1.9.0 is the first release to have these testing utilities available. Although these utilities
-simplify testing of Kudu applications, there is always room for improvement.
-Please report any issues, ideas, or feedback to the Kudu user mailing list, Jira, or Slack channel
-and we will try to incorporate your feedback quickly. See the
-&lt;a href=&quot;https://kudu.apache.org/community.html&quot;&gt;Kudu community page&lt;/a&gt; for details.&lt;/p&gt;
-
-&lt;h2 id=&quot;thank-you&quot;&gt;Thank You&lt;/h2&gt;
-
-&lt;p&gt;We would like to give a special thank you to everyone who helped contribute to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-test-utils&lt;/code&gt;
-and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-binary&lt;/code&gt; artifacts. We would especially like to thank
-&lt;a href=&quot;https://www.linkedin.com/in/brian-mcdevitt-1136a08/&quot;&gt;Brian McDevitt&lt;/a&gt; at &lt;a href=&quot;https://www.phdata.io/&quot;&gt;phData&lt;/a&gt;
-and
-&lt;a href=&quot;https://twitter.com/timrobertson100&quot;&gt;Tim Robertson&lt;/a&gt; at &lt;a href=&quot;https://www.gbif.org/&quot;&gt;GBIF&lt;/a&gt; who helped us
-tremendously.&lt;/p&gt;</content><author><name>Grant Henke &amp; Mike Percy</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Testing Apache Kudu Applications on the JVM Although the Kudu server is written in C++ for performance and efficiency, developers can write client applications in C++, Java, or Python. To make it easier for Java developers to create reliable client applications, we’ve added new utilities in Kudu 1.9.0 that allow you to write tests using a Kudu cluster without needing to build Kudu yourself, without any knowledge of C++, and without any complicated coordination around starting and stopping Kudu clusters for each test. This post describes how the new testing utilities work and how you can use them in your application tests.</summary></entry></feed>
+Apache Sentry and Apache Ranger.&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Fine-Grained Authorization with Apache Kudu and Impala Apache Impala supports fine-grained authorization via Apache Sentry on all of the tables it manages including Apache Kudu tables. Given Impala is a very common way to access the data stored in Kudu, this capability allows users deploying Impala and Kudu to fully secure the Kudu data in multi-tenant clusters even though Kudu does not yet have native fine-grained authorization of its own. This solution works because Kudu natively supports coarse-grained (all or nothing) authorization which enables blocking all access to Kudu directly except for the impala user and an optional whitelist of other trusted users. This post will describe how to use Apache Impala’s fine-grained authorization support along with Apache Kudu’s coarse-grained authorization to achieve a secure multi-tenant deployment.</summary></entry></feed>

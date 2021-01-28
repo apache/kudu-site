@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Optimized joins & filtering with Bloom filter predicate in Kudu</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png"
+                srcset="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png 1x, //d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://getkudu-slack.herokuapp.com/">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Optimized joins & filtering with Bloom filter predicate in Kudu</h1>
+    <p class="meta">Posted 15 Jan 2021 by Bankim Bhavsar</p>
+  </header>
+  <div class="entry-content">
+    <p>Note: This is a cross-post from the Cloudera Engineering Blog
+<a href="https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/">Optimized joins &amp; filtering with Bloom filter predicate in Kudu</a></p>
+
+<p>Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0</p>
+
+<h2 id="introduction">Introduction</h2>
+<p>In database systems one of the most effective ways to improve performance is to avoid doing
+unnecessary work, such as network transfers and reading data from disk. One of the ways Apache
+Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate
+filters to Kudu allows for optimized execution by skipping reading column values for filtered out
+rows and reducing network IO between a client, like the distributed query engine Apache Impala, and
+Kudu. See the documentation on
+<a href="https://docs.cloudera.com/runtime/latest/impala-reference/topics/impala-runtime-filtering.html">runtime filtering in Impala</a>
+for details.</p>
+
+<p>CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in
+Kudu and the associated integration in Impala.</p>
+
+<!--more-->
+
+<h2 id="bloom-filter">Bloom filter</h2>
+<p>A Bloom filter is a space-efficient probabilistic data structure used to test set membership with a
+possibility of false positive matches. In database systems these are used to determine whether a
+set of data can be ignored when only a subset of the records are required. See the
+<a href="https://en.wikipedia.org/wiki/Bloom_filter">wikipedia page</a> for more details.</p>
+
+<p>The implementation used in Kudu is a space, hash, and cache efficient block-based Bloom filter from
+<a href="https://www.cs.amherst.edu/~ccmcgeoch/cs34/papers/cacheefficientbloomfilters-jea.pdf">“Cache-, Hash- and Space-Efficient Bloom Filters”</a>
+by Putze et al. This Bloom filter was taken from the implementation in Impala and further enhanced.
+The block based Bloom filter is designed to fit in CPU cache, and it allows SIMD operations using
+AVX2, when available, for efficient lookup and insertion.</p>
+
+<p>Consider the case of a broadcast hash join between a small table and a big table where predicate
+push down is not available. This typically involves following steps:</p>
+<ol>
+  <li>Read the entire small table and construct a hash table from it.</li>
+  <li>Broadcast the generated hash table to all worker nodes.</li>
+  <li>On the worker nodes start fetching and iterating on slices of the big table,  check whether the
+key in the big table exists in the hash table, and only return the matched rows.</li>
+</ol>
+
+<p>Step 3 is the heaviest since it involves reading the entire big table, and could involve heavy
+network IO if the worker and the nodes hosting the big table are not on the same server.</p>
+
+<p>Before 7.1.5, Impala supported pushing down only the Minimum/Maximum (MIN_MAX) runtime filter to
+Kudu which filters out values not within the specified bounds. In addition to the MIN_MAX runtime
+filter, Impala in CDP 7.1.5+ now supports pushing down a runtime Bloom filter to Kudu. With the
+newly introduced Bloom filter predicate support in Kudu, Impala can use this feature to perform
+drastically more efficient joins for data stored in Kudu.
+Performance
+As in the scenario described above, we ran a Impala query which joins a big table stored on Kudu
+and a small table stored as Parquet on HDFS. The small table was created using Parquet on HDFS to
+isolate the new feature, but could also be stored in Kudu just the same. We ran the queries first
+using only the MIN_MAX filter and then using both the MIN_MAX and BLOOM filter
+(ALL runtime filters). For comparison, we created the same big table in Parquet on HDFS. Using
+Parquet on HDFS is a great baseline for comparison because Impala already supports both MIN_MAX and
+BLOOM filters for Parquet on HDFS.</p>
+
+<h2 id="setup">Setup</h2>
+<p>The following test was performed on a 6 node cluster with CDP Runtime 7.1.5.</p>
+
+<p>Hardware Configuration:
+<code class="language-plaintext highlighter-rouge">Dell PowerEdge R430, 20c/40t Xeon e5-2630 v4 @ 2.2Ghz, 128GB RAM, 4-2TB HDDs with 1 for WAL and 3
+for data directories.</code></p>
+
+<h3 id="schema">Schema:</h3>
+<ul>
+  <li>Big table consists of 260 million rows with randomly generated data hash partitioned by primary
+key across 20 partitions on Kudu. The Kudu table was explicitly rebalanced to ensure a balanced
+layout after the load.</li>
+  <li>Small table consists of 2000 rows of top 1000 and bottom 1000 keys from the big table stored as
+Parquet on HDFS. This prevents the MIN_MAX filters from doing any filtering on the big table as
+all rows would fall under the range bounds of the MIN_MAX filters.</li>
+  <li>COMPUTE STATS were run on all tables to help gather information about the table metadata and help
+Impala optimize the query plan.</li>
+  <li>All queries were run 10 times and the mean query runtime is depicted below.</li>
+</ul>
+
+<h2 id="join-queries">Join Queries</h2>
+<p>For join queries, we saw performance improvements of 3X to 5X in Kudu with Bloom filter predicate
+pushdown. We expect to see even better performance multiples with larger data sizes and more
+selective queries.</p>
+
+<p>Compared to Parquet on HDFS, Kudu performance is now better by around 17-33%.</p>
+
+<p><img src="/img/bloom-filter-join-queries.png" alt="png" class="img-responsive" /></p>
+
+<h2 id="update-query">Update Query</h2>
+<p>For an update query that basically upserts the entire small table into the existing big table, we
+saw 15X improvement. This is primarily due to the increased query performance when selecting the
+rows to update.</p>
+
+<p><img src="/img/bloom-filter-update-query.png" alt="png" class="img-responsive" /></p>
+
+<p>See references section below for details on the table schema, loading process, and queries that were
+run.</p>
+
+<h2 id="tpc-h">TPC-H</h2>
+<p>We also ran the TPC-H benchmark on a single node cluster with a scale factor of 30 and saw
+performance improvements in the range of 19% to 31% with different block cache capacity settings.</p>
+
+<p>Kudu automatically disables Bloom filter predicates that are not effectively filtering data to avoid
+any performance penalties from the new feature. During development of the feature, query 9 in the
+TPCH benchmark (TPCH-Q9) exhibited regression of 50-96%. On further investigation, the time required
+to scan the rows from Kudu increased by up to 2X. When investigating this regression we found that
+the Bloom filter predicate that was pushed down was filtering out less than 10% of the rows, leading
+to increased CPU usage in Kudu which outweighed the benefit of the filter. To resolve the regression
+we added a heuristic in Kudu wherein if a Bloom filter predicate is not filtering out a sufficient
+percentage of rows then it’s disabled automatically for the remainder of the scan. This is safe
+because Bloom filters can return false positives and hence false matches returned to the client are
+expected to be filtered out using other deterministic filters.</p>
+
+<h2 id="feature-availability">Feature Availability</h2>
+<p>Users querying Kudu using Impala will have the feature enabled by default from CDP 7.1.5 onward
+and CDP Public Cloud. We highly recommend users upgrade to get this performance enhancement and many
+other performance enhancements in the release. For custom applications that use the Kudu client API
+directly, the Kudu C++ client also has the Bloom filter predicate available from CDP 7.1.5 onward.
+The Kudu Java client does not have the Bloom filter predicate available yet,
+<a href="https://issues.apache.org/jira/browse/KUDU-3221">KUDU-3221</a>.</p>
+
+<h2 id="references">References:</h2>
+<ul>
+  <li>Performance testing related schema and queries:
+<a href="https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4">https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4</a></li>
+  <li>Kudu C++ client documentation:
+<a href="https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94">https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94</a></li>
+  <li>Example code to create and pass Bloom filter predicate:
+<a href="https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416">https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416</a></li>
+  <li>Block based Bloom filter:
+<a href="https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51">https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51</a></li>
+</ul>
+
+<h2 id="acknowledgement">Acknowledgement</h2>
+<p>This feature was implemented jointly by Bankim Bhavsar and Wenzhe Zhou with guidance and feedback
+from Tim Armstrong, Adar Dembo, Thomas Tauber-Marshall, Andrew Wong, and Grant Henke. We are also
+grateful for our customers especially Mauricio Aristizabal from Impact for providing us valuable
+feedback and benchmarks.</p>
+
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-10-1-release.html">Apache Kudu 1.10.1 released</a> </li>
+    
+      <li> <a href="/2019/07/09/apache-kudu-1-10-0-release.html">Apache Kudu 1.10.0 Released</a> </li>
+    
+      <li> <a href="/2019/04/30/location-awareness.html">Location Awareness in Kudu</a> </li>
+    
+      <li> <a href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">Fine-Grained Authorization with Apache Kudu and Impala</a> </li>
+    
+      <li> <a href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">Testing Apache Kudu Applications on the JVM</a> </li>
+    
+      <li> <a href="/2019/03/15/apache-kudu-1-9-0-release.html">Apache Kudu 1.9.0 Released</a> </li>
+    
+      <li> <a href="/2019/03/05/transparent-hierarchical-storage-management-with-apache-kudu-and-impala.html">Transparent Hierarchical Storage Management with Apache Kudu and Impala</a> </li>
+    
+      <li> <a href="/2018/12/11/call-for-posts.html">Call for Posts</a> </li>
+    
+      <li> <a href="/2018/10/26/apache-kudu-1-8-0-released.html">Apache Kudu 1.8.0 Released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2020 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+
