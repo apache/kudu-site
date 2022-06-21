@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Blog</title>
+    <title>Apache Kudu - Apache Kudu 1.16.0 Released</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -114,134 +114,56 @@
 
 <div class="row-fluid">
   <div class="col-lg-9">
-    
-
-<!-- Articles -->
-<article>
+    <article>
   <header>
-    <h1 class="entry-title"><a href="/2017/01/20/apache-kudu-1-2-0-released.html">Apache Kudu 1.2.0 released</a></h1>
-    <p class="meta">Posted 20 Jan 2017 by Todd Lipcon</p>
+    <h1 class="entry-title">Apache Kudu 1.16.0 Released</h1>
+    <p class="meta">Posted 17 Jun 2022 by Attila Bukor</p>
   </header>
   <div class="entry-content">
-    
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.2.0!</p>
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.16.0!</p>
 
-<p>The new release adds several new features and improvements, including:</p>
+<p>The new release adds several new features and improvements, including the
+following:</p>
 
+<!--more-->
 
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2017/01/20/apache-kudu-1-2-0-released.html">Read full post...</a>
-  </div>
-</article>
+<ul>
+  <li>
+    <p>Kudu has a new <code class="language-plaintext highlighter-rouge">/startup</code> page on the web UI where admins can easily track
+startup progress of a Kudu server.</p>
+  </li>
+  <li>
+    <p>It is now possible to change the replication of an existing table, and to
+require a minimum replication factor across a Kudu cluster.</p>
+  </li>
+</ul>
 
+<p>The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the <a href="/releases/1.16.0/docs/release_notes.html">release
+notes</a>.</p>
 
+<p>The Apache Kudu project only publishes source code releases. To build Kudu
+1.16.0, follow these steps:</p>
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/11/15/weekly-update.html">Apache Kudu Weekly Update November 15th, 2016</a></h1>
-    <p class="meta">Posted 15 Nov 2016 by David Alves</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</p>
+<ul>
+  <li>Download the Kudu <a href="/releases/1.16.0">1.16.0 source release</a></li>
+  <li>Follow the instructions in the documentation to build Kudu <a href="/releases/1.16.0/docs/installation.html#build_from_source">1.16.0 from
+source</a></li>
+</ul>
 
+<p>For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are <a href="https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.16.0">now
+available</a>.</p>
 
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/11/15/weekly-update.html">Read full post...</a>
-  </div>
-</article>
+<p>The Python client source is also available on
+<a href="https://pypi.org/project/kudu-python/">PyPI</a>.</p>
 
+<p>Additionally, experimental Docker images are published to
+<a href="https://hub.docker.com/r/apache/kudu">Docker Hub</a>.</p>
 
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/11/01/weekly-update.html">Apache Kudu Weekly Update November 1st, 2016</a></h1>
-    <p class="meta">Posted 01 Nov 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the twenty-third edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/11/01/weekly-update.html">Read full post...</a>
   </div>
 </article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/10/20/weekly-update.html">Apache Kudu Weekly Update October 20th, 2016</a></h1>
-    <p class="meta">Posted 20 Oct 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the twenty-second edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu project.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/10/20/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2016/10/11/weekly-update.html">Apache Kudu Weekly Update October 11th, 2016</a></h1>
-    <p class="meta">Posted 11 Oct 2016 by Todd Lipcon</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Welcome to the twenty-first edition of the Kudu Weekly Update. Astute
-readers will notice that the weekly blog posts have been not-so-weekly
-of late – in fact, it has been nearly two months since the previous post
-as I and others have focused on releases, conferences, etc.</p>
-
-<p>So, rather than covering just this past week, this post will cover highlights
-of the progress since the 1.0 release in mid-September. If you’re interested
-in learning about progress prior to that release, check the
-<a href="http://kudu.apache.org/releases/1.0.0/docs/release_notes.html">release notes</a>.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2016/10/11/weekly-update.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Pagination links -->
-
-<nav>
-  <hr/>
-  <ul class="pager">
-  
-    <li class="previous"><a href="/blog/page/6"><span aria-hidden="true">&larr;</span> Newer posts</a></li>
-  
-  
-    <li class="next"><a href="/blog/page/8">Older posts <span aria-hidden="true">&rarr;</span></a></li>
-  
-  </ul>
-</nav>
 
 
   </div>
