@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Apache Kudu 1.17.0 Released</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png"
+                srcset="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png 1x, //d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://getkudu-slack.herokuapp.com/">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Apache Kudu 1.17.0 Released</h1>
+    <p class="meta">Posted 07 Sep 2023 by Yingchun Lai</p>
+  </header>
+  <div class="entry-content">
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.17.0!</p>
+
+<p>The new release adds several new features and improvements, including the
+following:</p>
+
+<!--more-->
+
+<ul>
+  <li>
+    <p>Kudu now supports encrypting data at rest. Kudu supports <code class="language-plaintext highlighter-rouge">AES-128-CTR</code>, <code class="language-plaintext highlighter-rouge">AES-192-CTR</code>, and
+<code class="language-plaintext highlighter-rouge">AES-256-CTR</code> ciphers to encrypt data, supports Apache Ranger KMS and Apache Hadoop KMS. See
+<a href="https://kudu.apache.org/docs/security.html#_data_at_rest">Data at rest</a> for more details.</p>
+  </li>
+  <li>
+    <p>Kudu now supports range-specific hash schemas for tables. It’s now possible to add ranges with
+their own unique hash schema independent of the table-wide hash schema. This can be done at table
+creation time and while altering the table. It’s controlled by the <code class="language-plaintext highlighter-rouge">--enable_per_range_hash_schemas</code>
+master flag which is enabled by default (see
+<a href="https://issues.apache.org/jira/browse/KUDU-2671">KUDU-2671</a>).</p>
+  </li>
+  <li>
+    <p>Kudu now supports soft-deleted tables. Kudu keeps a soft-deleted table aside for a period of time
+(a.k.a. reservation), not purging the data yet.  The table can be restored/recalled back before its
+reservation expires.  The reservation period can be customized via Kudu client API upon
+soft-deleting the table.  The default reservation period is controlled by the
+<code class="language-plaintext highlighter-rouge">--default_deleted_table_reserve_seconds</code> master’s flag.
+NOTE: As of Kudu 1.17 release, the soft-delete functionality is not supported when HMS integration
+is enabled, but this should be addressed in a future release (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3326">KUDU-3326</a>).</p>
+  </li>
+  <li>
+    <p>Introduced <code class="language-plaintext highlighter-rouge">Auto-Incrementing</code> column. An auto-incrementing column is populated on the server side
+with a monotonically increasing counter. The counter is local to every tablet, i.e. each tablet has
+a separate auto incrementing counter (see
+<a href="https://issues.apache.org/jira/browse/KUDU-1945">KUDU-1945</a>).</p>
+  </li>
+  <li>
+    <p>Kudu now supports experimental non-unique primary key. When a table with non-unique primary key is
+created, an <code class="language-plaintext highlighter-rouge">Auto-Incrementing</code> column named <code class="language-plaintext highlighter-rouge">auto_incrementing_id</code> is added automatically to the
+table as the key column. The non-unique key columns and the <code class="language-plaintext highlighter-rouge">Auto-Incrementing</code> column together form
+the effective primary key (see <a href="https://issues.apache.org/jira/browse/KUDU-1945">KUDU-1945</a>).</p>
+  </li>
+  <li>
+    <p>Introduced <code class="language-plaintext highlighter-rouge">Immutable</code> column. It’s useful to represent a semantically constant entity (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3353">KUDU-3353</a>).</p>
+  </li>
+  <li>
+    <p>An experimental feature is added to Kudu that allows it to automatically rebalance tablet leader
+replicas among tablet servers. The background task can be enabled by setting the
+<code class="language-plaintext highlighter-rouge">--auto_leader_rebalancing_enabled</code> flag on the Kudu masters. By default, the flag is set to ‘false’
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3390">KUDU-3390</a>).</p>
+  </li>
+  <li>
+    <p>Introduced an experimental feature: authentication of Kudu client applications to Kudu servers
+using JSON Web Tokens (JWT).  The JWT-based authentication can be used as an alternative to Kerberos
+authentication for Kudu applications running at edge nodes where configuring Kerberos might be
+cumbersome.  Similar to Kerberos credentials, a JWT is considered a primary client’s credentials.
+The server-side capability of JWT-based authentication is controlled by the
+<code class="language-plaintext highlighter-rouge">--enable_jwt_token_auth</code> flag (set ‘false’ by default).  When the flat set to ‘true’, a Kudu server
+is capable of authenticating Kudu clients using the JWT provided by the client during RPC connection
+negotiation.  From its side, a Kudu client authenticates a Kudu server by verifying its TLS
+certificate.  For the latter to succeed, the client should use Kudu client API to add the cluster’s
+IPKI CA certificate into the list of trusted certificates.</p>
+  </li>
+  <li>
+    <p>The C++ client scan token builder can now create multiple tokens per tablet. So, it’s now possible
+to dynamically scale the set of readers/scanners fetching data from a Kudu table in parallel. To use
+this functionality, use the newly introduced <code class="language-plaintext highlighter-rouge">SetSplitSizeBytes()</code> method of the Kudu client API to
+specify how many bytes of data each token should scan
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3393">KUDU-3393</a>).</p>
+  </li>
+  <li>
+    <p>Kudu’s default replica placement algorithm is now range and table aware to prevent hotspotting
+unlike the old power of two choices algorithm. New replicas from the same range are spread evenly
+across available tablet servers, the table the range belongs to is used as a tiebreaker (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3476">KUDU-3476</a>).</p>
+  </li>
+  <li>
+    <p>Reduce the memory consumption if there are frequent alter schema operations for tablet servers
+(see <a href="https://issues.apache.org/jira/browse/KUDU-3197">KUDU-3197</a>).</p>
+  </li>
+  <li>
+    <p>Reduce the memory consumption by implementing memory budgeting for performing RowSet merge
+compactions (i.e. CompactRowSetsOp maintenance operations). Several flags have been introduced,
+while the <code class="language-plaintext highlighter-rouge">--rowset_compaction_memory_estimate_enabled</code> flag indicates whether to check for
+available memory necessary to run CompactRowSetsOp maintenance operations (see
+<a href="https://issues.apache.org/jira/browse/KUDU-3406">KUDU-3406</a>).</p>
+  </li>
+</ul>
+
+<p>The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the <a href="/releases/1.17.0/docs/release_notes.html">release
+notes</a>.</p>
+
+<p>The Apache Kudu project only publishes source code releases. To build Kudu
+1.17.0, follow these steps:</p>
+
+<ul>
+  <li>Download the Kudu <a href="/releases/1.17.0">1.17.0 source release</a></li>
+  <li>Follow the instructions in the documentation to build Kudu <a href="/releases/1.17.0/docs/installation.html#build_from_source">1.17.0 from
+source</a></li>
+</ul>
+
+<p>For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, and other Java integrations are published to the ASF Maven
+repository and are <a href="https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.17.0">now
+available</a>.</p>
+
+<p>The Python client source is also available on
+<a href="https://pypi.org/project/kudu-python/">PyPI</a>.</p>
+
+<p>Additionally, experimental Docker images are published to
+<a href="https://hub.docker.com/r/apache/kudu">Docker Hub</a>.</p>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
+    
+      <li> <a href="/2019/11/20/apache-kudu-1-10-1-release.html">Apache Kudu 1.10.1 released</a> </li>
+    
+      <li> <a href="/2019/07/09/apache-kudu-1-10-0-release.html">Apache Kudu 1.10.0 Released</a> </li>
+    
+      <li> <a href="/2019/04/30/location-awareness.html">Location Awareness in Kudu</a> </li>
+    
+      <li> <a href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">Fine-Grained Authorization with Apache Kudu and Impala</a> </li>
+    
+      <li> <a href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">Testing Apache Kudu Applications on the JVM</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2023 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+            crossorigin="anonymous"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-68448017-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+
