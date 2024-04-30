@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu 1.11.1 released</title>
+    <title>Apache Kudu - Introducing Auto-incrementing Column in Kudu</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -116,69 +116,176 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu 1.11.1 released</h1>
-    <p class="meta">Posted 20 Nov 2019 by Alexey Serbin</p>
+    <h1 class="entry-title">Introducing Auto-incrementing Column in Kudu</h1>
+    <p class="meta">Posted 07 Mar 2024 by Abhishek Chennaka</p>
   </header>
   <div class="entry-content">
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.11.1!</p>
+    <!--more-->
 
-<p>This release contains a fix which addresses a critical issue discovered in
-1.10.0 and 1.11.0 and adds several new features and improvements since 1.10.0.</p>
+<h1 id="introduction">Introduction</h1>
 
-<!--more-->
+<p>Kudu has a strict requirement for a primary key presence in a table. This is primarily to help in
+point lookups and support DELETE and UPDATE operations on the table data. There are situations where
+users are unable to define a unique primary key in their data set and have to either introduce
+additional columns to be a part of the primary key or define a new column and maintain it to enforce
+uniqueness. Kudu 1.17 has introduced support for the auto-incrementing column to have partially
+defined primary keys (keys which are not unique across the table) during table creation. This way a
+user does not have to worry about the uniqueness constraint when defining a primary key.</p>
 
-<p>Apache Kudu 1.11.1 is a bug fix release which fixes critical issues discovered
-in Apache Kudu 1.11.0. In particular, this release fixes a licensing issue with
-distributing libnuma library with the kudu-binary JAR artifact. Users of
-Kudu 1.11.0 are encouraged to upgrade to 1.11.1 as soon as possible.</p>
+<h1 id="implementation-details">Implementation Details</h1>
 
-<p>Apache Kudu 1.11.1 adds several new features and improvements since
-Apache Kudu 1.10.0, including the following:</p>
+<p>When a primary key is partially defined, Kudu internally creates a new column named
+“auto_incrementing_id” as a part of the primary key. The column is populated with a monotonically
+increasing counter. The system updates the counter value upon every INSERT operation and populates
+the “auto_incrementing_id” column on the server side. The counter is partition-local i.e. every
+tablet has its own counter.</p>
 
-<ul>
-  <li>Kudu now supports putting tablet servers into maintenance mode: while in this
-mode, the tablet server’s replicas will not be re-replicated if the server
-fails. Administrative CLI are added to orchestrate tablet server maintenance
-(see <a href="https://issues.apache.org/jira/browse/KUDU-2069">KUDU-2069</a>).</li>
-  <li>Kudu now has a built-in NTP client which maintains the internal wallclock
-time used for generation of HybridTime timestamps. When enabled, system clock
-synchronization for nodes running Kudu is no longer necessary,
-(see <a href="https://issues.apache.org/jira/browse/KUDU-2935">KUDU-2935</a>).</li>
-  <li>Aggregated table statistics are now available to Kudu clients. This allows
-for various query optimizations. For example, Spark now uses it to perform
-join optimizations
-(see <a href="https://issues.apache.org/jira/browse/KUDU-2797">KUDU-2797</a> and
-<a href="https://issues.apache.org/jira/browse/KUDU-2721">KUDU-2721</a>).</li>
-  <li>The kudu CLI tool now supports creating and dropping range partitions
-for a table
-(see <a href="https://issues.apache.org/jira/browse/KUDU-2881">KUDU-2881</a>).</li>
-  <li>The kudu CLI tool now supports altering and dropping table columns.</li>
-  <li>The kudu CLI tool now supports getting and setting extra configuration
-properties for a table
-(see <a href="https://issues.apache.org/jira/browse/KUDU-2514">KUDU-2514</a>).</li>
-</ul>
+<h2 id="server-side">Server Side</h2>
 
-<p>See the <a href="/releases/1.11.1/docs/release_notes.html">release notes</a> for details.</p>
+<p>When a user writes data into a table with the auto-incrementing column, the server makes sure that
+no INSERT operations have the “auto_incrementing_id” column field value set and populates this
+column value. The highest value of the counter written into the “auto_incrementing_id” column
+until any particular point is stored in memory and this is used to set the column value for the
+next INSERT operation.</p>
 
-<p>The Apache Kudu project only publishes source code releases. To build Kudu
-1.11.1, follow these steps:</p>
+<h2 id="client-side">Client Side</h2>
 
-<ul>
-  <li>Download the Kudu <a href="/releases/1.11.1">1.11.1 source release</a></li>
-  <li>Follow the instructions in the documentation to build Kudu <a href="/releases/1.11.1/docs/installation.html#build_from_source">1.11.1 from
-source</a></li>
-</ul>
+<p>When creating a table without an explicitly defined primary key, users will have to declare the key
+as non-unique. Internally, the client builds a schema with an extra column named
+“auto_incrementing_id” and forwards the request to the server where the table is created. For
+INSERT operations, the user shouldn’t specify the “auto_incrementing_id” column value as it will be
+populated on the server side.</p>
 
-<p>For your convenience, binary JAR files for the Kudu Java client library, Spark
-DataSource, Flume sink, and other Java integrations are published to the ASF
-Maven repository and are <a href="https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.11.1">now
-available</a>.</p>
+<h3 id="impala-integration">Impala Integration</h3>
 
-<p>The Python client source is also available on
-<a href="https://pypi.org/project/kudu-python/">PyPI</a>.</p>
+<p>In Impala, the new column is not exposed to the user by default. This is due to the reason that it
+is not a part of the user table schema. The below query will not return the “auto_incrementing_id”
+column
+SELECT * FROM &lt;tablename&gt;</p>
 
-<p>Additionally experimental Docker images are published to
-<a href="https://hub.docker.com/r/apache/kudu">Docker Hub</a>.</p>
+<p>If the auto-incrementing column’s data is needed, the column name has to be specifically requested.
+The below query will return the column values:
+SELECT *, auto_incrementing_id FROM &lt;tablename&gt;</p>
+
+<h4 id="examples">Examples</h4>
+
+<p>Create a table with two columns and two hash partitions:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU;
+Query: CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU
++-------------------------+
+| summary                 |
++-------------------------+
+| Table has been created. |
++-------------------------+
+Fetched 1 row(s) in 3.94s
+</code></pre></div></div>
+
+<p>Describe the table:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; DESCRIBE demo_table;
+Query: DESCRIBE demo_table
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+| name                 | type   | comment | primary_key | key_unique | nullable | default_value | encoding      | compression         | block_size |
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+| id                   | int    |         | true        | false      | false    |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
+| auto_incrementing_id | bigint |         | true        | false      | false    |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
+| name                 | string |         | false       |            | true     |               | AUTO_ENCODING | DEFAULT_COMPRESSION | 0          |
++----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
+</code></pre></div></div>
+
+<p><br />Insert rows with duplicate partial primary key column values:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
+Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
+..
+Modified 4 row(s), 0 row error(s) in 0.41s
+</code></pre></div></div>
+<p><br />Scan the table (notice the duplicate values in the ‘id’ column):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT * FROM demo_table;
+Query: SELECT * FROM demo_table
+..
++----+------+
+| id | name |
++----+------+
+| 3  | Mary |
+| 1  | John |
+| 1  | Joe  |
+| 2  | Bob  |
++----+------+
+Fetched 4 row(s) in 0.24s
+</code></pre></div></div>
+
+<p>Explicitly specify the auto-incrementing column name to fetch the column values:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT *, auto_incrementing_id FROM demo_table;
+Query: SELECT *, auto_incrementing_id FROM demo_table
+..
++----+------+----------------------+
+| id | name | auto_incrementing_id |
++----+------+----------------------+
+| 3  | Mary | 1                    |
+| 1  | John | 1                    |
+| 1  | Joe  | 2                    |
+| 2  | Bob  | 2                    |
++----+------+----------------------+
+Fetched 4 row(s) in 0.24s
+</code></pre></div></div>
+
+<p>Update and Delete rows:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; UPDATE demo_table SET name='Matt' WHERE id=3;
+Query: UPDATE demo_table SET name='Matt' WHERE id=3
+Modified 1 row(s), 0 row error(s) in 1.99s
+default&gt; UPDATE demo_table SET name='Liam' WHERE id=1;
+Query: UPDATE demo_table SET name='Liam' WHERE id=1
+Modified 2 row(s), 0 row error(s) in 2.15s
+default&gt; DELETE FROM demo_table where id=2;
+Query: DELETE FROM demo_table where id=2;
+Modified 1 row(s), 0 row error(s) in 1.40s
+</code></pre></div></div>
+<p>Scan all the columns of the table:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT *, auto_incrementing_id FROM demo_table;
+Query: SELECT *, auto_incrementing_id FROM demo_table
+..
++----+------+----------------------+
+| id | name | auto_incrementing_id |
++----+------+----------------------+
+| 3  | Matt | 1                    |
+| 1  | Liam | 1                    |
+| 1  | Liam | 2                    |
++----+------+----------------------+
+Fetched 3 row(s) in 0.20s
+</code></pre></div></div>
+<h4 id="limitations">Limitations</h4>
+
+<p>Impala doesn’t support UPSERT operations on tables with the auto-incrementing column as of writing
+this article.</p>
+
+<h3 id="kudu-clientsjava-c-python">Kudu clients(Java, C++, Python)</h3>
+
+<p>Unlike in Impala, scanning the table fetches all the table data including the auto incrementing column.
+There is no need to explicitly request the auto-incrementing column.</p>
+
+<p>There is also support for UPSERT operations but the user has to provide the entire primary key
+including the value for the auto-incrementing column. If the row is present, it will be considered a
+regular UPDATE operation. If the row is not present, it is considered an INSERT operation.</p>
+
+<h4 id="examples-1">Examples</h4>
+
+<p><a href="https://github.com/apache/kudu/blob/master/examples/cpp/non_unique_primary_key.cc">https://github.com/apache/kudu/blob/master/examples/cpp/non_unique_primary_key.cc</a></p>
+
+<p><a href="https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py">https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py</a></p>
+
+<p>##Backup and Restore</p>
+
+<p>The Kudu backup tool from Kudu 1.17 and later supports backing up tables with the
+auto-incrementing column. The prior backup tools will fail with an error message -
+“auto_incrementing_id is a reserved column name” during backup and restore operations.</p>
+
+<p>The backed up data (from Kudu 1.17 and later) includes the auto-incrementing column in the table
+schema and the column values as well. Restoring this backed up table with the Kudu restore tool
+will create a table with the auto-incrementing column and the column values identical to the
+original source table.</p>
 
   </div>
 </article>

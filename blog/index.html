@@ -119,6 +119,25 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a></h1>
+    <p class="meta">Posted 07 Mar 2024 by Abhishek Chennaka</p>
+  </header>
+  <div class="entry-content">
+    
+    
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2024/03/07/introducing-auto-incrementing-column.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a></h1>
     <p class="meta">Posted 07 Sep 2023 by Yingchun Lai</p>
   </header>
@@ -208,42 +227,6 @@ following:</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a></h1>
-    <p class="meta">Posted 15 Jan 2021 by Bankim Bhavsar</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>Note: This is a cross-post from the Cloudera Engineering Blog
-<a href="https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/">Optimized joins &amp; filtering with Bloom filter predicate in Kudu</a></p>
-
-<p>Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0</p>
-
-<h2 id="introduction">Introduction</h2>
-<p>In database systems one of the most effective ways to improve performance is to avoid doing
-unnecessary work, such as network transfers and reading data from disk. One of the ways Apache
-Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate
-filters to Kudu allows for optimized execution by skipping reading column values for filtered out
-rows and reducing network IO between a client, like the distributed query engine Apache Impala, and
-Kudu. See the documentation on
-<a href="https://docs.cloudera.com/runtime/latest/impala-reference/topics/impala-runtime-filtering.html">runtime filtering in Impala</a>
-for details.</p>
-
-<p>CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in
-Kudu and the associated integration in Impala.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2021/01/15/bloom-filter-predicate.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -261,6 +244,8 @@ Kudu and the associated integration in Impala.</p>
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
     
       <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
     
@@ -289,8 +274,6 @@ Kudu and the associated integration in Impala.</p>
       <li> <a href="/2019/04/30/location-awareness.html">Location Awareness in Kudu</a> </li>
     
       <li> <a href="/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html">Fine-Grained Authorization with Apache Kudu and Impala</a> </li>
-    
-      <li> <a href="/2019/03/19/testing-apache-kudu-applications-on-the-jvm.html">Testing Apache Kudu Applications on the JVM</a> </li>
     
     </ul>
   </div>
