@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-04-30T10:59:16-07:00</updated><id>/feed.xml</id><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00-08:00</published><updated>2024-03-07T00:00:00-08:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-05-07T12:20:23-07:00</updated><id>/feed.xml</id><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00-08:00</published><updated>2024-03-07T00:00:00-08:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
 
 &lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
@@ -48,7 +48,6 @@ SELECT *, auto_incrementing_id FROM &amp;lt;tablename&amp;gt;&lt;/p&gt;
 &lt;h4 id=&quot;examples&quot;&gt;Examples&lt;/h4&gt;
 
 &lt;p&gt;Create a table with two columns and two hash partitions:&lt;/p&gt;
-
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU;
 Query: CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU
 +-------------------------+
@@ -60,7 +59,6 @@ Fetched 1 row(s) in 3.94s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Describe the table:&lt;/p&gt;
-
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; DESCRIBE demo_table;
 Query: DESCRIBE demo_table
 +----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
@@ -72,15 +70,14 @@ Query: DESCRIBE demo_table
 +----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;br /&gt;Insert rows with duplicate partial primary key column values:&lt;/p&gt;
-
+&lt;p&gt;Insert rows with duplicate partial primary key column values:&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
 Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
 ..
 Modified 4 row(s), 0 row error(s) in 0.41s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;&lt;br /&gt;Scan the table (notice the duplicate values in the ‘id’ column):&lt;/p&gt;
 
+&lt;p&gt;Scan the table (notice the duplicate values in the ‘id’ column):&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; SELECT * FROM demo_table;
 Query: SELECT * FROM demo_table
 ..
@@ -121,6 +118,7 @@ default&amp;gt; DELETE FROM demo_table where id=2;
 Query: DELETE FROM demo_table where id=2;
 Modified 1 row(s), 0 row error(s) in 1.40s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;p&gt;Scan all the columns of the table:&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; SELECT *, auto_incrementing_id FROM demo_table;
 Query: SELECT *, auto_incrementing_id FROM demo_table
@@ -134,12 +132,13 @@ Query: SELECT *, auto_incrementing_id FROM demo_table
 +----+------+----------------------+
 Fetched 3 row(s) in 0.20s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
 &lt;h4 id=&quot;limitations&quot;&gt;Limitations&lt;/h4&gt;
 
 &lt;p&gt;Impala doesn’t support UPSERT operations on tables with the auto-incrementing column as of writing
 this article.&lt;/p&gt;
 
-&lt;h3 id=&quot;kudu-clientsjava-c-python&quot;&gt;Kudu clients(Java, C++, Python)&lt;/h3&gt;
+&lt;h3 id=&quot;kudu-clients-java-c-python&quot;&gt;Kudu clients (Java, C++, Python)&lt;/h3&gt;
 
 &lt;p&gt;Unlike in Impala, scanning the table fetches all the table data including the auto incrementing column.
 There is no need to explicitly request the auto-incrementing column.&lt;/p&gt;
@@ -154,7 +153,7 @@ regular UPDATE operation. If the row is not present, it is considered an INSERT 
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py&quot;&gt;https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;##Backup and Restore&lt;/p&gt;
+&lt;h2 id=&quot;backup-and-restore&quot;&gt;Backup and Restore&lt;/h2&gt;
 
 &lt;p&gt;The Kudu backup tool from Kudu 1.17 and later supports backing up tables with the
 auto-incrementing column. The prior backup tools will fail with an error message -

@@ -170,7 +170,6 @@ SELECT *, auto_incrementing_id FROM &lt;tablename&gt;</p>
 <h4 id="examples">Examples</h4>
 
 <p>Create a table with two columns and two hash partitions:</p>
-
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU;
 Query: CREATE TABLE demo_table(id INT NON UNIQUE PRIMARY KEY, name STRING) PARTITION BY HASH (id) PARTITIONS 2 STORED AS KUDU
 +-------------------------+
@@ -182,7 +181,6 @@ Fetched 1 row(s) in 3.94s
 </code></pre></div></div>
 
 <p>Describe the table:</p>
-
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; DESCRIBE demo_table;
 Query: DESCRIBE demo_table
 +----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
@@ -194,15 +192,14 @@ Query: DESCRIBE demo_table
 +----------------------+--------+---------+-------------+------------+----------+---------------+---------------+---------------------+------------+
 </code></pre></div></div>
 
-<p><br />Insert rows with duplicate partial primary key column values:</p>
-
+<p>Insert rows with duplicate partial primary key column values:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
 Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
 ..
 Modified 4 row(s), 0 row error(s) in 0.41s
 </code></pre></div></div>
-<p><br />Scan the table (notice the duplicate values in the ‘id’ column):</p>
 
+<p>Scan the table (notice the duplicate values in the ‘id’ column):</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT * FROM demo_table;
 Query: SELECT * FROM demo_table
 ..
@@ -243,6 +240,7 @@ default&gt; DELETE FROM demo_table where id=2;
 Query: DELETE FROM demo_table where id=2;
 Modified 1 row(s), 0 row error(s) in 1.40s
 </code></pre></div></div>
+
 <p>Scan all the columns of the table:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>default&gt; SELECT *, auto_incrementing_id FROM demo_table;
 Query: SELECT *, auto_incrementing_id FROM demo_table
@@ -256,12 +254,13 @@ Query: SELECT *, auto_incrementing_id FROM demo_table
 +----+------+----------------------+
 Fetched 3 row(s) in 0.20s
 </code></pre></div></div>
+
 <h4 id="limitations">Limitations</h4>
 
 <p>Impala doesn’t support UPSERT operations on tables with the auto-incrementing column as of writing
 this article.</p>
 
-<h3 id="kudu-clientsjava-c-python">Kudu clients(Java, C++, Python)</h3>
+<h3 id="kudu-clients-java-c-python">Kudu clients (Java, C++, Python)</h3>
 
 <p>Unlike in Impala, scanning the table fetches all the table data including the auto incrementing column.
 There is no need to explicitly request the auto-incrementing column.</p>
@@ -276,7 +275,7 @@ regular UPDATE operation. If the row is not present, it is considered an INSERT 
 
 <p><a href="https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py">https://github.com/apache/kudu/blob/master/examples/python/basic-python-example/non_unique_primary_key.py</a></p>
 
-<p>##Backup and Restore</p>
+<h2 id="backup-and-restore">Backup and Restore</h2>
 
 <p>The Kudu backup tool from Kudu 1.17 and later supports backing up tables with the
 auto-incrementing column. The prior backup tools will fail with an error message -
