@@ -1,4 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-05-07T12:20:23-07:00</updated><id>/feed.xml</id><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00-08:00</published><updated>2024-03-07T00:00:00-08:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2024-11-25T10:16:06-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00-08:00</published><updated>2024-11-13T00:00:00-08:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
+
+&lt;p&gt;This maintenance release fixes critical bugs and build issues discovered in Apache
+Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as
+possible.&lt;/p&gt;
+
+&lt;p&gt;The changes include the following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Upgraded several thirdparty components either to address CVEs or fix build
+issues discovered with contemporary releases.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Fixed file descriptor leak in encryption-at-rest
+(see https://issues.apache.org/jira/browse/KUDU-3520[KUDU-3520]).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Fixed bug in range-aware tablet replica placement causing Kudu master to crash
+(see https://issues.apache.org/jira/browse/KUDU-3532[KUDU-3532]).&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a few of the fixes, for a more complete list of  improvements and
+fixes please refer to the &lt;a href=&quot;/releases/1.17.1/docs/release_notes.html&quot;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.17.1, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.17.1&quot;&gt;1.17.1 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.17.1/docs/installation.html#build_from_source&quot;&gt;1.17.1 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, Flume sink, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.17.1&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.1! This maintenance release fixes critical bugs and build issues discovered in Apache Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as possible. The changes include the following:</summary></entry><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00-08:00</published><updated>2024-03-07T00:00:00-08:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
 
 &lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
@@ -71,8 +117,8 @@ Query: DESCRIBE demo_table
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Insert rows with duplicate partial primary key column values:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
-Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, &apos;John&apos;), (2, &apos;Bob&apos;), (3, &apos;Mary&apos;), (1, &apos;Joe&apos;);
+Query: INSERT INTO demo_table VALUES (1, &apos;John&apos;), (2, &apos;Bob&apos;), (3, &apos;Mary&apos;), (1, &apos;Joe&apos;)
 ..
 Modified 4 row(s), 0 row error(s) in 0.41s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -108,11 +154,11 @@ Fetched 4 row(s) in 0.24s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Update and Delete rows:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name='Matt' WHERE id=3;
-Query: UPDATE demo_table SET name='Matt' WHERE id=3
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name=&apos;Matt&apos; WHERE id=3;
+Query: UPDATE demo_table SET name=&apos;Matt&apos; WHERE id=3
 Modified 1 row(s), 0 row error(s) in 1.99s
-default&amp;gt; UPDATE demo_table SET name='Liam' WHERE id=1;
-Query: UPDATE demo_table SET name='Liam' WHERE id=1
+default&amp;gt; UPDATE demo_table SET name=&apos;Liam&apos; WHERE id=1;
+Query: UPDATE demo_table SET name=&apos;Liam&apos; WHERE id=1
 Modified 2 row(s), 0 row error(s) in 2.15s
 default&amp;gt; DELETE FROM demo_table where id=2;
 Query: DELETE FROM demo_table where id=2;
@@ -1110,68 +1156,4 @@ did have some reservations about using them and were concerned about support if/
 NiFi and Kudu developers. Huge thank you to all of you who helped us alone the way. You guys are
 amazing and you are building fantastic products!&lt;/p&gt;
 
-&lt;p&gt;To be continued…&lt;/p&gt;</content><author><name>Boris Tyukin</name></author><summary type="html">Note: This is a cross-post from the Boris Tyukin’s personal blog Building Near Real-time Big Data Lake: Part 2 This is the second part of the series. In Part 1 I wrote about our use-case for the Data Lake architecture and shared our success story.</summary></entry><entry><title type="html">Apache Kudu 1.12.0 released</title><link href="/2020/05/18/apache-kudu-1-12-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.12.0 released" /><published>2020-05-18T00:00:00-07:00</published><updated>2020-05-18T00:00:00-07:00</updated><id>/2020/05/18/apache-kudu-1-12-0-release</id><content type="html" xml:base="/2020/05/18/apache-kudu-1-12-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.12.0!&lt;/p&gt;
-
-&lt;p&gt;The new release adds several new features and improvements, including the
-following:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Kudu now supports native fine-grained authorization via integration with
-Apache Ranger. Kudu may now enforce access control policies defined for
-Kudu tables and columns stored in Ranger. See the
-&lt;a href=&quot;/releases/1.12.0/docs/security.html#fine_grained_authz&quot;&gt;authorization documentation&lt;/a&gt;
-for more details.&lt;/li&gt;
-  &lt;li&gt;Kudu’s web UI now supports proxying via Apache Knox. Kudu may be deployed
-in a firewalled state behind a Knox Gateway which will forward HTTP requests
-and responses between clients and the Kudu web UI.&lt;/li&gt;
-  &lt;li&gt;Kudu’s web UI now supports HTTP keep-alive. Operations that access multiple
-URLs will now reuse a single HTTP connection, improving their performance.&lt;/li&gt;
-  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu tserver quiesce&lt;/code&gt; tool is added to quiesce tablet servers. While a
-tablet server is quiescing, it will stop hosting tablet leaders and stop
-serving new scan requests. This can be used to orchestrate a rolling restart
-without stopping on-going Kudu workloads.&lt;/li&gt;
-  &lt;li&gt;Introduced &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;auto&lt;/code&gt; time source for HybridClock timestamps. With
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--time_source=auto&lt;/code&gt; in AWS and GCE cloud environments, Kudu masters and
-tablet servers use the built-in NTP client synchronized with dedicated NTP
-servers available via host-only networks. With &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--time_source=auto&lt;/code&gt; in
-environments other than AWS/GCE, Kudu masters and tablet servers rely on
-their local machine’s clock synchronized by NTP. The default setting for
-the HybridClock time source (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--time_source=system&lt;/code&gt;) is backward-compatible,
-requiring the local machine’s clock to be synchronized by the kernel’s NTP
-discipline.&lt;/li&gt;
-  &lt;li&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu cluster rebalance&lt;/code&gt; tool now supports moving replicas away from
-specific tablet servers by supplying the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--ignored_tservers&lt;/code&gt; and
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--move_replicas_from_ignored_tservers&lt;/code&gt; arguments (see
-&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-2914&quot;&gt;KUDU-2914&lt;/a&gt; for more
-details).&lt;/li&gt;
-  &lt;li&gt;Write Ahead Log file segments and index chunks are now managed by Kudu’s file
-cache. With that, all long-lived file descriptors used by Kudu are managed by
-the file cache, and there’s no longer a need for capacity planning of file
-descriptor usage.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
-features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.12.0/docs/release_notes.html&quot;&gt;release
-notes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
-1.12.0, follow these steps:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.12.0&quot;&gt;1.12.0 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.12.0/docs/installation.html#build_from_source&quot;&gt;1.12.0 from
-source&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
-DataSource, Flume sink, and other Java integrations are published to the ASF
-Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.12.0&quot;&gt;now
-available&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Python client source is also available on
-&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Hao Hao</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.12.0! The new release adds several new features and improvements, including the following:</summary></entry></feed>
+&lt;p&gt;To be continued…&lt;/p&gt;</content><author><name>Boris Tyukin</name></author><summary type="html">Note: This is a cross-post from the Boris Tyukin’s personal blog Building Near Real-time Big Data Lake: Part 2 This is the second part of the series. In Part 1 I wrote about our use-case for the Data Lake architecture and shared our success story.</summary></entry></feed>
