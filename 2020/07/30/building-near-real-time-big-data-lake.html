@@ -7,15 +7,6 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      script-src 'self' https://kudu.apache.org https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com 'unsafe-inline';
-      style-src 'self' https://kudu.apache.org https://fonts.googleapis.com https://maxcdn.bootstrapcdn.com 'unsafe-inline';
-      font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com data:;
-      img-src 'self' https://kudu.apache.org https://d3dr9sfxru4sde.cloudfront.net https://www.apache.org data:;
-      base-uri 'self';
-      form-action 'self';
-    ">
     <title>Apache Kudu - Building Near Real-time Big Data Lake</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -54,8 +45,8 @@
               </button>
               
               <a class="logo" href="/"><img
-                src="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png"
-                srcset="//d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_80px.png 1x, //d3dr9sfxru4sde.cloudfront.net/i/k/apachekudu_logo_0716_160px.png 2x"
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
                 alt="Apache Kudu"/></a>
               
             </div>
@@ -244,9 +235,9 @@ open-source projects, as nothing really prevents you from installing and using a
 product you desire and trust. One of these products for us was Apache NiFi, which proved to be a
 tremendous value.</p>
 
-<p>After a lot of trials and errors, we decided on this architecture:</p>
-
-<p><img src="https://boristyukin.com/content/images/pipelinearchitecture.png" width="100%" /></p>
+<p>After a lot of trials and errors, we decided on this architecture:
+<!--Image downloaded from https://boristyukin.com/content/images/pipelinearchitecture.png-->
+<img src="/img/boristyukin.com/pipelinearchitecture.png" width="100%" /></p>
 
 <p>One of the toughest challenges we faced right away was the fact that most of the Big Data data
 engines were not designed to support mutable data but rather immutable append-only data. All the
@@ -280,7 +271,8 @@ its own blog post!</p>
 NiFi helps orchestrate initial load for hundreds of tables. Actually, this NiFi flow below can
 handle initial ingest of hundreds of tables!</p>
 
-<p><img src="https://boristyukin.com/content/images/nifi_initial.png" width="100%" /></p>
+<!--Image downloaded from https://boristyukin.com/content/images/nifi_initial.png-->
+<p><img src="/img/boristyukin.com/nifi_initial.png" width="100%" /></p>
 
 <p>Our secret sauce though is <a href="http://boristyukin.com/how-to-ingest-a-large-number-of-tables-into-a-big-data-lake-or-why-i-built-metazoo/">MetaZoo</a>.
 MetaZoo generates optimal parameters for Sqoop (such as a number of mappers, split-by column, and so
@@ -331,7 +323,8 @@ without much impact.</p>
 <p>Below is the NiFi flow than handles real-time streaming from Oracle/GoldenGate/Kafka and persists
 data into Kudu:</p>
 
-<p><img src="https://boristyukin.com/content/images/nifi_rt.png" width="100%" /></p>
+<!--Image downloaded from https://boristyukin.com/content/images/nifi_rt.png-->
+<p><img src="/img/boristyukin.com/nifi_rt.png" width="100%" /></p>
 
 <ol>
   <li>NiFi flow consumes Kafka messages, produced by GoldenGate. Every table from every domain has
@@ -366,18 +359,21 @@ scalability of Big Data technology.</p>
 <p>Here, I run a query in Impala to count patients, admitted to our hospitals within the last 7 days,
 who are still in the hospitals (not discharged yet):</p>
 
-<p><img src="https://boristyukin.com/content/images/query1.png" alt="query 1" /></p>
+<!--Image downloaded from https://boristyukin.com/content/images/query1.png-->
+<p><img src="/img/boristyukin.com/query1.png" alt="query 1" /></p>
 
 <p>Then 5 seconds later I run the same query again to see numbers changed - more patients got admitted
 and discharged:</p>
 
-<p><img src="https://boristyukin.com/content/images/query2.png" alt="query 2" />]</p>
+<!--Image downloaded from https://boristyukin.com/content/images/query2.png-->
+<p><img src="/img/boristyukin.com/query2.png" alt="query 2" />]</p>
 
 <p>This query below counts certain clinical events in the 20B row Kudu table (which is updated in near
 real-time). While it takes 28 seconds to finish, this query would never even finish I ran it against
 our Oracle database. It found 13.7B events:</p>
 
-<p><img src="https://boristyukin.com/content/images/query3.png" alt="query 3" /></p>
+<!--Image downloaded from https://boristyukin.com/content/images/query3.png-->
+<p><img src="/img/boristyukin.com/query3.png" alt="query 3" /></p>
 
 <h2 id="credits">Credits</h2>
 <p>Apache Impala, Apache Kudu and Apache NiFi were the pillars of our real-time pipeline. Back in 2017,
@@ -454,7 +450,7 @@ amazing and you are building fantastic products!</p>
         </div>
       </footer>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script>
       // Try to detect touch-screen devices. Note: Many laptops have touch screens.
       $(document).ready(function() {
@@ -465,10 +461,8 @@ amazing and you are building fantastic products!</p>
         }
       });
     </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-            integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
     <script>
       anchors.options = {
         placement: 'right',

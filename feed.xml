@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-02-06T20:45:32-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00-08:00</published><updated>2024-11-13T00:00:00-08:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-02-26T18:48:42-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00-08:00</published><updated>2024-11-13T00:00:00-08:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
 
 &lt;p&gt;This maintenance release fixes critical bugs and build issues discovered in Apache
 Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as
@@ -1011,9 +1011,9 @@ open-source projects, as nothing really prevents you from installing and using a
 product you desire and trust. One of these products for us was Apache NiFi, which proved to be a
 tremendous value.&lt;/p&gt;
 
-&lt;p&gt;After a lot of trials and errors, we decided on this architecture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://boristyukin.com/content/images/pipelinearchitecture.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;After a lot of trials and errors, we decided on this architecture:
+&lt;!--Image downloaded from https://boristyukin.com/content/images/pipelinearchitecture.png--&gt;
+&lt;img src=&quot;/img/boristyukin.com/pipelinearchitecture.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;One of the toughest challenges we faced right away was the fact that most of the Big Data data
 engines were not designed to support mutable data but rather immutable append-only data. All the
@@ -1047,7 +1047,8 @@ its own blog post!&lt;/p&gt;
 NiFi helps orchestrate initial load for hundreds of tables. Actually, this NiFi flow below can
 handle initial ingest of hundreds of tables!&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://boristyukin.com/content/images/nifi_initial.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;
+&lt;!--Image downloaded from https://boristyukin.com/content/images/nifi_initial.png--&gt;
+&lt;p&gt;&lt;img src=&quot;/img/boristyukin.com/nifi_initial.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Our secret sauce though is &lt;a href=&quot;http://boristyukin.com/how-to-ingest-a-large-number-of-tables-into-a-big-data-lake-or-why-i-built-metazoo/&quot;&gt;MetaZoo&lt;/a&gt;.
 MetaZoo generates optimal parameters for Sqoop (such as a number of mappers, split-by column, and so
@@ -1098,7 +1099,8 @@ without much impact.&lt;/p&gt;
 &lt;p&gt;Below is the NiFi flow than handles real-time streaming from Oracle/GoldenGate/Kafka and persists
 data into Kudu:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://boristyukin.com/content/images/nifi_rt.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;
+&lt;!--Image downloaded from https://boristyukin.com/content/images/nifi_rt.png--&gt;
+&lt;p&gt;&lt;img src=&quot;/img/boristyukin.com/nifi_rt.png&quot; width=&quot;100%&quot; /&gt;&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;NiFi flow consumes Kafka messages, produced by GoldenGate. Every table from every domain has
@@ -1133,18 +1135,21 @@ scalability of Big Data technology.&lt;/p&gt;
 &lt;p&gt;Here, I run a query in Impala to count patients, admitted to our hospitals within the last 7 days,
 who are still in the hospitals (not discharged yet):&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://boristyukin.com/content/images/query1.png&quot; alt=&quot;query 1&quot; /&gt;&lt;/p&gt;
+&lt;!--Image downloaded from https://boristyukin.com/content/images/query1.png--&gt;
+&lt;p&gt;&lt;img src=&quot;/img/boristyukin.com/query1.png&quot; alt=&quot;query 1&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Then 5 seconds later I run the same query again to see numbers changed - more patients got admitted
 and discharged:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://boristyukin.com/content/images/query2.png&quot; alt=&quot;query 2&quot; /&gt;]&lt;/p&gt;
+&lt;!--Image downloaded from https://boristyukin.com/content/images/query2.png--&gt;
+&lt;p&gt;&lt;img src=&quot;/img/boristyukin.com/query2.png&quot; alt=&quot;query 2&quot; /&gt;]&lt;/p&gt;
 
 &lt;p&gt;This query below counts certain clinical events in the 20B row Kudu table (which is updated in near
 real-time). While it takes 28 seconds to finish, this query would never even finish I ran it against
 our Oracle database. It found 13.7B events:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;https://boristyukin.com/content/images/query3.png&quot; alt=&quot;query 3&quot; /&gt;&lt;/p&gt;
+&lt;!--Image downloaded from https://boristyukin.com/content/images/query3.png--&gt;
+&lt;p&gt;&lt;img src=&quot;/img/boristyukin.com/query3.png&quot; alt=&quot;query 3&quot; /&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;credits&quot;&gt;Credits&lt;/h2&gt;
 &lt;p&gt;Apache Impala, Apache Kudu and Apache NiFi were the pillars of our real-time pipeline. Back in 2017,
