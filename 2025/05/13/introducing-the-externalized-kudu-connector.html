@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
     <meta name="author" content="Cloudera" />
-    <title>Apache Kudu - Apache Kudu (incubating) Weekly Update May 9, 2016</title>
+    <title>Apache Kudu - Introducing the Externalized Kudu Connector</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
 
@@ -109,62 +109,105 @@
   <div class="col-lg-9">
     <article>
   <header>
-    <h1 class="entry-title">Apache Kudu (incubating) Weekly Update May 9, 2016</h1>
-    <p class="meta">Posted 09 May 2016 by Jean-Daniel Cryans</p>
+    <h1 class="entry-title">Introducing the Externalized Kudu Connector</h1>
+    <p class="meta">Posted 13 May 2025 by Ferenc Csaky</p>
   </header>
   <div class="entry-content">
-    <p>Welcome to the eighth edition of the Kudu Weekly Update. This weekly blog post
-covers ongoing development and news in the Apache Kudu (incubating) project.</p>
+    <p>Note: This is a cross-post from the Apache Flink blog <a href="https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/">Introducing the Externalized Kudu Connector</a></p>
+
+<p>We are pleased to announce the revival of a connector that makes it possible for Flink to interact with <a href="https://kudu.apache.org/">Apache Kudu</a>.
+The original connector existed as part of the <a href="https://bahir.apache.org/#home">Apache Bahir</a> project, which was moved into the attic.
+Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model.
+For more information about the externalization process, see <a href="https://cwiki.apache.org/confluence/display/FLINK/FLIP-439%3A+Externalize+Kudu+Connector+from+Bahir">FLIP-439</a>.</p>
 
 <!--more-->
 
-<p>If you find this post useful, please let us know by emailing the
-<a href="mailto:user@kudu.incubator.apache.org">kudu-user mailing list</a> or
-tweeting at <a href="https://twitter.com/ApacheKudu">@ApacheKudu</a>. Similarly, if you’re
-aware of some Kudu news we missed, let us know so we can cover it in
-a future post.</p>
-
-<h2 id="development-discussions-and-code-in-progress">Development discussions and code in progress</h2>
+<h1 id="highlights">Highlights</h1>
 
 <ul>
-  <li>
-    <p>Sameer Abhyankar posted a <a href="http://gerrit.cloudera.org:8080/#/c/2986/">patch</a>
-for <a href="https://issues.apache.org/jira/browse/KUDU-1363">KUDU-1363</a>
-that adds the ability to specify
-<a href="http://www.w3schools.com/sql/sql_in.asp">IN</a>-like predicates on column values.</p>
-  </li>
-  <li>
-    <p>Chris George and Andy Grove have both been adding new features in Kudu’s
-Spark module such as methods to <a href="http://gerrit.cloudera.org:8080/#/c/2981/">create/delete tables</a>
-and <a href="http://gerrit.cloudera.org:8080/#/c/2992/">insert/update rows in the DataSource</a>.</p>
-  </li>
-  <li>
-    <p>Todd Lipcon <a href="https://issues.apache.org/jira/browse/KUDU-1437">fixed a bug</a> in RLE
-encoding that was reported by Przemyslaw Maciolek. Thank you Przemyslaw for
-reporting it and providing an easy way to reproduce it!</p>
-  </li>
-  <li>
-    <p>Adar Dembo is currently working on addressing the
-<a href="https://github.com/cloudera/kudu/blob/master/docs/design-docs/multi-master-1.0.md">issues with multi-master</a>
-and early last week he got <a href="http://gerrit.cloudera.org:8080/2879">a</a>
-<a href="http://gerrit.cloudera.org:8080/2928">few</a> <a href="http://gerrit.cloudera.org:8080/2891">patches</a>
-in that address some race conditions.</p>
-  </li>
-  <li>
-    <p>Zhen Zhang got <a href="http://gerrit.cloudera.org:8080/#/c/2858/">a first contribution</a>
-in with a patch that adds statistics in the Java client. In 0.9.0 it will be
-possible to query the client to get things like the number of bytes written or
-how many write operations were sent.</p>
-  </li>
+  <li>The connector is built on the already existing Apache Bahir code.</li>
+  <li>The existing DataStream connector is updated to Sink V2 API.</li>
+  <li>New DataStream Source API connector implementation.</li>
+  <li>The Table API source and sink connectors are now using the new Schema stack.</li>
+  <li>The first released connector version is <em>2.0.0</em>, and it supports <em>Flink 1.19</em>, and <em>1.20</em>.</li>
 </ul>
 
-<h2 id="upcoming-talks-and-meetups">Upcoming talks and meetups</h2>
+<h1 id="datastream-source-api">DataStream Source API</h1>
 
+<p>The Source API implementation is a net new addition to the externalized connector, and it brings some interesting features.
+Although Kudu itself is a bounded source, the Kudu Source implementation supports to configure boundedness, and can run in <code class="language-plaintext highlighter-rouge">CONTINUOUS_UNBOUNDED</code> mode.
+In <code class="language-plaintext highlighter-rouge">CONTINUOUS_UNBOUNDED</code> mode, the source operates similarly to a Change Data Capture (CDC) system.
+When the job starts, it takes a snapshot of the source table and records the snapshot timestamp.
+After that, it performs periodic differential scans, capturing only the changes that occurred since the last scan.
+The frequency of these scans is determined by the <code class="language-plaintext highlighter-rouge">.setDiscoveryPeriod(Duration)</code> setting.
+The following example demonstrates how to stream data from a Kudu table, capturing updates every one minute.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">KuduSource</span><span class="o">&lt;</span><span class="nc">Row</span><span class="o">&gt;</span> <span class="n">source</span> <span class="o">=</span>
+        <span class="nc">KuduSource</span><span class="o">.&lt;</span><span class="nc">Row</span><span class="o">&gt;</span><span class="n">builder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">setTableInfo</span><span class="o">(...)</span>
+                <span class="o">.</span><span class="na">setReaderConfig</span><span class="o">(...)</span>
+                <span class="o">.</span><span class="na">setRowResultConverter</span><span class="o">(</span><span class="k">new</span> <span class="nc">RowResultRowConverter</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">setBoundedness</span><span class="o">(</span><span class="nc">Boundedness</span><span class="o">.</span><span class="na">CONTINUOUS_UNBOUNDED</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">setDiscoveryPeriod</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="na">ofMinutes</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</code></pre></div></div>
+
+<p>For more details and examples, see the <a href="https://nightlies.apache.org/flink/flink-docs-lts/docs/connectors/datastream/kudu/">DataStream connector documentation</a></p>
+
+<h1 id="table-api-catalog">Table API Catalog</h1>
+
+<p>The connector includes a catalog implementation designed to manage metadata for your Kudu setup and facilitate table operations.
+With the Kudu catalog, you can access all existing Kudu tables directly through Flink SQL queries.
+Such catalog can be defined in Flink SQL, as part of the Java application, or via a YAML catalog descriptor as well.
+The below example shows a minimal example in Filnk SQL.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">CATALOG</span> <span class="n">my_kudu_catalog</span> <span class="k">WITH</span><span class="p">(</span>
+    <span class="s1">'type'</span> <span class="o">=</span> <span class="s1">'kudu'</span><span class="p">,</span>
+    <span class="s1">'masters'</span> <span class="o">=</span> <span class="s1">'localhost:7051'</span><span class="p">,</span>
+    <span class="s1">'default-database'</span> <span class="o">=</span> <span class="s1">'default_database'</span>
+<span class="p">);</span>
+
+<span class="n">USE</span> <span class="k">CATALOG</span> <span class="n">my_kudu_catalog</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>For other Table API related topics and examples, see the <a href="https://nightlies.apache.org/flink/flink-docs-lts/docs/connectors/table/kudu/">Table API connector documentation</a></p>
+
+<h1 id="release-notes">Release Notes</h1>
+
+<h2 id="sub-task">Sub-task</h2>
 <ul>
-  <li>Dan Burkert and Mike Percy will present Kudu at the
-<a href="http://www.meetup.com/Vancouver-Spark/events/229692936/">Vancouver Spark Meetup</a> in Vancouver, BC,
-on May 10.</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-34929">FLINK-34929</a>] - Create “flink-connector-kudu” repository</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-34930">FLINK-34930</a>] - Move existing Kudu connector code from Bahir repo to dedicated repo</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-34931">FLINK-34931</a>] - Update Kudu DataStream connector to use Sink V2</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-35114">FLINK-35114</a>] - Remove old Table API implementations, update Schema stack</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-35350">FLINK-35350</a>] - Add documentation for Kudu connector</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37389">FLINK-37389</a>] - Add “flink-sql-connector-kudu” module</li>
 </ul>
+
+<h2 id="new-feature">New Feature</h2>
+<ul>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-36855">FLINK-36855</a>] - Implement Source API in Kudu connector</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37527">FLINK-37527</a>] - Add <code class="language-plaintext highlighter-rouge">KuduSource</code> documentation</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37664">FLINK-37664</a>] - Integrate Kudu connector docs</li>
+</ul>
+
+<h2 id="improvement">Improvement</h2>
+<ul>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-36839">FLINK-36839</a>] - Update Kudu version to 1.17.1</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37190">FLINK-37190</a>] - Make Kudu <code class="language-plaintext highlighter-rouge">FlushMode</code> configurable in Flink SQL</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37230">FLINK-37230</a>] - Consolidate Kudu connector table options</li>
+  <li>[<a href="https://issues.apache.org/jira/browse/FLINK-37237">FLINK-37237</a>] - Improve Kudu table creation based on Flink SQL <code class="language-plaintext highlighter-rouge">CREATE TABLE</code></li>
+</ul>
+
+<h1 id="list-of-contributors">List of Contributors</h1>
+
+<p>Ferenc Csaky, Martijn Visser, Marton Greber</p>
+
+<h1 id="resources">Resources</h1>
+
+<p>Connector GitHub repository: <a href="https://github.com/apache/flink-connector-kudu">https://github.com/apache/flink-connector-kudu</a></p>
+
+<p>Maven Central link: <a href="https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu">https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu</a></p>
 
   </div>
 </article>
