@@ -1,4 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-05-19T12:07:01+00:00</updated><id>/feed.xml</id><entry><title type="html">Introducing the Externalized Kudu Connector</title><link href="/2025/05/13/introducing-the-externalized-kudu-connector.html" rel="alternate" type="text/html" title="Introducing the Externalized Kudu Connector" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>/2025/05/13/introducing-the-externalized-kudu-connector</id><content type="html" xml:base="/2025/05/13/introducing-the-externalized-kudu-connector.html">&lt;p&gt;Note: This is a cross-post from the Apache Flink blog &lt;a href=&quot;https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/&quot;&gt;Introducing the Externalized Kudu Connector&lt;/a&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-07-14T10:58:23-07:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.18.0 Released</title><link href="/2025/07/10/apache-kudu-1-18-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.0 Released" /><published>2025-07-10T00:00:00-07:00</published><updated>2025-07-10T00:00:00-07:00</updated><id>/2025/07/10/apache-kudu-1-18-0-release</id><content type="html" xml:base="/2025/07/10/apache-kudu-1-18-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.0!&lt;/p&gt;
+
+&lt;p&gt;The new release adds several new features and improvements, including the following:&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Segmented LRU Block Cache (Experimental):&lt;/strong&gt;
+Helps protect hot data from eviction during large scans.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Embedded RocksDB for Metadata (Experimental):&lt;/strong&gt;
+A new option to store metadata in embedded RocksDB for better scalability.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Auto-Incrementing Columns Enhancements:&lt;/strong&gt;
+These columns are now correctly restored on backup/restore and initialized on bootstrap.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Improved Metrics &amp;amp; Observability:&lt;/strong&gt;
+Added metrics for timeouts, tablet scans, RPC backlogs, and more as well as Prometheus
+support for tablet-level metrics.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Build and Platform Updates:&lt;/strong&gt;
+Kudu now supports &lt;strong&gt;AArch64 Ubuntu/RedHat&lt;/strong&gt;, &lt;strong&gt;Ubuntu24.04&lt;/strong&gt; and builds on &lt;strong&gt;macOS Sonoma (Xcode 15)&lt;/strong&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Java &amp;amp; Python Client Improvements:&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Python: simplified installation, UPSERT IGNORE, soft-deletes, immutable columns&lt;/li&gt;
+      &lt;li&gt;Java: configurable buffer size, better schema update handling&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Security Enhancements:&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Improvements in JWT authentication&lt;/li&gt;
+      &lt;li&gt;Dedicated SPNEGO keytab for embedded webserver&lt;/li&gt;
+      &lt;li&gt;HTTP headers for enhanced security of the embedded webserver&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Kudu CLI &amp;amp; Tooling Improvements:&lt;/strong&gt;
+Better error messages and handling in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu table copy&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;scan&lt;/code&gt;, and others.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.18.0/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.18.0, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.18.0&quot;&gt;1.18.0 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.18.0/docs/installation.html#build_from_source&quot;&gt;1.18.0 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.18.0&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Introducing the Externalized Kudu Connector</title><link href="/2025/05/13/introducing-the-externalized-kudu-connector.html" rel="alternate" type="text/html" title="Introducing the Externalized Kudu Connector" /><published>2025-05-13T00:00:00-07:00</published><updated>2025-05-13T00:00:00-07:00</updated><id>/2025/05/13/introducing-the-externalized-kudu-connector</id><content type="html" xml:base="/2025/05/13/introducing-the-externalized-kudu-connector.html">&lt;p&gt;Note: This is a cross-post from the Apache Flink blog &lt;a href=&quot;https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/&quot;&gt;Introducing the Externalized Kudu Connector&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;We are pleased to announce the revival of a connector that makes it possible for Flink to interact with &lt;a href=&quot;https://kudu.apache.org/&quot;&gt;Apache Kudu&lt;/a&gt;.
 The original connector existed as part of the &lt;a href=&quot;https://bahir.apache.org/#home&quot;&gt;Apache Bahir&lt;/a&gt; project, which was moved into the attic.
@@ -47,9 +114,9 @@ Such catalog can be defined in Flink SQL, as part of the Java application, or vi
 The below example shows a minimal example in Filnk SQL.&lt;/p&gt;
 
 &lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CATALOG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_kudu_catalog&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;'type'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'kudu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;'masters'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'localhost:7051'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;'default-database'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'default_database'&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&apos;type&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;kudu&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&apos;masters&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;localhost:7051&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;&apos;default-database&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;default_database&apos;&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
 &lt;span class=&quot;n&quot;&gt;USE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CATALOG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_kudu_catalog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -92,7 +159,7 @@ The below example shows a minimal example in Filnk SQL.&lt;/p&gt;
 
 &lt;p&gt;Connector GitHub repository: &lt;a href=&quot;https://github.com/apache/flink-connector-kudu&quot;&gt;https://github.com/apache/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Maven Central link: &lt;a href=&quot;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&quot;&gt;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;</content><author><name>Ferenc Csaky</name></author><summary type="html">Note: This is a cross-post from the Apache Flink blog Introducing the Externalized Kudu Connector We are pleased to announce the revival of a connector that makes it possible for Flink to interact with Apache Kudu. The original connector existed as part of the Apache Bahir project, which was moved into the attic. Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model. For more information about the externalization process, see FLIP-439.</summary></entry><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00+00:00</published><updated>2024-11-13T00:00:00+00:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
+&lt;p&gt;Maven Central link: &lt;a href=&quot;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&quot;&gt;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;</content><author><name>Ferenc Csaky</name></author><summary type="html">Note: This is a cross-post from the Apache Flink blog Introducing the Externalized Kudu Connector We are pleased to announce the revival of a connector that makes it possible for Flink to interact with Apache Kudu. The original connector existed as part of the Apache Bahir project, which was moved into the attic. Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model. For more information about the externalization process, see FLIP-439.</summary></entry><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00-08:00</published><updated>2024-11-13T00:00:00-08:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
 
 &lt;p&gt;This maintenance release fixes critical bugs and build issues discovered in Apache
 Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as
@@ -138,7 +205,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.1! This maintenance release fixes critical bugs and build issues discovered in Apache Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as possible. The changes include the following:</summary></entry><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00+00:00</published><updated>2024-03-07T00:00:00+00:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.1! This maintenance release fixes critical bugs and build issues discovered in Apache Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as possible. The changes include the following:</summary></entry><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00-08:00</published><updated>2024-03-07T00:00:00-08:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
 
 &lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
@@ -211,8 +278,8 @@ Query: DESCRIBE demo_table
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Insert rows with duplicate partial primary key column values:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
-Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, &apos;John&apos;), (2, &apos;Bob&apos;), (3, &apos;Mary&apos;), (1, &apos;Joe&apos;);
+Query: INSERT INTO demo_table VALUES (1, &apos;John&apos;), (2, &apos;Bob&apos;), (3, &apos;Mary&apos;), (1, &apos;Joe&apos;)
 ..
 Modified 4 row(s), 0 row error(s) in 0.41s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -248,11 +315,11 @@ Fetched 4 row(s) in 0.24s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Update and Delete rows:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name='Matt' WHERE id=3;
-Query: UPDATE demo_table SET name='Matt' WHERE id=3
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name=&apos;Matt&apos; WHERE id=3;
+Query: UPDATE demo_table SET name=&apos;Matt&apos; WHERE id=3
 Modified 1 row(s), 0 row error(s) in 1.99s
-default&amp;gt; UPDATE demo_table SET name='Liam' WHERE id=1;
-Query: UPDATE demo_table SET name='Liam' WHERE id=1
+default&amp;gt; UPDATE demo_table SET name=&apos;Liam&apos; WHERE id=1;
+Query: UPDATE demo_table SET name=&apos;Liam&apos; WHERE id=1
 Modified 2 row(s), 0 row error(s) in 2.15s
 default&amp;gt; DELETE FROM demo_table where id=2;
 Query: DELETE FROM demo_table where id=2;
@@ -302,7 +369,7 @@ auto-incrementing column. The prior backup tools will fail with an error message
 &lt;p&gt;The backed up data (from Kudu 1.17 and later) includes the auto-incrementing column in the table
 schema and the column values as well. Restoring this backed up table with the Kudu restore tool
 will create a table with the auto-incrementing column and the column values identical to the
-original source table.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html"></summary></entry><entry><title type="html">Apache Kudu 1.17.0 Released</title><link href="/2023/09/07/apache-kudu-1-17-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.0 Released" /><published>2023-09-07T00:00:00+00:00</published><updated>2023-09-07T00:00:00+00:00</updated><id>/2023/09/07/apache-kudu-1-17-0-released</id><content type="html" xml:base="/2023/09/07/apache-kudu-1-17-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.0!&lt;/p&gt;
+original source table.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html"></summary></entry><entry><title type="html">Apache Kudu 1.17.0 Released</title><link href="/2023/09/07/apache-kudu-1-17-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.0 Released" /><published>2023-09-07T00:00:00-07:00</published><updated>2023-09-07T00:00:00-07:00</updated><id>/2023/09/07/apache-kudu-1-17-0-released</id><content type="html" xml:base="/2023/09/07/apache-kudu-1-17-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -414,7 +481,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Yingchun Lai</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.16.0 Released</title><link href="/2022/06/17/apache-kudu-1-16-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.16.0 Released" /><published>2022-06-17T00:00:00+00:00</published><updated>2022-06-17T00:00:00+00:00</updated><id>/2022/06/17/apache-kudu-1-16-0-released</id><content type="html" xml:base="/2022/06/17/apache-kudu-1-16-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.16.0!&lt;/p&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Yingchun Lai</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.16.0 Released</title><link href="/2022/06/17/apache-kudu-1-16-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.16.0 Released" /><published>2022-06-17T00:00:00-07:00</published><updated>2022-06-17T00:00:00-07:00</updated><id>/2022/06/17/apache-kudu-1-16-0-released</id><content type="html" xml:base="/2022/06/17/apache-kudu-1-16-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.16.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -454,7 +521,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.16.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.15.0 Released</title><link href="/2021/06/22/apache-kudu-1-15-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.15.0 Released" /><published>2021-06-22T00:00:00+00:00</published><updated>2021-06-22T00:00:00+00:00</updated><id>/2021/06/22/apache-kudu-1-15-0-released</id><content type="html" xml:base="/2021/06/22/apache-kudu-1-15-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.15.0!&lt;/p&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.16.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.15.0 Released</title><link href="/2021/06/22/apache-kudu-1-15-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.15.0 Released" /><published>2021-06-22T00:00:00-07:00</published><updated>2021-06-22T00:00:00-07:00</updated><id>/2021/06/22/apache-kudu-1-15-0-released</id><content type="html" xml:base="/2021/06/22/apache-kudu-1-15-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.15.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -528,7 +595,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
 &lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.15.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.14.0 Released</title><link href="/2021/01/28/apache-kudu-1-14-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.14.0 Released" /><published>2021-01-28T00:00:00+00:00</published><updated>2021-01-28T00:00:00+00:00</updated><id>/2021/01/28/apache-kudu-1-14-0-release</id><content type="html" xml:base="/2021/01/28/apache-kudu-1-14-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.14.0!&lt;/p&gt;
+architectures (ARM).&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.15.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.14.0 Released</title><link href="/2021/01/28/apache-kudu-1-14-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.14.0 Released" /><published>2021-01-28T00:00:00-08:00</published><updated>2021-01-28T00:00:00-08:00</updated><id>/2021/01/28/apache-kudu-1-14-0-release</id><content type="html" xml:base="/2021/01/28/apache-kudu-1-14-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.14.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -601,7 +668,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
 &lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00+00:00</published><updated>2021-01-15T00:00:00+00:00</updated><id>/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
+architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00-08:00</published><updated>2021-01-15T00:00:00-08:00</updated><id>/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
 &lt;a href=&quot;https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/&quot;&gt;Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0&lt;/p&gt;
@@ -737,7 +804,7 @@ The Kudu Java client does not have the Bloom filter predicate available yet,
 &lt;p&gt;This feature was implemented jointly by Bankim Bhavsar and Wenzhe Zhou with guidance and feedback
 from Tim Armstrong, Adar Dembo, Thomas Tauber-Marshall, Andrew Wong, and Grant Henke. We are also
 grateful for our customers especially Mauricio Aristizabal from Impact for providing us valuable
-feedback and benchmarks.&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0 Introduction In database systems one of the most effective ways to improve performance is to avoid doing unnecessary work, such as network transfers and reading data from disk. One of the ways Apache Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate filters to Kudu allows for optimized execution by skipping reading column values for filtered out rows and reducing network IO between a client, like the distributed query engine Apache Impala, and Kudu. See the documentation on runtime filtering in Impala for details. CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in Kudu and the associated integration in Impala.</summary></entry><entry><title type="html">Apache Kudu 1.13.0 released</title><link href="/2020/09/21/apache-kudu-1-13-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.13.0 released" /><published>2020-09-21T00:00:00+00:00</published><updated>2020-09-21T00:00:00+00:00</updated><id>/2020/09/21/apache-kudu-1-13-0-release</id><content type="html" xml:base="/2020/09/21/apache-kudu-1-13-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.13.0!&lt;/p&gt;
+feedback and benchmarks.&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0 Introduction In database systems one of the most effective ways to improve performance is to avoid doing unnecessary work, such as network transfers and reading data from disk. One of the ways Apache Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate filters to Kudu allows for optimized execution by skipping reading column values for filtered out rows and reducing network IO between a client, like the distributed query engine Apache Impala, and Kudu. See the documentation on runtime filtering in Impala for details. CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in Kudu and the associated integration in Impala.</summary></entry><entry><title type="html">Apache Kudu 1.13.0 released</title><link href="/2020/09/21/apache-kudu-1-13-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.13.0 released" /><published>2020-09-21T00:00:00-07:00</published><updated>2020-09-21T00:00:00-07:00</updated><id>/2020/09/21/apache-kudu-1-13-0-release</id><content type="html" xml:base="/2020/09/21/apache-kudu-1-13-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.13.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -786,208 +853,4 @@ available&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
 &lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.13.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</title><link href="/2020/08/11/fine-grained-authz-ranger.html" rel="alternate" type="text/html" title="Fine-Grained Authorization with Apache Kudu and Apache Ranger" /><published>2020-08-11T00:00:00+00:00</published><updated>2020-08-11T00:00:00+00:00</updated><id>/2020/08/11/fine-grained-authz-ranger</id><content type="html" xml:base="/2020/08/11/fine-grained-authz-ranger.html">&lt;p&gt;When Apache Kudu was first released in September 2016, it didn’t support any
-kind of authorization. Anyone who could access the cluster could do anything
-they wanted. To remedy this, coarse-grained authorization was added along with
-authentication in Kudu 1.3.0. This meant allowing only certain users to access
-Kudu, but those who were allowed access could still do whatever they wanted. The
-only way to achieve finer-grained access control was to limit access to Apache
-Impala where access control &lt;a href=&quot;/2019/04/22/fine-grained-authorization-with-apache-kudu-and-impala.html&quot;&gt;could be enforced&lt;/a&gt; by
-fine-grained policies in Apache Sentry. This method limited how Kudu could be
-accessed, so we saw a need to implement fine-grained access control in a way
-that wouldn’t limit access to Impala only.&lt;/p&gt;
-
-&lt;p&gt;Kudu 1.10.0 integrated with Apache Sentry to enable finer-grained authorization
-policies. This integration was rather short-lived as it was deprecated in Kudu
-1.12.0 and will be completely removed in Kudu 1.13.0.&lt;/p&gt;
-
-&lt;p&gt;Most recently, since 1.12.0 Kudu supports fine-grained authorization by
-integrating with Apache Ranger 2.1 and later. In this post, we’ll cover how this
-works and how to set it up.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;how-it-works&quot;&gt;How it works&lt;/h2&gt;
-
-&lt;p&gt;Ranger supports a wide range of software across the Apache Hadoop ecosystem, but
-unlike Sentry, it doesn’t depend on any of them for fine-grained authorization,
-making it an ideal choice for Kudu.&lt;/p&gt;
-
-&lt;p&gt;Ranger consists of an Admin server that has a web UI and a REST API where admins
-can create policies. The policies are stored in a database (supported database
-systems are Microsoft SQL Server, MySQL, Oracle, PostgreSQL, and SQL Anywhere)
-and are periodically fetched and cached by the Ranger plugin that runs on the
-Kudu Masters. The Ranger plugin is responsible for authorizing the requests
-against the cached policies. At the time of writing this post, the Ranger plugin
-base is available only in Java, as most Hadoop ecosystem projects, including
-Ranger, are written in Java.&lt;/p&gt;
-
-&lt;p&gt;Unlike Sentry’s client which we reimplemented in C++, the Ranger plugin is a fat
-client that handles the evaluation of the policies (which are much richer and
-more complex than Sentry policies) locally, so we decided not to reimplement it
-in C++.&lt;/p&gt;
-
-&lt;p&gt;Each Kudu Master spawns a JVM child process that is effectively a wrapper around
-the Ranger plugin and communicates with it via named pipes.&lt;/p&gt;
-
-&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
-
-&lt;p&gt;This post assumes the Admin Tool of a compatible Ranger version is
-&lt;a href=&quot;https://ranger.apache.org/quick_start_guide.html&quot;&gt;installed&lt;/a&gt; on a host that is
-reachable by both you and by all Kudu Master servers.&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: At the time of writing this post, Ranger 2.0 is the most recent release
-which does NOT support Kudu yet. Ranger 2.1 will be the first version that
-supports Kudu. If you wish to use Kudu with Ranger before this is released, you
-either need to build Ranger from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;master&lt;/code&gt; branch or use a distribution that
-has already backported the relevant bits
-(&lt;a href=&quot;https://issues.apache.org/jira/browse/RANGER-2684&quot;&gt;RANGER-2684&lt;/a&gt;:
-0b23df7801062cc7836f2e162e1775101898add4).&lt;/p&gt;
-
-&lt;p&gt;To enable Ranger integration in Kudu, Java 8 or later has to be available on the
-Master servers.&lt;/p&gt;
-
-&lt;p&gt;You can build the Ranger subprocess by navigating to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;java/&lt;/code&gt; inside the Kudu
-source directory, then running the below command:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;./gradlew :kudu-subprocess:jar&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;This will build the subprocess JAR which you can find in the
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-subprocess/build/libs&lt;/code&gt; directory.&lt;/p&gt;
-
-&lt;h2 id=&quot;setting-up-kudu-with-ranger&quot;&gt;Setting up Kudu with Ranger&lt;/h2&gt;
-
-&lt;p&gt;The first step is to add Kudu in Ranger Admin and set &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tag.download.auth.users&lt;/code&gt;
-and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;policy.download.auth.users&lt;/code&gt; to the user or service principal name running
-the Kudu process (typically &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu&lt;/code&gt;). The former is for downloading tag-based
-policies which Kudu doesn’t currently support, so this is only for forward
-compatibility and can be safely omitted.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/blog-ranger/create-service.png&quot; alt=&quot;create-service&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Next, you’ll have to configure the Ranger plugin. As it’s written in Java and is
-part of the Hadoop ecosystem, it expects to find a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core-site.xml&lt;/code&gt; in its
-classpath that at a minimum configures the authentication types (simple or
-Kerberos) and the group mapping. If your Kudu is co-located with a Hadoop
-cluster, you can simply use your Hadoop’s &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core-site.xml&lt;/code&gt; and it should work.
-Otherwise, you can use the below sample &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core-site.xml&lt;/code&gt; assuming you have
-Kerberos enabled and shell-based groups mapping works for you:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;hadoop.security.authentication&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;kerberos&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;hadoop.security.group.mapping&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;org.apache.hadoop.security.ShellBasedUnixGroupsMapping&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;In addition to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;core-site.xml&lt;/code&gt; file, you’ll also need a
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger-kudu-security.xml&lt;/code&gt; in the same directory that looks like this:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;ranger.plugin.kudu.policy.cache.dir&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;/path/to/policy/cache/&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;ranger.plugin.kudu.service.name&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;kudu&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;ranger.plugin.kudu.policy.rest.url&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;http://ranger-admin:6080&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;ranger.plugin.kudu.policy.source.impl&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;org.apache.ranger.admin.client.RangerAdminRESTClient&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;ranger.plugin.kudu.policy.pollIntervalMs&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;30000&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;property&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;ranger.plugin.kudu.access.cluster.name&lt;span class=&quot;nt&quot;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;value&amp;gt;&lt;/span&gt;Cluster 1&lt;span class=&quot;nt&quot;&gt;&amp;lt;/value&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/property&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger.plugin.kudu.policy.cache.dir&lt;/code&gt; - A directory that is writable by the
-user running the Master process where the plugin will cache the policies it
-fetches from Ranger Admin.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger.plugin.kudu.service.name&lt;/code&gt; - This needs to be set to whatever the
-service name was set to on Ranger Admin.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger.plugin.kudu.policiy.rest.url&lt;/code&gt; - The URL of the Ranger Admin REST API.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger.plugin.kudu.policy.source.impl&lt;/code&gt; - This should always be
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;org.apache.ranger.admin.client.RangerAdminRESTClient&lt;/code&gt;.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger.plugin.kudu.policy.pollIntervalMs&lt;/code&gt; - This is the interval at which the
-plugin will fetch policies from the Ranger Admin.&lt;/li&gt;
-  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ranger.plugin.kudu.access.cluster.name&lt;/code&gt; - The name of the cluster.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;em&gt;Note&lt;/em&gt;: This is a minimal config. For more options refer to the &lt;a href=&quot;https://cwiki.apache.org/confluence/display/RANGER/Index&quot;&gt;Ranger
-documentation&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Once these files are created, you need to point Kudu Masters to the directory
-containing them with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-ranger_config_path&lt;/code&gt; flag. In addition,
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-ranger_jar_path&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-ranger_java_path&lt;/code&gt; should be configured. The Java path
-defaults to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$JAVA_HOME/bin/java&lt;/code&gt; if &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$JAVA_HOME&lt;/code&gt; is set and falls back to
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;java&lt;/code&gt; in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$PATH&lt;/code&gt; if not. The JAR path defaults to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-subprocess.jar&lt;/code&gt; in the
-directory containing the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-master&lt;/code&gt; binary.&lt;/p&gt;
-
-&lt;p&gt;As the last step, you need to set &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-tserver_enforce_access_control&lt;/code&gt; to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt; on
-the Tablet Servers to make sure access control is respected across the cluster.&lt;/p&gt;
-
-&lt;h2 id=&quot;creating-policies&quot;&gt;Creating policies&lt;/h2&gt;
-
-&lt;p&gt;After setting up the integration it’s time to create some policies, as now only
-trusted users are allowed to perform any action, everyone else is locked out.&lt;/p&gt;
-
-&lt;p&gt;To create your first policy, log in to Ranger Admin, click on the Kudu service
-you created in the first step of setup, then on the “Add New Policy” button in
-the top right corner. You’ll need to name the policy and set the resource it
-will apply to. Kudu doesn’t support databases, but with Ranger integration
-enabled, it will treat the part of the table name before the first period as the
-database name, or default to “default” if the table name doesn’t contain a
-period (configurable with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-ranger_default_database&lt;/code&gt; flag on the
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu-master&lt;/code&gt;).&lt;/p&gt;
-
-&lt;p&gt;There is no implicit hierarchy in the resources, which means that granting
-privileges on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;db=foo&lt;/code&gt; won’t imply privileges on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo.bar&lt;/code&gt;. To create a policy
-that applies to all tables and all columns in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;foo&lt;/code&gt; database you need to
-create a policy for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;db=foo-&amp;gt;tbl=*-&amp;gt;col=*&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/blog-ranger/create-policy.png&quot; alt=&quot;create-policy&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;For a list of the required privileges to perform operations please refer to our
-&lt;a href=&quot;/docs/security.html#policy-for-kudu-masters&quot;&gt;documentation&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;table-ownership&quot;&gt;Table ownership&lt;/h2&gt;
-
-&lt;p&gt;Kudu 1.13 will introduce table ownership, which enhances the authorization
-experience when Ranger integration is enabled. Tables are automatically owned by
-the users creating the table and it’s possible to change the owner as a part of
-an alter table operation.&lt;/p&gt;
-
-&lt;p&gt;Ranger supports granting privileges to the table owners via a special &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{OWNER}&lt;/code&gt;
-user. You can, for example, grant the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ALL&lt;/code&gt; privilege and delegate admin (this
-is required to change the owner of a table) to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{OWNER}&lt;/code&gt; on
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;db=*-&amp;gt;table=*-&amp;gt;column=*&lt;/code&gt;. This way your users will be able to perform any
-actions on the tables they created without having to explicitly assign
-privileges per table. They will, of course, need to be granted the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CREATE&lt;/code&gt;
-privilege on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;db=*&lt;/code&gt; or on a specific database to actually be able to create
-their own tables.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/blog-ranger/allow-conditions.png&quot; alt=&quot;allow-conditions&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;In this post we’ve covered how to set up and use the newest Kudu integration,
-Apache Ranger, and a sneak peek into the table ownership feature. Please try
-them out if you have a chance, and let us know what you think on our &lt;a href=&quot;mailto:user@kudu.apache.org&quot;&gt;mailing
-list&lt;/a&gt; or &lt;a href=&quot;https://getkudu.slack.com&quot;&gt;Slack&lt;/a&gt;. If you
-run into any issues, feel free to reach out to us on either platform, or open a
-&lt;a href=&quot;https://issues.apache.org/jira/projects/KUDU&quot;&gt;bug report&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">When Apache Kudu was first released in September 2016, it didn’t support any kind of authorization. Anyone who could access the cluster could do anything they wanted. To remedy this, coarse-grained authorization was added along with authentication in Kudu 1.3.0. This meant allowing only certain users to access Kudu, but those who were allowed access could still do whatever they wanted. The only way to achieve finer-grained access control was to limit access to Apache Impala where access control could be enforced by fine-grained policies in Apache Sentry. This method limited how Kudu could be accessed, so we saw a need to implement fine-grained access control in a way that wouldn’t limit access to Impala only. Kudu 1.10.0 integrated with Apache Sentry to enable finer-grained authorization policies. This integration was rather short-lived as it was deprecated in Kudu 1.12.0 and will be completely removed in Kudu 1.13.0. Most recently, since 1.12.0 Kudu supports fine-grained authorization by integrating with Apache Ranger 2.1 and later. In this post, we’ll cover how this works and how to set it up.</summary></entry></feed>
+architectures (ARM).&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.13.0! The new release adds several new features and improvements, including the following:</summary></entry></feed>

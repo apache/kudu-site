@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['jwt_702',['jwt',['../classkudu_1_1client_1_1KuduClientBuilder.html#aba292cfe8509d0280274f6b6073b6f31',1,'kudu::client::KuduClientBuilder']]]
+  ['jwt_0',['jwt',['../classkudu_1_1client_1_1KuduClientBuilder.html#ab2111cd52c1c29c30c68d2394357207d',1,'kudu::client::KuduClientBuilder::jwt()'],['../classKuduClientBuilder.html#ab2111cd52c1c29c30c68d2394357207d',1,'KuduClientBuilder::jwt()']]]
 ];
