@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="A new open source Apache Hadoop ecosystem project, Apache Kudu completes Hadoop's storage layer to enable fast analytics on fast data" />
+    <meta name="author" content="Cloudera" />
+    <title>Apache Kudu - Introducing REST API for metadata management to Apache Kudu</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/kudu.css" rel="stylesheet"/>
+    <link href="/css/asciidoc.css" rel="stylesheet"/>
+    <link rel="shortcut icon" href="/img/logo-favicon.ico" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    
+    <link rel="alternate" type="application/atom+xml"
+      title="RSS Feed for Apache Kudu blog"
+      href="/feed.xml" />
+    
+
+  </head>
+  <body>
+    <div class="kudu-site container-fluid">
+      <!-- Static navbar -->
+        <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="logo" href="/"><img
+                src="/img/apachekudu_logo_0716_80px.png"
+                srcset="/img/apachekudu_logo_0716_80px.png 1x, /img/apachekudu_logo_0716_160px.png 2x"
+                alt="Apache Kudu"/></a>
+              
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav navbar-right">
+                <li >
+                  <a href="/">Home</a>
+                </li>
+                <li >
+                  <a href="/overview.html">Overview</a>
+                </li>
+                <li >
+                  <a href="/docs/">Documentation</a>
+                </li>
+                <li >
+                  <a href="/releases/">Releases</a>
+                </li>
+                <li class="active">
+                  <a href="/blog/">Blog</a>
+                </li>
+                <!-- NOTE: this dropdown menu does not appear on Mobile, so don't add anything here
+                     that doesn't also appear elsewhere on the site. -->
+                <li class="dropdown">
+                  <a href="/community.html" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-header">GET IN TOUCH</li>
+                    <li><a class="icon email" href="/community.html">Mailing Lists</a></li>
+                    <li><a class="icon slack" href="https://join.slack.com/t/getkudu/shared_invite/zt-244b4zvki-hB1q9IbAk6CqHNMZHvUALA">Slack Channel</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/community.html#meetups-user-groups-and-conference-presentations">Events and Meetups</a></li>
+                    <li><a href="/committers.html">Project Committers</a></li>
+                    <li><a href="/ecosystem.html">Ecosystem</a></li>
+                    <!--<li><a href="/roadmap.html">Roadmap</a></li>-->
+                    <li><a href="/community.html#contributions">How to Contribute</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">DEVELOPER RESOURCES</li>
+                    <li><a class="icon github" href="https://github.com/apache/incubator-kudu">GitHub</a></li>
+                    <li><a class="icon gerrit" href="http://gerrit.cloudera.org:8080/#/q/status:open+project:kudu">Gerrit Code Review</a></li>
+                    <li><a class="icon jira" href="https://issues.apache.org/jira/browse/KUDU">JIRA Issue Tracker</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">SOCIAL MEDIA</li>
+                    <li><a class="icon twitter" href="https://twitter.com/ApacheKudu">Twitter</a></li>
+                    <li><a href="https://www.reddit.com/r/kudu/">Reddit</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li class="dropdown-header">APACHE SOFTWARE FOUNDATION</li>
+                    <li><a href="https://www.apache.org/security/" target="_blank">Security</a></li>
+                    <li><a href="https://www.apache.org/foundation/sponsorship.html" target="_blank">Sponsorship</a></li>
+                    <li><a href="https://www.apache.org/foundation/thanks.html" target="_blank">Thanks</a></li>
+                    <li><a href="https://www.apache.org/licenses/" target="_blank">License</a></li>
+                  </ul>
+                </li>
+                <li >
+                  <a href="/faq.html">FAQ</a>
+                </li>
+              </ul><!-- /.nav -->
+            </div><!-- /#navbar -->
+          </div><!-- /.container-fluid -->
+        </nav>
+
+<div class="row header">
+  <div class="col-lg-12">
+    <h2><a href="/blog">Apache Kudu Blog</a></h2>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="col-lg-9">
+    <article>
+  <header>
+    <h1 class="entry-title">Introducing REST API for metadata management to Apache Kudu</h1>
+    <p class="meta">Posted 10 Nov 2025 by Gabriella Lotz</p>
+  </header>
+  <div class="entry-content">
+    <p>Apache Kudu has long provided client APIs in C++, Java, and Python for building
+client applications. Today, we’re excited to announce the introduction of a REST
+API for table DDL operations that makes Kudu even more accessible to developers
+and integration tools.</p>
+
+<p>This feature is available in the master branch and will be released with
+Kudu 1.19.0.</p>
+
+<!--more-->
+
+<h2 id="overview">Overview</h2>
+
+<p>The Apache Kudu REST API exposes table metadata and administrative operations
+over HTTP on top of Kudu’s system catalog. It lets users handle these tasks with
+lightweight REST calls instead of building a full client application that
+depends on the Kudu client library and uses KRPC to interact with Kudu clusters.</p>
+
+<h2 id="key-features">Key Features</h2>
+
+<ul>
+  <li><strong>DDL Operations</strong>: Create, read, update, and delete tables through HTTP
+endpoints</li>
+  <li><strong>JSON-based</strong>: All requests and responses use JSON format for easy parsing</li>
+  <li><strong>RESTful Design</strong>: Follows standard HTTP methods and status codes</li>
+  <li><strong>Kerberos/SPNEGO Authentication</strong>: Integrates with Kudu’s existing
+authentication mechanisms</li>
+</ul>
+
+<h2 id="api-overview">API Overview</h2>
+
+<p>The REST API is available on the master’s webserver at <code class="language-plaintext highlighter-rouge">/api/v1/</code> and provides
+endpoints for table DDL operations. The API supports standard HTTP methods
+(GET, POST, PUT, DELETE) and returns JSON responses.</p>
+
+<h3 id="available-endpoints">Available Endpoints</h3>
+
+<ul>
+  <li><strong>GET</strong> <code class="language-plaintext highlighter-rouge">/api/v1/tables</code> - List all tables</li>
+  <li><strong>POST</strong> <code class="language-plaintext highlighter-rouge">/api/v1/tables</code> - Create a new table</li>
+  <li><strong>GET</strong> <code class="language-plaintext highlighter-rouge">/api/v1/tables/&lt;table_id&gt;</code> - Get table details</li>
+  <li><strong>PUT</strong> <code class="language-plaintext highlighter-rouge">/api/v1/tables/&lt;table_id&gt;</code> - Update table metadata</li>
+  <li><strong>DELETE</strong> <code class="language-plaintext highlighter-rouge">/api/v1/tables/&lt;table_id&gt;</code> - Delete a table</li>
+  <li><strong>GET</strong> <code class="language-plaintext highlighter-rouge">/api/v1/leader</code> - Discover the current leader master</li>
+</ul>
+
+<h3 id="example-request">Example Request</h3>
+
+<p><strong>GET</strong> <code class="language-plaintext highlighter-rouge">/api/v1/tables/&lt;table_id&gt;</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://master-host:8051/api/v1/tables/a2810622a25b4a3e8ce0be3ece103c50
+</code></pre></div></div>
+
+<p>For secure clusters with Kerberos/SPNEGO authentication enabled, include
+authentication flags in the curl command (e.g., <code class="language-plaintext highlighter-rouge">--negotiate -u :</code>).</p>
+
+<p><strong>Response:</strong></p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"example_table"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a2810622a25b4a3e8ce0be3ece103c50"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"columns"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"column_name"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INT8"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"is_key"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"is_nullable"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"encoding"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AUTO_ENCODING"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"compression"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DEFAULT_COMPRESSION"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"cfile_block_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"immutable"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"partition_schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"hash_schema"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"columns"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+          </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">],</span><span class="w">
+        </span><span class="nl">"num_buckets"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"range_schema"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"columns"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"default"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"comment"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"extra_config"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>For complete API documentation, the OpenAPI specification is available in the
+<a href="https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json">Kudu repository</a>.
+On a Kudu cluster running this feature, the API documentation is accessible at
+<code class="language-plaintext highlighter-rouge">http://master-host:8051/api/docs</code>:</p>
+
+<p><img src="/img/swagger.png" alt="png" class="img-responsive" /></p>
+
+<h2 id="limitations">Limitations</h2>
+
+<h3 id="multi-master-setup">Multi-Master Setup</h3>
+<p>In multi-master Kudu clusters, only the leader master will successfully process
+REST API requests. Non-leader masters will respond with an HTTP 503 (Service
+Unavailable) error. Since the leader master can change at any time due to
+failures or cluster reconfigurations, applications should handle 503 errors by
+querying the <code class="language-plaintext highlighter-rouge">/api/v1/leader</code> endpoint to discover the current leader and
+retrying the request against the new leader master’s address.</p>
+
+<h3 id="metadata-only">Metadata Only</h3>
+<p>This REST API focuses exclusively on table DDL operations. Data read/write
+operations are not supported through this interface and should continue to use
+Kudu’s native client APIs.</p>
+
+<h2 id="configuration">Configuration</h2>
+
+<p>The REST API must be explicitly enabled using the <code class="language-plaintext highlighter-rouge">--enable_rest_api</code> flag on
+Kudu masters. The master’s webserver must also be enabled (via the
+<code class="language-plaintext highlighter-rouge">--webserver_enabled</code> flag) since the REST API is served through the webserver.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li>OpenAPI Specification:
+<a href="https://swagger.io/specification/">https://swagger.io/specification/</a></li>
+  <li>Kudu REST API OpenAPI specification:
+<a href="https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json">https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json</a></li>
+  <li>Kudu C++ Client API documentation:
+<a href="https://kudu.apache.org/cpp-client-api/index.html">https://kudu.apache.org/cpp-client-api/index.html</a></li>
+  <li>Kudu Java Client API documentation:
+<a href="https://kudu.apache.org/apidocs/index.html">https://kudu.apache.org/apidocs/index.html</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+  </div>
+  <div class="col-lg-3 recent-posts">
+    <h3>Recent posts</h3>
+    <ul>
+    
+      <li> <a href="/2026/01/09/apache-kudu-1-18-1-release.html">Apache Kudu 1.18.1 Released</a> </li>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
+    
+      <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
+    
+      <li> <a href="/2025/05/13/introducing-the-externalized-kudu-connector.html">Introducing the Externalized Kudu Connector</a> </li>
+    
+      <li> <a href="/2024/11/13/apache-kudu-1-17-1-release.html">Apache Kudu 1.17.1 Released</a> </li>
+    
+      <li> <a href="/2024/03/07/introducing-auto-incrementing-column.html">Introducing Auto-incrementing Column in Kudu</a> </li>
+    
+      <li> <a href="/2023/09/07/apache-kudu-1-17-0-released.html">Apache Kudu 1.17.0 Released</a> </li>
+    
+      <li> <a href="/2022/06/17/apache-kudu-1-16-0-released.html">Apache Kudu 1.16.0 Released</a> </li>
+    
+      <li> <a href="/2021/06/22/apache-kudu-1-15-0-released.html">Apache Kudu 1.15.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/28/apache-kudu-1-14-0-release.html">Apache Kudu 1.14.0 Released</a> </li>
+    
+      <li> <a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a> </li>
+    
+      <li> <a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a> </li>
+    
+      <li> <a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a> </li>
+    
+      <li> <a href="/2020/07/30/building-near-real-time-big-data-lake.html">Building Near Real-time Big Data Lake</a> </li>
+    
+      <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
+    
+    </ul>
+  </div>
+</div>
+
+      <footer class="footer">
+        <div class="row">
+          <div class="col-md-9">
+            <p class="small">
+            Copyright &copy; 2026 The Apache Software Foundation. 
+            </p>
+            <p class="small">
+            Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
+            project logo are either registered trademarks or trademarks of The
+            Apache Software Foundation in the United States and other countries.
+            </p>
+          </div>
+          <div class="col-md-3">
+            <a class="pull-right" href="https://www.apache.org/events/current-event.html">
+                <img src="https://www.apache.org/events/current-event-234x60.png"/>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script src="/js/jquery.min.js"></script>
+    <script>
+      // Try to detect touch-screen devices. Note: Many laptops have touch screens.
+      $(document).ready(function() {
+        if ("ontouchstart" in document.documentElement) {
+          $(document.documentElement).addClass("touch");
+        } else {
+          $(document.documentElement).addClass("no-touch");
+        }
+      });
+    </script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/anchor.js"></script>
+    <script>
+      anchors.options = {
+        placement: 'right',
+        visible: 'touch',
+      };
+      anchors.add();
+    </script>
+  </body>
+</html>
+

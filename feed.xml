@@ -1,4 +1,196 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2025-07-14T10:58:23-07:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.18.0 Released</title><link href="/2025/07/10/apache-kudu-1-18-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.0 Released" /><published>2025-07-10T00:00:00-07:00</published><updated>2025-07-10T00:00:00-07:00</updated><id>/2025/07/10/apache-kudu-1-18-0-release</id><content type="html" xml:base="/2025/07/10/apache-kudu-1-18-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.0!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-01-09T15:06:36-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.18.1 Released</title><link href="/2026/01/09/apache-kudu-1-18-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.1 Released" /><published>2026-01-09T00:00:00-08:00</published><updated>2026-01-09T00:00:00-08:00</updated><id>/2026/01/09/apache-kudu-1-18-1-release</id><content type="html" xml:base="/2026/01/09/apache-kudu-1-18-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.1!&lt;/p&gt;
+
+&lt;p&gt;This maintenance release fixes critical bugs and packaging issues discovered in Apache Kudu
+ 1.18.0. Users of Kudu 1.18.0 are encouraged to upgrade to 1.18.1 as soon as possible.&lt;/p&gt;
+
+&lt;p&gt;This release includes the following incremental updates since Apache Kudu 1.18.0:
+&lt;!--more--&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Improved Java and Spark ecosystem reliability through fixes to dependency publishing, Spark
+class packaging, and data source discovery.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Enhanced TLS support for the embedded webserver, including configurable minimum TLS versions
+up to TLS 1.3 and control over TLSv1.3 cipher suites.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Upgraded Apache Spark support to Spark 3.5.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Increased stability of the CLI tools and the C++ client library, fixing crash in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu&lt;/code&gt; CLI
+binary upon exiting and crash in the C++ client library with verbose logging enabled. The
+latter was a regression introduced in the 1.18.0 release.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Improved compatibility with newer system libraries, including OpenSSL 3.4+ and platforms with
+64KB memory pages.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
+features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.18.1/docs/release_notes.html&quot;&gt;release
+notes&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
+1.18.1, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.18.1&quot;&gt;1.18.1 source release&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.18.1/docs/installation.html#build_from_source&quot;&gt;1.18.1 from
+source&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
+DataSource, and other Java integrations are published to the ASF
+Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.18.1&quot;&gt;now
+available&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Python client source is also available on
+&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Additionally, experimental Docker images are published to
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.1! This maintenance release fixes critical bugs and packaging issues discovered in Apache Kudu 1.18.0. Users of Kudu 1.18.0 are encouraged to upgrade to 1.18.1 as soon as possible. This release includes the following incremental updates since Apache Kudu 1.18.0:</summary></entry><entry><title type="html">Introducing REST API for metadata management to Apache Kudu</title><link href="/2025/11/10/introducing-the-rest-api.html" rel="alternate" type="text/html" title="Introducing REST API for metadata management to Apache Kudu" /><published>2025-11-10T00:00:00-08:00</published><updated>2025-11-10T00:00:00-08:00</updated><id>/2025/11/10/introducing-the-rest-api</id><content type="html" xml:base="/2025/11/10/introducing-the-rest-api.html">&lt;p&gt;Apache Kudu has long provided client APIs in C++, Java, and Python for building
+client applications. Today, we’re excited to announce the introduction of a REST
+API for table DDL operations that makes Kudu even more accessible to developers
+and integration tools.&lt;/p&gt;
+
+&lt;p&gt;This feature is available in the master branch and will be released with
+Kudu 1.19.0.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;overview&quot;&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;The Apache Kudu REST API exposes table metadata and administrative operations
+over HTTP on top of Kudu’s system catalog. It lets users handle these tasks with
+lightweight REST calls instead of building a full client application that
+depends on the Kudu client library and uses KRPC to interact with Kudu clusters.&lt;/p&gt;
+
+&lt;h2 id=&quot;key-features&quot;&gt;Key Features&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;DDL Operations&lt;/strong&gt;: Create, read, update, and delete tables through HTTP
+endpoints&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;JSON-based&lt;/strong&gt;: All requests and responses use JSON format for easy parsing&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;RESTful Design&lt;/strong&gt;: Follows standard HTTP methods and status codes&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Kerberos/SPNEGO Authentication&lt;/strong&gt;: Integrates with Kudu’s existing
+authentication mechanisms&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;api-overview&quot;&gt;API Overview&lt;/h2&gt;
+
+&lt;p&gt;The REST API is available on the master’s webserver at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/&lt;/code&gt; and provides
+endpoints for table DDL operations. The API supports standard HTTP methods
+(GET, POST, PUT, DELETE) and returns JSON responses.&lt;/p&gt;
+
+&lt;h3 id=&quot;available-endpoints&quot;&gt;Available Endpoints&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables&lt;/code&gt; - List all tables&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;POST&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables&lt;/code&gt; - Create a new table&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt; - Get table details&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;PUT&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt; - Update table metadata&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;DELETE&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt; - Delete a table&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/leader&lt;/code&gt; - Discover the current leader master&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;example-request&quot;&gt;Example Request&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;GET&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/tables/&amp;lt;table_id&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;curl http://master-host:8051/api/v1/tables/a2810622a25b4a3e8ce0be3ece103c50
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For secure clusters with Kerberos/SPNEGO authentication enabled, include
+authentication flags in the curl command (e.g., &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--negotiate -u :&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Response:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;example_table&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;a2810622a25b4a3e8ce0be3ece103c50&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;columns&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;column_name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;INT8&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;is_key&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;is_nullable&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;encoding&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;AUTO_ENCODING&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;compression&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;DEFAULT_COMPRESSION&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;cfile_block_size&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;immutable&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;partition_schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;hash_schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;columns&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;num_buckets&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;seed&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;range_schema&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;columns&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+          &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;owner&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;default&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;comment&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+  &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;extra_config&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For complete API documentation, the OpenAPI specification is available in the
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json&quot;&gt;Kudu repository&lt;/a&gt;.
+On a Kudu cluster running this feature, the API documentation is accessible at
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http://master-host:8051/api/docs&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/swagger.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;limitations&quot;&gt;Limitations&lt;/h2&gt;
+
+&lt;h3 id=&quot;multi-master-setup&quot;&gt;Multi-Master Setup&lt;/h3&gt;
+&lt;p&gt;In multi-master Kudu clusters, only the leader master will successfully process
+REST API requests. Non-leader masters will respond with an HTTP 503 (Service
+Unavailable) error. Since the leader master can change at any time due to
+failures or cluster reconfigurations, applications should handle 503 errors by
+querying the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/api/v1/leader&lt;/code&gt; endpoint to discover the current leader and
+retrying the request against the new leader master’s address.&lt;/p&gt;
+
+&lt;h3 id=&quot;metadata-only&quot;&gt;Metadata Only&lt;/h3&gt;
+&lt;p&gt;This REST API focuses exclusively on table DDL operations. Data read/write
+operations are not supported through this interface and should continue to use
+Kudu’s native client APIs.&lt;/p&gt;
+
+&lt;h2 id=&quot;configuration&quot;&gt;Configuration&lt;/h2&gt;
+
+&lt;p&gt;The REST API must be explicitly enabled using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--enable_rest_api&lt;/code&gt; flag on
+Kudu masters. The master’s webserver must also be enabled (via the
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--webserver_enabled&lt;/code&gt; flag) since the REST API is served through the webserver.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;OpenAPI Specification:
+&lt;a href=&quot;https://swagger.io/specification/&quot;&gt;https://swagger.io/specification/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kudu REST API OpenAPI specification:
+&lt;a href=&quot;https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json&quot;&gt;https://github.com/apache/kudu/blob/master/www/swagger/kudu-api.json&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kudu C++ Client API documentation:
+&lt;a href=&quot;https://kudu.apache.org/cpp-client-api/index.html&quot;&gt;https://kudu.apache.org/cpp-client-api/index.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kudu Java Client API documentation:
+&lt;a href=&quot;https://kudu.apache.org/apidocs/index.html&quot;&gt;https://kudu.apache.org/apidocs/index.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Gabriella Lotz</name></author><summary type="html">Apache Kudu has long provided client APIs in C++, Java, and Python for building client applications. Today, we’re excited to announce the introduction of a REST API for table DDL operations that makes Kudu even more accessible to developers and integration tools. This feature is available in the master branch and will be released with Kudu 1.19.0.</summary></entry><entry><title type="html">Apache Kudu 1.18.0 Released</title><link href="/2025/07/10/apache-kudu-1-18-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.0 Released" /><published>2025-07-10T00:00:00-07:00</published><updated>2025-07-10T00:00:00-07:00</updated><id>/2025/07/10/apache-kudu-1-18-0-release</id><content type="html" xml:base="/2025/07/10/apache-kudu-1-18-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the following:&lt;/p&gt;
 
@@ -668,189 +860,4 @@ available&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
 &lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu</title><link href="/2021/01/15/bloom-filter-predicate.html" rel="alternate" type="text/html" title="Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu" /><published>2021-01-15T00:00:00-08:00</published><updated>2021-01-15T00:00:00-08:00</updated><id>/2021/01/15/bloom-filter-predicate</id><content type="html" xml:base="/2021/01/15/bloom-filter-predicate.html">&lt;p&gt;Note: This is a cross-post from the Cloudera Engineering Blog
-&lt;a href=&quot;https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/&quot;&gt;Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0&lt;/p&gt;
-
-&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;In database systems one of the most effective ways to improve performance is to avoid doing
-unnecessary work, such as network transfers and reading data from disk. One of the ways Apache
-Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate
-filters to Kudu allows for optimized execution by skipping reading column values for filtered out
-rows and reducing network IO between a client, like the distributed query engine Apache Impala, and
-Kudu. See the documentation on
-&lt;a href=&quot;https://docs.cloudera.com/runtime/latest/impala-reference/topics/impala-runtime-filtering.html&quot;&gt;runtime filtering in Impala&lt;/a&gt;
-for details.&lt;/p&gt;
-
-&lt;p&gt;CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in
-Kudu and the associated integration in Impala.&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;h2 id=&quot;bloom-filter&quot;&gt;Bloom filter&lt;/h2&gt;
-&lt;p&gt;A Bloom filter is a space-efficient probabilistic data structure used to test set membership with a
-possibility of false positive matches. In database systems these are used to determine whether a
-set of data can be ignored when only a subset of the records are required. See the
-&lt;a href=&quot;https://en.wikipedia.org/wiki/Bloom_filter&quot;&gt;wikipedia page&lt;/a&gt; for more details.&lt;/p&gt;
-
-&lt;p&gt;The implementation used in Kudu is a space, hash, and cache efficient block-based Bloom filter from
-&lt;a href=&quot;https://www.cs.amherst.edu/~ccmcgeoch/cs34/papers/cacheefficientbloomfilters-jea.pdf&quot;&gt;“Cache-, Hash- and Space-Efficient Bloom Filters”&lt;/a&gt;
-by Putze et al. This Bloom filter was taken from the implementation in Impala and further enhanced.
-The block based Bloom filter is designed to fit in CPU cache, and it allows SIMD operations using
-AVX2, when available, for efficient lookup and insertion.&lt;/p&gt;
-
-&lt;p&gt;Consider the case of a broadcast hash join between a small table and a big table where predicate
-push down is not available. This typically involves following steps:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Read the entire small table and construct a hash table from it.&lt;/li&gt;
-  &lt;li&gt;Broadcast the generated hash table to all worker nodes.&lt;/li&gt;
-  &lt;li&gt;On the worker nodes start fetching and iterating on slices of the big table,  check whether the
-key in the big table exists in the hash table, and only return the matched rows.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Step 3 is the heaviest since it involves reading the entire big table, and could involve heavy
-network IO if the worker and the nodes hosting the big table are not on the same server.&lt;/p&gt;
-
-&lt;p&gt;Before 7.1.5, Impala supported pushing down only the Minimum/Maximum (MIN_MAX) runtime filter to
-Kudu which filters out values not within the specified bounds. In addition to the MIN_MAX runtime
-filter, Impala in CDP 7.1.5+ now supports pushing down a runtime Bloom filter to Kudu. With the
-newly introduced Bloom filter predicate support in Kudu, Impala can use this feature to perform
-drastically more efficient joins for data stored in Kudu.
-Performance
-As in the scenario described above, we ran a Impala query which joins a big table stored on Kudu
-and a small table stored as Parquet on HDFS. The small table was created using Parquet on HDFS to
-isolate the new feature, but could also be stored in Kudu just the same. We ran the queries first
-using only the MIN_MAX filter and then using both the MIN_MAX and BLOOM filter
-(ALL runtime filters). For comparison, we created the same big table in Parquet on HDFS. Using
-Parquet on HDFS is a great baseline for comparison because Impala already supports both MIN_MAX and
-BLOOM filters for Parquet on HDFS.&lt;/p&gt;
-
-&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
-&lt;p&gt;The following test was performed on a 6 node cluster with CDP Runtime 7.1.5.&lt;/p&gt;
-
-&lt;p&gt;Hardware Configuration:
-&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Dell PowerEdge R430, 20c/40t Xeon e5-2630 v4 @ 2.2Ghz, 128GB RAM, 4-2TB HDDs with 1 for WAL and 3
-for data directories.&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;schema&quot;&gt;Schema:&lt;/h3&gt;
-&lt;ul&gt;
-  &lt;li&gt;Big table consists of 260 million rows with randomly generated data hash partitioned by primary
-key across 20 partitions on Kudu. The Kudu table was explicitly rebalanced to ensure a balanced
-layout after the load.&lt;/li&gt;
-  &lt;li&gt;Small table consists of 2000 rows of top 1000 and bottom 1000 keys from the big table stored as
-Parquet on HDFS. This prevents the MIN_MAX filters from doing any filtering on the big table as
-all rows would fall under the range bounds of the MIN_MAX filters.&lt;/li&gt;
-  &lt;li&gt;COMPUTE STATS were run on all tables to help gather information about the table metadata and help
-Impala optimize the query plan.&lt;/li&gt;
-  &lt;li&gt;All queries were run 10 times and the mean query runtime is depicted below.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;join-queries&quot;&gt;Join Queries&lt;/h2&gt;
-&lt;p&gt;For join queries, we saw performance improvements of 3X to 5X in Kudu with Bloom filter predicate
-pushdown. We expect to see even better performance multiples with larger data sizes and more
-selective queries.&lt;/p&gt;
-
-&lt;p&gt;Compared to Parquet on HDFS, Kudu performance is now better by around 17-33%.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/bloom-filter-join-queries.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;update-query&quot;&gt;Update Query&lt;/h2&gt;
-&lt;p&gt;For an update query that basically upserts the entire small table into the existing big table, we
-saw 15X improvement. This is primarily due to the increased query performance when selecting the
-rows to update.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/img/bloom-filter-update-query.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;See references section below for details on the table schema, loading process, and queries that were
-run.&lt;/p&gt;
-
-&lt;h2 id=&quot;tpc-h&quot;&gt;TPC-H&lt;/h2&gt;
-&lt;p&gt;We also ran the TPC-H benchmark on a single node cluster with a scale factor of 30 and saw
-performance improvements in the range of 19% to 31% with different block cache capacity settings.&lt;/p&gt;
-
-&lt;p&gt;Kudu automatically disables Bloom filter predicates that are not effectively filtering data to avoid
-any performance penalties from the new feature. During development of the feature, query 9 in the
-TPCH benchmark (TPCH-Q9) exhibited regression of 50-96%. On further investigation, the time required
-to scan the rows from Kudu increased by up to 2X. When investigating this regression we found that
-the Bloom filter predicate that was pushed down was filtering out less than 10% of the rows, leading
-to increased CPU usage in Kudu which outweighed the benefit of the filter. To resolve the regression
-we added a heuristic in Kudu wherein if a Bloom filter predicate is not filtering out a sufficient
-percentage of rows then it’s disabled automatically for the remainder of the scan. This is safe
-because Bloom filters can return false positives and hence false matches returned to the client are
-expected to be filtered out using other deterministic filters.&lt;/p&gt;
-
-&lt;h2 id=&quot;feature-availability&quot;&gt;Feature Availability&lt;/h2&gt;
-&lt;p&gt;Users querying Kudu using Impala will have the feature enabled by default from CDP 7.1.5 onward
-and CDP Public Cloud. We highly recommend users upgrade to get this performance enhancement and many
-other performance enhancements in the release. For custom applications that use the Kudu client API
-directly, the Kudu C++ client also has the Bloom filter predicate available from CDP 7.1.5 onward.
-The Kudu Java client does not have the Bloom filter predicate available yet,
-&lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3221&quot;&gt;KUDU-3221&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References:&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;Performance testing related schema and queries:
-&lt;a href=&quot;https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4&quot;&gt;https://gist.github.com/bbhavsar/006df9c40b4b0528e297fac29824ceb4&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Kudu C++ client documentation:
-&lt;a href=&quot;https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94&quot;&gt;https://kudu.apache.org/cpp-client-api/classkudu_1_1client_1_1KuduTable.html#a356e8d0d10491d4d8540adefac86be94&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Example code to create and pass Bloom filter predicate:
-&lt;a href=&quot;https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416&quot;&gt;https://github.com/apache/kudu/blob/master/src/kudu/client/predicate-test.cc#L1416&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Block based Bloom filter:
-&lt;a href=&quot;https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51&quot;&gt;https://github.com/apache/kudu/blob/master/src/kudu/util/block_bloom_filter.h#L51&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;acknowledgement&quot;&gt;Acknowledgement&lt;/h2&gt;
-&lt;p&gt;This feature was implemented jointly by Bankim Bhavsar and Wenzhe Zhou with guidance and feedback
-from Tim Armstrong, Adar Dembo, Thomas Tauber-Marshall, Andrew Wong, and Grant Henke. We are also
-grateful for our customers especially Mauricio Aristizabal from Impact for providing us valuable
-feedback and benchmarks.&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">Note: This is a cross-post from the Cloudera Engineering Blog Optimized joins &amp;amp; filtering with Bloom filter predicate in Kudu Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0 Introduction In database systems one of the most effective ways to improve performance is to avoid doing unnecessary work, such as network transfers and reading data from disk. One of the ways Apache Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate filters to Kudu allows for optimized execution by skipping reading column values for filtered out rows and reducing network IO between a client, like the distributed query engine Apache Impala, and Kudu. See the documentation on runtime filtering in Impala for details. CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in Kudu and the associated integration in Impala.</summary></entry><entry><title type="html">Apache Kudu 1.13.0 released</title><link href="/2020/09/21/apache-kudu-1-13-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.13.0 released" /><published>2020-09-21T00:00:00-07:00</published><updated>2020-09-21T00:00:00-07:00</updated><id>/2020/09/21/apache-kudu-1-13-0-release</id><content type="html" xml:base="/2020/09/21/apache-kudu-1-13-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.13.0!&lt;/p&gt;
-
-&lt;p&gt;The new release adds several new features and improvements, including the
-following:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Added table ownership support. All newly created tables are automatically
-owned by the user creating them. It is also possible to change the owner by
-altering the table. You can also assign privileges to table owners via Apache
-Ranger.&lt;/li&gt;
-  &lt;li&gt;An experimental feature is added to Kudu that allows it to automatically
-rebalance tablet replicas among tablet servers. The background task can be
-enabled by setting the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--auto_rebalancing_enabled&lt;/code&gt; flag on the Kudu masters.
-Before starting auto-rebalancing on an existing cluster, the CLI rebalancer
-tool should be run first.&lt;/li&gt;
-  &lt;li&gt;Bloom filter column predicate pushdown has been added to allow optimized
-execution of filters which match on a set of column values with a
-false-positive rate. Support for Impala queries utilizing Bloom filter
-predicate is available yielding performance improvements of 19% to 30% in TPC-H
-benchmarks and around 41% improvement for distributed joins across large
-tables. Support for Spark is not yet available.&lt;/li&gt;
-  &lt;li&gt;ARM-based architectures are now supported.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
-features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.13.0/docs/release_notes.html&quot;&gt;release
-notes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
-1.13.0, follow these steps:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.13.0&quot;&gt;1.13.0 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.13.0/docs/installation.html#build_from_source&quot;&gt;1.13.0 from
-source&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
-DataSource, Flume sink, and other Java integrations are published to the ASF
-Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.13.0&quot;&gt;now
-available&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Python client source is also available on
-&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.13.0! The new release adds several new features and improvements, including the following:</summary></entry></feed>
+architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry></feed>

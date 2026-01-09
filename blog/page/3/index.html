@@ -112,6 +112,65 @@
 <!-- Articles -->
 <article>
   <header>
+    <h1 class="entry-title"><a href="/2021/01/15/bloom-filter-predicate.html">Optimized joins & filtering with Bloom filter predicate in Kudu</a></h1>
+    <p class="meta">Posted 15 Jan 2021 by Bankim Bhavsar</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>Note: This is a cross-post from the Cloudera Engineering Blog
+<a href="https://blog.cloudera.com/optimized-joins-filtering-with-bloom-filter-predicate-in-kudu/">Optimized joins &amp; filtering with Bloom filter predicate in Kudu</a></p>
+
+<p>Cloudera’s CDP Runtime version 7.1.5 maps to Apache Kudu 1.13 and upcoming Apache Impala 4.0</p>
+
+<h2 id="introduction">Introduction</h2>
+<p>In database systems one of the most effective ways to improve performance is to avoid doing
+unnecessary work, such as network transfers and reading data from disk. One of the ways Apache
+Kudu achieves this is by supporting column predicates with scanners. Pushing down column predicate
+filters to Kudu allows for optimized execution by skipping reading column values for filtered out
+rows and reducing network IO between a client, like the distributed query engine Apache Impala, and
+Kudu. See the documentation on
+<a href="https://docs.cloudera.com/runtime/latest/impala-reference/topics/impala-runtime-filtering.html">runtime filtering in Impala</a>
+for details.</p>
+
+<p>CDP Runtime 7.1.5 and CDP Public Cloud added support for Bloom filter column predicate pushdown in
+Kudu and the associated integration in Impala.</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2021/01/15/bloom-filter-predicate.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
+    <h1 class="entry-title"><a href="/2020/09/21/apache-kudu-1-13-0-release.html">Apache Kudu 1.13.0 released</a></h1>
+    <p class="meta">Posted 21 Sep 2020 by Attila Bukor</p>
+  </header>
+  <div class="entry-content">
+    
+    <p>The Apache Kudu team is happy to announce the release of Kudu 1.13.0!</p>
+
+<p>The new release adds several new features and improvements, including the
+following:</p>
+
+
+    
+  </div>
+  <div class="read-full">
+    <a class="btn btn-info" href="/2020/09/21/apache-kudu-1-13-0-release.html">Read full post...</a>
+  </div>
+</article>
+
+
+
+<!-- Articles -->
+<article>
+  <header>
     <h1 class="entry-title"><a href="/2020/08/11/fine-grained-authz-ranger.html">Fine-Grained Authorization with Apache Kudu and Apache Ranger</a></h1>
     <p class="meta">Posted 11 Aug 2020 by Attila Bukor</p>
   </header>
@@ -192,55 +251,6 @@ following:</p>
 
 
 
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a></h1>
-    <p class="meta">Posted 20 Nov 2019 by Alexey Serbin</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.11.1!</p>
-
-<p>This release contains a fix which addresses a critical issue discovered in
-1.10.0 and 1.11.0 and adds several new features and improvements since 1.10.0.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2019/11/20/apache-kudu-1-11-1-release.html">Read full post...</a>
-  </div>
-</article>
-
-
-
-<!-- Articles -->
-<article>
-  <header>
-    <h1 class="entry-title"><a href="/2019/11/20/apache-kudu-1-10-1-release.html">Apache Kudu 1.10.1 released</a></h1>
-    <p class="meta">Posted 20 Nov 2019 by Alexey Serbin</p>
-  </header>
-  <div class="entry-content">
-    
-    <p>The Apache Kudu team is happy to announce the release of Kudu 1.10.1!</p>
-
-<p>Apache Kudu 1.10.1 is a bug fix release which fixes critical issues discovered
-in Apache Kudu 1.10.0. In particular, this fixes a licensing issue with
-distributing libnuma library with the kudu-binary JAR artifact. Users of
-Kudu 1.10.0 are encouraged to upgrade to 1.10.1 as soon as possible. See the
-<a href="/releases/1.10.1/docs/release_notes.html">release notes</a> for details.</p>
-
-
-    
-  </div>
-  <div class="read-full">
-    <a class="btn btn-info" href="/2019/11/20/apache-kudu-1-10-1-release.html">Read full post...</a>
-  </div>
-</article>
-
-
-
 <!-- Pagination links -->
 
 <nav>
@@ -260,6 +270,10 @@ Kudu 1.10.0 are encouraged to upgrade to 1.10.1 as soon as possible. See the
   <div class="col-lg-3 recent-posts">
     <h3>Recent posts</h3>
     <ul>
+    
+      <li> <a href="/2026/01/09/apache-kudu-1-18-1-release.html">Apache Kudu 1.18.1 Released</a> </li>
+    
+      <li> <a href="/2025/11/10/introducing-the-rest-api.html">Introducing REST API for metadata management to Apache Kudu</a> </li>
     
       <li> <a href="/2025/07/10/apache-kudu-1-18-0-release.html">Apache Kudu 1.18.0 Released</a> </li>
     
@@ -287,10 +301,6 @@ Kudu 1.10.0 are encouraged to upgrade to 1.10.1 as soon as possible. See the
     
       <li> <a href="/2020/05/18/apache-kudu-1-12-0-release.html">Apache Kudu 1.12.0 released</a> </li>
     
-      <li> <a href="/2019/11/20/apache-kudu-1-11-1-release.html">Apache Kudu 1.11.1 released</a> </li>
-    
-      <li> <a href="/2019/11/20/apache-kudu-1-10-1-release.html">Apache Kudu 1.10.1 released</a> </li>
-    
     </ul>
   </div>
 </div>
@@ -299,7 +309,7 @@ Kudu 1.10.0 are encouraged to upgrade to 1.10.1 as soon as possible. See the
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2025 The Apache Software Foundation. 
+            Copyright &copy; 2026 The Apache Software Foundation. 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
