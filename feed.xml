@@ -1,4 +1,173 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-01-11T14:43:17-08:00</updated><id>/feed.xml</id><entry><title type="html">Apache Kudu 1.18.1 Released</title><link href="/2026/01/09/apache-kudu-1-18-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.1 Released" /><published>2026-01-09T00:00:00-08:00</published><updated>2026-01-09T00:00:00-08:00</updated><id>/2026/01/09/apache-kudu-1-18-1-release</id><content type="html" xml:base="/2026/01/09/apache-kudu-1-18-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.1!&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.1.1">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-11-14T22:41:16+00:00</updated><id>/feed.xml</id><entry><title type="html">Integrating Kudu Prometheus Metrics with Grafana, A Step-by-Step Guide</title><link href="/2026/07/03/kudu-prometheus-grafana.html" rel="alternate" type="text/html" title="Integrating Kudu Prometheus Metrics with Grafana, A Step-by-Step Guide" /><published>2026-07-03T00:00:00+00:00</published><updated>2026-07-03T00:00:00+00:00</updated><id>/2026/07/03/kudu-prometheus-grafana</id><content type="html" xml:base="/2026/07/03/kudu-prometheus-grafana.html">&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;With the completion of &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3691&quot;&gt;KUDU-3691&lt;/a&gt;, Apache Kudu
+now offers full Prometheus metrics support - making it straightforward to integrate Kudu monitoring
+into Grafana. This guide covers the basics, from installing Prometheus and Grafana to configuring
+them. It provides a practical approach to crafting Grafana dashboards for a better understanding of
+Apache Kudu.&lt;/p&gt;
+
+&lt;p&gt;Full Prometheus metrics support is available on the master branch and will ship with the upcoming
+Kudu 1.19 release.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;integration-benefits&quot;&gt;Integration Benefits&lt;/h2&gt;
+&lt;p&gt;The built-in Kudu web server exposes metrics as a point-in-time snapshot per daemon. Prometheus adds
+historical retention, cross-node aggregation, and alerting - Grafana provides the visualization
+layer on top. Together they allow correlating Kudu metrics with the rest of the infrastructure in a
+single place.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+&lt;p&gt;Ensure that you have the following:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;A running Apache Kudu cluster&lt;/strong&gt;: At least one master and one tablet server.
+See the &lt;a href=&quot;https://kudu.apache.org/docs/quickstart.html&quot;&gt;Kudu quickstart guide&lt;/a&gt;
+if you need to set one up.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Prometheus&lt;/strong&gt;: Follow the
+&lt;a href=&quot;https://prometheus.io/docs/prometheus/latest/getting_started&quot;&gt;official Prometheus installation guide&lt;/a&gt;
+to set up Prometheus on your system.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Grafana&lt;/strong&gt; (optional): Install Grafana by following the
+&lt;a href=&quot;https://grafana.com/docs/grafana/latest/setup-grafana/installation&quot;&gt;official Grafana documentation&lt;/a&gt;
+if you want to visualize the collected metrics.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;prometheus-configuration-for-kudu&quot;&gt;Prometheus Configuration for Kudu&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;Open the Prometheus configuration file, typically located at /etc/prometheus/prometheus.yml. If
+using a custom location, specify it accordingly.&lt;/li&gt;
+  &lt;li&gt;Add the following snippet to the file to configure Prometheus to scrape Kudu metrics:
+    &lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; &lt;span class=&quot;na&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+   &lt;span class=&quot;na&quot;&gt;scrape_interval&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;15s&lt;/span&gt;
+   &lt;span class=&quot;na&quot;&gt;evaluation_interval&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;15s&lt;/span&gt;
+
+ &lt;span class=&quot;na&quot;&gt;scrape_configs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+   &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;job_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;kudu&quot;&lt;/span&gt;
+     &lt;span class=&quot;na&quot;&gt;metrics_path&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/metrics_prometheus&quot;&lt;/span&gt;
+     &lt;span class=&quot;na&quot;&gt;static_configs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+       &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targets&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;master-1:8051&quot;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;master-2:8051&quot;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;master-3:8051&quot;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;masters&quot;&lt;/span&gt;
+       &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;targets&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;pi&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;tserver-1:8050&quot;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;tserver-2:8050&quot;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;tserver-3:8050&quot;&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;]&lt;/span&gt;
+         &lt;span class=&quot;na&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;tservers&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Adjust the targets to match the Kudu instances in your environment. For more configuration
+options, refer to the
+&lt;a href=&quot;https://prometheus.io/docs/prometheus/latest/configuration/configuration&quot;&gt;Prometheus documentation&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;Start Prometheus, if using a custom config location, use the config.file command line flag, for
+example:
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; $ prometheus --config.file=&quot;&amp;lt;custom_path&amp;gt;/prometheus.yml&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Verify that Prometheus is running on localhost:9090 and check the /targets endpoint to ensure all
+Kudu services are up.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;/img/2026-07-03-kudu-prometheus-grafana/prometheus-targets.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;grafana-setup&quot;&gt;Grafana Setup&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;Start Grafana, which runs by default on port 3000.&lt;/li&gt;
+  &lt;li&gt;Configure Prometheus as a data source in Grafana:
+    &lt;ul&gt;
+      &lt;li&gt;Follow the steps outlined in the Grafana documentation to add Prometheus as a data source.&lt;/li&gt;
+      &lt;li&gt;Set the Prometheus URL to the Prometheus server (e.g., http://localhost:9090).&lt;/li&gt;
+      &lt;li&gt;Save and test the connection.
+&lt;img src=&quot;/img/2026-07-03-kudu-prometheus-grafana/metrics-browser.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;For a comprehensive list of available metrics in Kudu, please refer to the &lt;a href=&quot;https://kudu.apache.org/docs/metrics_reference.html&quot;&gt;official metrics
+reference&lt;/a&gt;. Kudu Prometheus metrics all have
+the “kudu_” prefix.&lt;/li&gt;
+  &lt;li&gt;Create a Kudu Dashboard:
+    &lt;ul&gt;
+      &lt;li&gt;Navigate to the “+” menu on the left sidebar and select “Dashboard”.&lt;/li&gt;
+      &lt;li&gt;Add a new panel, select Prometheus as the data source, and use PromQL
+ queries to create visualizations based on Kudu metrics.
+&lt;img src=&quot;/img/2026-07-03-kudu-prometheus-grafana/master-tserver-memory.png&quot; alt=&quot;png&quot; class=&quot;img-responsive&quot; /&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;working-with-a-large-number-of-tservers&quot;&gt;Working with a large number of TServers&lt;/h2&gt;
+
+&lt;p&gt;For clusters with many tablet servers, manually listing every target in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;prometheus.yml&lt;/code&gt; is
+impractical and breaks when nodes are added or removed. Kudu masters expose an HTTP service
+discovery endpoint at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/prometheus-sd&lt;/code&gt; that Prometheus can poll directly, returning all registered
+masters and tablet servers automatically.&lt;/p&gt;
+
+&lt;p&gt;The endpoint:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Is served only by the leader master (non-leaders return an empty response with HTTP 200)&lt;/li&gt;
+  &lt;li&gt;Returns one target per server with labels: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;group&lt;/code&gt; (masters/tservers), &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cluster_id&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;location&lt;/code&gt;,
+and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;__scheme__&lt;/code&gt; (http/https)&lt;/li&gt;
+  &lt;li&gt;Automatically excludes presumed-dead tablet servers&lt;/li&gt;
+  &lt;li&gt;Supports authentication via the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--webserver_prometheus_token_cmd&lt;/code&gt; flag&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Example Prometheus config using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;http_sd_configs&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-yaml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;global&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;scrape_interval&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;15s&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;evaluation_interval&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;15s&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;scrape_configs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;job_name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;kudu&quot;&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;metrics_path&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;/metrics_prometheus&quot;&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;http_sd_configs&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;http://master-1:8051/prometheus-sd&quot;&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;http://master-2:8051/prometheus-sd&quot;&lt;/span&gt;
+      &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;http://master-3:8051/prometheus-sd&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;By pointing at all masters, Prometheus discovers all targets regardless of which master is currently
+the leader. Non-leader masters return an empty list, so there is no duplication.&lt;/p&gt;
+
+&lt;p&gt;A sample response from the endpoint:&lt;/p&gt;
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;targets&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;master-1:8051&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;labels&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;group&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;masters&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;cluster_id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;fb61f15b7f184f009731f52a1b973bfa&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;location&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;n/a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;__scheme__&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;targets&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tserver-1:8050&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;labels&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;group&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tservers&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;cluster_id&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;fb61f15b7f184f009731f52a1b973bfa&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;location&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;n/a&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;__scheme__&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;err&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For more details on HTTP service discovery configuration options, refer to the
+&lt;a href=&quot;https://prometheus.io/docs/prometheus/latest/configuration/configuration/#http_sd_config&quot;&gt;Prometheus documentation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;capability-notes&quot;&gt;Capability Notes&lt;/h2&gt;
+
+&lt;p&gt;Tablet-level metrics are available at the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/metrics_prometheus&lt;/code&gt; endpoint since
+Kudu 1.18. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--metrics_prometheus_use_entity_labels&lt;/code&gt; flag controls how they
+are represented in the output:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;false&lt;/code&gt; (default):&lt;/strong&gt; Entity IDs are embedded in metric names (e.g.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu_tablet_&amp;lt;tablet_id&amp;gt;_on_disk_data_size&lt;/code&gt;). This preserves backward
+compatibility with existing dashboards and alerting rules but prevents
+label-based aggregation in PromQL.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;true&lt;/code&gt; (recommended for new deployments):&lt;/strong&gt; Entity attributes appear as
+Prometheus labels on a shared metric name, enabling queries like
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sum by (table_name)(kudu_on_disk_data_size)&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>Marton Greber</name></author><summary type="html">Introduction With the completion of KUDU-3691, Apache Kudu now offers full Prometheus metrics support - making it straightforward to integrate Kudu monitoring into Grafana. This guide covers the basics, from installing Prometheus and Grafana to configuring them. It provides a practical approach to crafting Grafana dashboards for a better understanding of Apache Kudu. Full Prometheus metrics support is available on the master branch and will ship with the upcoming Kudu 1.19 release.</summary></entry><entry><title type="html">Apache Kudu 1.18.1 Released</title><link href="/2026/01/09/apache-kudu-1-18-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.1 Released" /><published>2026-01-09T00:00:00+00:00</published><updated>2026-01-09T00:00:00+00:00</updated><id>/2026/01/09/apache-kudu-1-18-1-release</id><content type="html" xml:base="/2026/01/09/apache-kudu-1-18-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.1!&lt;/p&gt;
 
 &lt;p&gt;This maintenance release fixes critical bugs and packaging issues discovered in Apache Kudu
  1.18.0. Users of Kudu 1.18.0 are encouraged to upgrade to 1.18.1 as soon as possible.&lt;/p&gt;
@@ -51,7 +220,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.1! This maintenance release fixes critical bugs and packaging issues discovered in Apache Kudu 1.18.0. Users of Kudu 1.18.0 are encouraged to upgrade to 1.18.1 as soon as possible. This release includes the following incremental updates since Apache Kudu 1.18.0:</summary></entry><entry><title type="html">Introducing REST API for metadata management to Apache Kudu</title><link href="/2025/11/10/introducing-the-rest-api.html" rel="alternate" type="text/html" title="Introducing REST API for metadata management to Apache Kudu" /><published>2025-11-10T00:00:00-08:00</published><updated>2025-11-10T00:00:00-08:00</updated><id>/2025/11/10/introducing-the-rest-api</id><content type="html" xml:base="/2025/11/10/introducing-the-rest-api.html">&lt;p&gt;Apache Kudu has long provided client APIs in C++, Java, and Python for building
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.1! This maintenance release fixes critical bugs and packaging issues discovered in Apache Kudu 1.18.0. Users of Kudu 1.18.0 are encouraged to upgrade to 1.18.1 as soon as possible. This release includes the following incremental updates since Apache Kudu 1.18.0:</summary></entry><entry><title type="html">Introducing REST API for metadata management to Apache Kudu</title><link href="/2025/11/10/introducing-the-rest-api.html" rel="alternate" type="text/html" title="Introducing REST API for metadata management to Apache Kudu" /><published>2025-11-10T00:00:00+00:00</published><updated>2025-11-10T00:00:00+00:00</updated><id>/2025/11/10/introducing-the-rest-api</id><content type="html" xml:base="/2025/11/10/introducing-the-rest-api.html">&lt;p&gt;Apache Kudu has long provided client APIs in C++, Java, and Python for building
 client applications. Today, we’re excited to announce the introduction of a REST
 API for table DDL operations that makes Kudu even more accessible to developers
 and integration tools.&lt;/p&gt;
@@ -190,7 +359,7 @@ Kudu masters. The master’s webserver must also be enabled (via the
 &lt;a href=&quot;https://kudu.apache.org/cpp-client-api/index.html&quot;&gt;https://kudu.apache.org/cpp-client-api/index.html&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;Kudu Java Client API documentation:
 &lt;a href=&quot;https://kudu.apache.org/apidocs/index.html&quot;&gt;https://kudu.apache.org/apidocs/index.html&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>Gabriella Lotz</name></author><summary type="html">Apache Kudu has long provided client APIs in C++, Java, and Python for building client applications. Today, we’re excited to announce the introduction of a REST API for table DDL operations that makes Kudu even more accessible to developers and integration tools. This feature is available in the master branch and will be released with Kudu 1.19.0.</summary></entry><entry><title type="html">Apache Kudu 1.18.0 Released</title><link href="/2025/07/10/apache-kudu-1-18-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.0 Released" /><published>2025-07-10T00:00:00-07:00</published><updated>2025-07-10T00:00:00-07:00</updated><id>/2025/07/10/apache-kudu-1-18-0-release</id><content type="html" xml:base="/2025/07/10/apache-kudu-1-18-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.0!&lt;/p&gt;
+&lt;/ul&gt;</content><author><name>Gabriella Lotz</name></author><summary type="html">Apache Kudu has long provided client APIs in C++, Java, and Python for building client applications. Today, we’re excited to announce the introduction of a REST API for table DDL operations that makes Kudu even more accessible to developers and integration tools. This feature is available in the master branch and will be released with Kudu 1.19.0.</summary></entry><entry><title type="html">Apache Kudu 1.18.0 Released</title><link href="/2025/07/10/apache-kudu-1-18-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.18.0 Released" /><published>2025-07-10T00:00:00+00:00</published><updated>2025-07-10T00:00:00+00:00</updated><id>/2025/07/10/apache-kudu-1-18-0-release</id><content type="html" xml:base="/2025/07/10/apache-kudu-1-18-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.18.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the following:&lt;/p&gt;
 
@@ -257,7 +426,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Introducing the Externalized Kudu Connector</title><link href="/2025/05/13/introducing-the-externalized-kudu-connector.html" rel="alternate" type="text/html" title="Introducing the Externalized Kudu Connector" /><published>2025-05-13T00:00:00-07:00</published><updated>2025-05-13T00:00:00-07:00</updated><id>/2025/05/13/introducing-the-externalized-kudu-connector</id><content type="html" xml:base="/2025/05/13/introducing-the-externalized-kudu-connector.html">&lt;p&gt;Note: This is a cross-post from the Apache Flink blog &lt;a href=&quot;https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/&quot;&gt;Introducing the Externalized Kudu Connector&lt;/a&gt;&lt;/p&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.18.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Introducing the Externalized Kudu Connector</title><link href="/2025/05/13/introducing-the-externalized-kudu-connector.html" rel="alternate" type="text/html" title="Introducing the Externalized Kudu Connector" /><published>2025-05-13T00:00:00+00:00</published><updated>2025-05-13T00:00:00+00:00</updated><id>/2025/05/13/introducing-the-externalized-kudu-connector</id><content type="html" xml:base="/2025/05/13/introducing-the-externalized-kudu-connector.html">&lt;p&gt;Note: This is a cross-post from the Apache Flink blog &lt;a href=&quot;https://flink.apache.org/2025/04/30/introducing-the-externalized-kudu-connector/&quot;&gt;Introducing the Externalized Kudu Connector&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;We are pleased to announce the revival of a connector that makes it possible for Flink to interact with &lt;a href=&quot;https://kudu.apache.org/&quot;&gt;Apache Kudu&lt;/a&gt;.
 The original connector existed as part of the &lt;a href=&quot;https://bahir.apache.org/#home&quot;&gt;Apache Bahir&lt;/a&gt; project, which was moved into the attic.
@@ -306,9 +475,9 @@ Such catalog can be defined in Flink SQL, as part of the Java application, or vi
 The below example shows a minimal example in Filnk SQL.&lt;/p&gt;
 
 &lt;div class=&quot;language-sql highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CATALOG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_kudu_catalog&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;WITH&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&apos;type&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;kudu&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&apos;masters&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;localhost:7051&apos;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;s1&quot;&gt;&apos;default-database&apos;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&apos;default_database&apos;&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;'type'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'kudu'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;'masters'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'localhost:7051'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s1&quot;&gt;'default-database'&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'default_database'&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
 &lt;span class=&quot;n&quot;&gt;USE&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;CATALOG&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;my_kudu_catalog&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -351,7 +520,7 @@ The below example shows a minimal example in Filnk SQL.&lt;/p&gt;
 
 &lt;p&gt;Connector GitHub repository: &lt;a href=&quot;https://github.com/apache/flink-connector-kudu&quot;&gt;https://github.com/apache/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Maven Central link: &lt;a href=&quot;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&quot;&gt;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;</content><author><name>Ferenc Csaky</name></author><summary type="html">Note: This is a cross-post from the Apache Flink blog Introducing the Externalized Kudu Connector We are pleased to announce the revival of a connector that makes it possible for Flink to interact with Apache Kudu. The original connector existed as part of the Apache Bahir project, which was moved into the attic. Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model. For more information about the externalization process, see FLIP-439.</summary></entry><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00-08:00</published><updated>2024-11-13T00:00:00-08:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
+&lt;p&gt;Maven Central link: &lt;a href=&quot;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&quot;&gt;https://central.sonatype.com/artifact/org.apache.flink/flink-connector-kudu&lt;/a&gt;&lt;/p&gt;</content><author><name>Ferenc Csaky</name></author><summary type="html">Note: This is a cross-post from the Apache Flink blog Introducing the Externalized Kudu Connector We are pleased to announce the revival of a connector that makes it possible for Flink to interact with Apache Kudu. The original connector existed as part of the Apache Bahir project, which was moved into the attic. Despite this, we saw interest to keep the Kudu connector updated, hence the community agreed to externalize it as a standalone connector in accordance with the current connector development model. For more information about the externalization process, see FLIP-439.</summary></entry><entry><title type="html">Apache Kudu 1.17.1 Released</title><link href="/2024/11/13/apache-kudu-1-17-1-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.1 Released" /><published>2024-11-13T00:00:00+00:00</published><updated>2024-11-13T00:00:00+00:00</updated><id>/2024/11/13/apache-kudu-1-17-1-release</id><content type="html" xml:base="/2024/11/13/apache-kudu-1-17-1-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.1!&lt;/p&gt;
 
 &lt;p&gt;This maintenance release fixes critical bugs and build issues discovered in Apache
 Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as
@@ -397,7 +566,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.1! This maintenance release fixes critical bugs and build issues discovered in Apache Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as possible. The changes include the following:</summary></entry><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00-08:00</published><updated>2024-03-07T00:00:00-08:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.1! This maintenance release fixes critical bugs and build issues discovered in Apache Kudu 1.17.0. Users of Kudu 1.17.0 are encouraged to upgrade to 1.17.1 as soon as possible. The changes include the following:</summary></entry><entry><title type="html">Introducing Auto-incrementing Column in Kudu</title><link href="/2024/03/07/introducing-auto-incrementing-column.html" rel="alternate" type="text/html" title="Introducing Auto-incrementing Column in Kudu" /><published>2024-03-07T00:00:00+00:00</published><updated>2024-03-07T00:00:00+00:00</updated><id>/2024/03/07/introducing-auto-incrementing-column</id><content type="html" xml:base="/2024/03/07/introducing-auto-incrementing-column.html">&lt;!--more--&gt;
 
 &lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
@@ -470,8 +639,8 @@ Query: DESCRIBE demo_table
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Insert rows with duplicate partial primary key column values:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, &apos;John&apos;), (2, &apos;Bob&apos;), (3, &apos;Mary&apos;), (1, &apos;Joe&apos;);
-Query: INSERT INTO demo_table VALUES (1, &apos;John&apos;), (2, &apos;Bob&apos;), (3, &apos;Mary&apos;), (1, &apos;Joe&apos;)
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe');
+Query: INSERT INTO demo_table VALUES (1, 'John'), (2, 'Bob'), (3, 'Mary'), (1, 'Joe')
 ..
 Modified 4 row(s), 0 row error(s) in 0.41s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -507,11 +676,11 @@ Fetched 4 row(s) in 0.24s
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Update and Delete rows:&lt;/p&gt;
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name=&apos;Matt&apos; WHERE id=3;
-Query: UPDATE demo_table SET name=&apos;Matt&apos; WHERE id=3
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;default&amp;gt; UPDATE demo_table SET name='Matt' WHERE id=3;
+Query: UPDATE demo_table SET name='Matt' WHERE id=3
 Modified 1 row(s), 0 row error(s) in 1.99s
-default&amp;gt; UPDATE demo_table SET name=&apos;Liam&apos; WHERE id=1;
-Query: UPDATE demo_table SET name=&apos;Liam&apos; WHERE id=1
+default&amp;gt; UPDATE demo_table SET name='Liam' WHERE id=1;
+Query: UPDATE demo_table SET name='Liam' WHERE id=1
 Modified 2 row(s), 0 row error(s) in 2.15s
 default&amp;gt; DELETE FROM demo_table where id=2;
 Query: DELETE FROM demo_table where id=2;
@@ -561,7 +730,7 @@ auto-incrementing column. The prior backup tools will fail with an error message
 &lt;p&gt;The backed up data (from Kudu 1.17 and later) includes the auto-incrementing column in the table
 schema and the column values as well. Restoring this backed up table with the Kudu restore tool
 will create a table with the auto-incrementing column and the column values identical to the
-original source table.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html"></summary></entry><entry><title type="html">Apache Kudu 1.17.0 Released</title><link href="/2023/09/07/apache-kudu-1-17-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.0 Released" /><published>2023-09-07T00:00:00-07:00</published><updated>2023-09-07T00:00:00-07:00</updated><id>/2023/09/07/apache-kudu-1-17-0-released</id><content type="html" xml:base="/2023/09/07/apache-kudu-1-17-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.0!&lt;/p&gt;
+original source table.&lt;/p&gt;</content><author><name>Abhishek Chennaka</name></author><summary type="html"></summary></entry><entry><title type="html">Apache Kudu 1.17.0 Released</title><link href="/2023/09/07/apache-kudu-1-17-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.17.0 Released" /><published>2023-09-07T00:00:00+00:00</published><updated>2023-09-07T00:00:00+00:00</updated><id>/2023/09/07/apache-kudu-1-17-0-released</id><content type="html" xml:base="/2023/09/07/apache-kudu-1-17-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.17.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -673,7 +842,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Yingchun Lai</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.16.0 Released</title><link href="/2022/06/17/apache-kudu-1-16-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.16.0 Released" /><published>2022-06-17T00:00:00-07:00</published><updated>2022-06-17T00:00:00-07:00</updated><id>/2022/06/17/apache-kudu-1-16-0-released</id><content type="html" xml:base="/2022/06/17/apache-kudu-1-16-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.16.0!&lt;/p&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Yingchun Lai</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.17.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.16.0 Released</title><link href="/2022/06/17/apache-kudu-1-16-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.16.0 Released" /><published>2022-06-17T00:00:00+00:00</published><updated>2022-06-17T00:00:00+00:00</updated><id>/2022/06/17/apache-kudu-1-16-0-released</id><content type="html" xml:base="/2022/06/17/apache-kudu-1-16-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.16.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -713,7 +882,7 @@ available&lt;/a&gt;.&lt;/p&gt;
 &lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.16.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.15.0 Released</title><link href="/2021/06/22/apache-kudu-1-15-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.15.0 Released" /><published>2021-06-22T00:00:00-07:00</published><updated>2021-06-22T00:00:00-07:00</updated><id>/2021/06/22/apache-kudu-1-15-0-released</id><content type="html" xml:base="/2021/06/22/apache-kudu-1-15-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.15.0!&lt;/p&gt;
+&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;.&lt;/p&gt;</content><author><name>Attila Bukor</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.16.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.15.0 Released</title><link href="/2021/06/22/apache-kudu-1-15-0-released.html" rel="alternate" type="text/html" title="Apache Kudu 1.15.0 Released" /><published>2021-06-22T00:00:00+00:00</published><updated>2021-06-22T00:00:00+00:00</updated><id>/2021/06/22/apache-kudu-1-15-0-released</id><content type="html" xml:base="/2021/06/22/apache-kudu-1-15-0-released.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.15.0!&lt;/p&gt;
 
 &lt;p&gt;The new release adds several new features and improvements, including the
 following:&lt;/p&gt;
@@ -787,77 +956,4 @@ available&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Additionally, experimental Docker images are published to
 &lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.15.0! The new release adds several new features and improvements, including the following:</summary></entry><entry><title type="html">Apache Kudu 1.14.0 Released</title><link href="/2021/01/28/apache-kudu-1-14-0-release.html" rel="alternate" type="text/html" title="Apache Kudu 1.14.0 Released" /><published>2021-01-28T00:00:00-08:00</published><updated>2021-01-28T00:00:00-08:00</updated><id>/2021/01/28/apache-kudu-1-14-0-release</id><content type="html" xml:base="/2021/01/28/apache-kudu-1-14-0-release.html">&lt;p&gt;The Apache Kudu team is happy to announce the release of Kudu 1.14.0!&lt;/p&gt;
-
-&lt;p&gt;The new release adds several new features and improvements, including the
-following:&lt;/p&gt;
-
-&lt;!--more--&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Full support for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE_IGNORE&lt;/code&gt;, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE_IGNORE&lt;/code&gt; operations
-was added. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;INSERT_IGNORE&lt;/code&gt; operation will insert a row if one matching the key
-does not exist and ignore the operation if one already exists. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPDATE_IGNORE&lt;/code&gt;
-operation will update the row if one matching the key exists and ignore the operation
-if one does not exist. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DELETE_IGNORE&lt;/code&gt; operation will delete the row if one matching
-the key exists and ignore the operation if one does not exist. These operations are
-particularly useful in situations where retries or duplicate operations could occur and
-you do not want to handle the errors that could result manually or you do not want to cause
-unnecessary writes and compaction work as a result of using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UPSERT&lt;/code&gt; operation.
-The Java client can check if the cluster it is communicating with supports these operations
-by calling the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;supportsIgnoreOperations()&lt;/code&gt; method on the KuduClient.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Spark 3 compatible JARs compiled for Scala 2.12 are now published for the Kudu Spark integration.
-See &lt;a href=&quot;https://issues.apache.org/jira/browse/KUDU-3202&quot;&gt;KUDU-3202&lt;/a&gt; for more details.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Every Kudu cluster now has an automatically generated cluster Id that can be used to uniquely
-identify a cluster. The cluster Id is shown in the masters web-UI, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kudu master list&lt;/code&gt; tool,
-and in master server logs.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Downloading the WAL data and data blocks when copying tablets to another tablet server is now
-parallelized, resulting in much faster tablet copy operations. These operations occur when
-recovering from a down tablet server or when running the cluster rebalancer.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;The HMS integration now supports multiple Kudu clusters associated with a single HMS
-including Kudu clusters that do not have HMS synchronization enabled. This is possible,
-because the Kudu master will now leverage the cluster Id to ignore notifications from
-tables in a different cluster. Additionally, the HMS plugin will check if the Kudu cluster
-associated with a table has HMS synchronization enabled.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;DeltaMemStores will now be flushed as long as any DMS in a tablet is older than the point
-defined by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--flush_threshold_secs&lt;/code&gt;, rather than flushing once every &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--flush_threshold_secs&lt;/code&gt;
-period. This can reduce memory pressure under update- or delete-heavy workloads, and lower tablet
-server restart times following such workloads.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The above is just a list of the highlights, for a more complete list of new
-features, improvements and fixes please refer to the &lt;a href=&quot;/releases/1.14.0/docs/release_notes.html&quot;&gt;release
-notes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Apache Kudu project only publishes source code releases. To build Kudu
-1.14.0, follow these steps:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Download the Kudu &lt;a href=&quot;/releases/1.14.0&quot;&gt;1.14.0 source release&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;Follow the instructions in the documentation to build Kudu &lt;a href=&quot;/releases/1.14.0/docs/installation.html#build_from_source&quot;&gt;1.14.0 from
-source&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For your convenience, binary JAR files for the Kudu Java client library, Spark
-DataSource, Flume sink, and other Java integrations are published to the ASF
-Maven repository and are &lt;a href=&quot;https://search.maven.org/search?q=g:org.apache.kudu%20AND%20v:1.14.0&quot;&gt;now
-available&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The Python client source is also available on
-&lt;a href=&quot;https://pypi.org/project/kudu-python/&quot;&gt;PyPI&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Additionally, experimental Docker images are published to
-&lt;a href=&quot;https://hub.docker.com/r/apache/kudu&quot;&gt;Docker Hub&lt;/a&gt;, including for AArch64-based
-architectures (ARM).&lt;/p&gt;</content><author><name>Grant Henke</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.14.0! The new release adds several new features and improvements, including the following:</summary></entry></feed>
+architectures (ARM).&lt;/p&gt;</content><author><name>Bankim Bhavsar</name></author><summary type="html">The Apache Kudu team is happy to announce the release of Kudu 1.15.0! The new release adds several new features and improvements, including the following:</summary></entry></feed>

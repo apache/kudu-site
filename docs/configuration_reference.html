@@ -125,7 +125,7 @@ limitations under the License.
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-This document applies to Apache Kudu version 1.18.1. Please consult the
+This document applies to Apache Kudu version 1.18.2. Please consult the
 <a href="http://kudu.apache.org/releases/">documentation of the appropriate release</a> that&#8217;s applicable
 to the version of the Kudu cluster.
 </td>
@@ -1012,7 +1012,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">stable,advanced,runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stable,runtime,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -1418,7 +1418,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -1447,7 +1447,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -1476,7 +1476,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -1505,7 +1505,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -1534,7 +1534,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">advanced,stable,runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced,runtime,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -1563,7 +1563,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -2586,7 +2586,7 @@ being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,evolving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,evolving,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -2731,7 +2731,7 @@ being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,evolving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,evolving,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -3555,6 +3555,35 @@ being changed or removed without notice.</p>
 <h4 id="kudu-master_catalog_manager_enable_chunked_tablet_reports"><a class="link" href="#kudu-master_catalog_manager_enable_chunked_tablet_reports"><code>--catalog_manager_enable_chunked_tablet_reports</code></a></h4>
 <div class="paragraph">
 <p>Whether to split the tablet report data received from one tablet server into chunks when persisting it in the system catalog. The chunking starts at around the maximum allowed RPC size controlled by the --rpc_max_message_size flag. When the chunking is disabled, a tablet report sent by a tablet server is rejected if it would result in an oversized update on the system catalog tablet. With the default settings for --rpc_max_message_size, the latter can happen only in case of extremely high number of tablet replicas per tablet server.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>&#160;</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="kudu-master_catalog_manager_step_down_leader_for_replacement"><a class="link" href="#kudu-master_catalog_manager_step_down_leader_for_replacement"><code>--catalog_manager_step_down_leader_for_replacement</code></a></h4>
+<div class="paragraph">
+<p>Whether the catalog manager makes a leader replica marked with the 'replace' attribute step down so it can be evicted. This lets the master complete a move of a leader replica even if the client that initiated it was interrupted. Only effective with the 3-4-3 replica management scheme (--raft_prepare_replacement_before_eviction).</p>
 </div>
 <table class="tableblock frame-all grid-all" style="width: 50%;">
 <colgroup>
@@ -5109,7 +5138,7 @@ being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">evolving,advanced,runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">evolving,runtime,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -9653,7 +9682,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">stable,advanced,runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stable,runtime,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -10059,7 +10088,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -10088,7 +10117,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -10117,7 +10146,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -10146,7 +10175,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -10175,7 +10204,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">advanced,stable,runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">advanced,runtime,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -10204,7 +10233,7 @@ configuration tasks.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,stable,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,stable</p></td>
 </tr>
 </tbody>
 </table>
@@ -11198,7 +11227,7 @@ being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,evolving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,evolving,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -11343,7 +11372,7 @@ being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,evolving</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,evolving,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -12126,7 +12155,7 @@ being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">evolving,advanced,runtime</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">evolving,runtime,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -16520,7 +16549,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,runtime,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced,runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -17586,7 +17615,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -17612,7 +17641,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -18184,7 +18213,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -18210,7 +18239,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -18219,6 +18248,32 @@ subject to being changed or removed without notice.</p>
 <h4 id="kudu-master_catalog_manager_enable_chunked_tablet_reports"><a class="link" href="#kudu-master_catalog_manager_enable_chunked_tablet_reports"><code>--catalog_manager_enable_chunked_tablet_reports</code></a></h4>
 <div class="paragraph">
 <p>Whether to split the tablet report data received from one tablet server into chunks when persisting it in the system catalog. The chunking starts at around the maximum allowed RPC size controlled by the --rpc_max_message_size flag. When the chunking is disabled, a tablet report sent by a tablet server is rejected if it would result in an oversized update on the system catalog tablet. With the default settings for --rpc_max_message_size, the latter can happen only in case of extremely high number of tablet replicas per tablet server.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 50%;">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Type</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Default</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="kudu-master_catalog_manager_step_down_leader_for_replacement"><a class="link" href="#kudu-master_catalog_manager_step_down_leader_for_replacement"><code>--catalog_manager_step_down_leader_for_replacement</code></a></h4>
+<div class="paragraph">
+<p>Whether the catalog manager makes a leader replica marked with the 'replace' attribute step down so it can be evicted. This lets the master complete a move of a leader replica even if the client that initiated it was interrupted. Only effective with the 3-4-3 replica management scheme (--raft_prepare_replacement_before_eviction).</p>
 </div>
 <table class="tableblock frame-all grid-all" style="width: 50%;">
 <colgroup>
@@ -19718,7 +19773,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,runtime,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced,runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -21980,7 +22035,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -24008,7 +24063,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -24034,7 +24089,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -25551,7 +25606,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,runtime,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced,runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -26617,7 +26672,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -26643,7 +26698,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -26851,7 +26906,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,runtime,advanced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">experimental,advanced,runtime</p></td>
 </tr>
 </tbody>
 </table>
@@ -28905,7 +28960,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -30959,7 +31014,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -30985,7 +31040,7 @@ subject to being changed or removed without notice.</p>
 </tr>
 <tr>
 <th class="tableblock halign-left valign-top"><p class="tableblock">Tags</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,advanced,experimental</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">runtime,experimental,advanced</p></td>
 </tr>
 </tbody>
 </table>
@@ -31764,7 +31819,7 @@ subject to being changed or removed without notice.</p>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2026 The Apache Software Foundation.  Last updated 2026-01-07 15:43:26 -0800 
+            Copyright &copy; 2026 The Apache Software Foundation.  Last updated 2026-11-13 11:16:56 UTC 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu

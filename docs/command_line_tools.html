@@ -765,7 +765,7 @@ limitations under the License.
 <div class="paragraph">
 <p>The rebalancing tool moves tablet replicas between tablet servers, in the same manner as the 'kudu tablet change_config move_replica' command, attempting to balance the count of replicas per table on each tablet server, and after that attempting to balance the total number of replicas per tablet server.<br>
 <strong>Usage:</strong><br>
-<code>kudu cluster rebalance &lt;master_addresses&gt; [-disable_cross_location_rebalancing] [-disable_intra_location_rebalancing] [-disable_policy_fixer] [-fetch_info_concurrency=&lt;concurrency&gt;] [-force_rebalance_replicas_on_maintenance_tservers] [-ignored_tservers=&lt;tservers&gt;] [-intra_location_rebalancing_concurrency=&lt;concurrency&gt;] [-load_imbalance_threshold=&lt;threshold&gt;] [-max_moves_per_server=&lt;server&gt;] [-max_run_time_sec=&lt;sec&gt;] [-max_staleness_interval_sec=&lt;sec&gt;] [-move_replicas_from_ignored_tservers] [-move_single_replicas=&lt;replicas&gt;] [-output_replica_distribution_details] [-enable_range_rebalancing] [-report_only] [-tables=&lt;tables&gt;] [-negotiation_timeout_ms=&lt;ms&gt;] [-timeout_ms=&lt;ms&gt;]</code>
+<code>kudu cluster rebalance &lt;master_addresses&gt; [-disable_cross_location_rebalancing] [-disable_intra_location_rebalancing] [-disable_policy_fixer] [-fetch_info_concurrency=&lt;concurrency&gt;] [-force_rebalance_replicas_on_maintenance_tservers] [-ignored_tservers=&lt;tservers&gt;] [-intra_location_rebalancing_concurrency=&lt;concurrency&gt;] [-load_imbalance_threshold=&lt;threshold&gt;] [-max_moves_per_server=&lt;server&gt;] [-max_run_time_sec=&lt;sec&gt;] [-max_staleness_interval_sec=&lt;sec&gt;] [-move_replicas_from_ignored_tservers] [-move_single_replicas=&lt;replicas&gt;] [-output_replica_distribution_details] [-noenable_range_rebalancing] [-report_only] [-tables=&lt;tables&gt;] [-negotiation_timeout_ms=&lt;ms&gt;] [-timeout_ms=&lt;ms&gt;]</code>
 <br>
 <strong>Arguments:</strong></p>
 </div>
@@ -879,7 +879,7 @@ limitations under the License.
 <td class="tableblock halign-left valign-top"><p class="tableblock">enable_range_rebalancing (optional)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Whether to enable table range rebalancing</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">bool</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>false</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">report_only (optional)</p></td>
@@ -4740,7 +4740,7 @@ The only supported predicate operator is <code>AND</code>.</p></td>
 <h3 id="table-add_column"><a class="link" href="#table-add_column"><code>add_column</code>: Add a column&#160;</a></h3>
 <div class="paragraph">
 <p><strong>Usage:</strong><br>
-<code>kudu table add_column &lt;master_addresses&gt; &lt;table_name&gt; &lt;column_name&gt; &lt;data_type&gt; [-encoding_type=&lt;type&gt;] [-compression_type=&lt;type&gt;] [-default_value=&lt;value&gt;] [-comment=&lt;comment&gt;]</code>
+<code>kudu table add_column &lt;master_addresses&gt; &lt;table_name&gt; &lt;column_name&gt; &lt;data_type&gt; [-encoding_type=&lt;type&gt;] [-compression_type=&lt;type&gt;] [-default_value=&lt;value&gt;] [-comment=&lt;comment&gt;] [-column_precision=&lt;precision&gt;] [-column_scale=&lt;scale&gt;] [-column_length=&lt;length&gt;]</code>
 <br>
 <strong>Arguments:</strong></p>
 </div>
@@ -4780,7 +4780,7 @@ The only supported predicate operator is <code>AND</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">data_type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Type, eg: INT8, INT16, INT32, INT64, STRING, BOOL, FLOAT, DOUBLE, BINARY, UNIXTIME_MICROS, DECIMAL, VARCHAR, TIMESTAMP, DATE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data type of the column to add. Supported types: INT8, INT16, INT32, INT64, STRING, BOOL, FLOAT, DOUBLE, BINARY, UNIXTIME_MICROS, DATE, DECIMAL, VARCHAR. For DECIMAL, use 'DECIMAL' (not 'DECIMAL(p,s)') and specify --column_precision and optionally --column_scale. For VARCHAR, use 'VARCHAR' (not 'VARCHAR(n)') and specify --column_length.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">none</p></td>
 </tr>
@@ -4807,6 +4807,24 @@ The only supported predicate operator is <code>AND</code>.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Comment for this column.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">string</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">none</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">column_precision (optional)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Precision for a DECIMAL column. Required when adding a DECIMAL column. Valid range: [1, 38]. Example: add_column &#8230;&#8203; DECIMAL --column_precision=10 --column_scale=2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">column_scale (optional)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scale for a DECIMAL column. Valid range: [0, precision]. Defaults to 0. Use with --column_precision.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">column_length (optional)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Length for a VARCHAR column. Required when adding a VARCHAR column. Valid range: [1, 65535]. Example: add_column &#8230;&#8203; VARCHAR --column_length=100</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
 </tr>
 </tbody>
 </table>
@@ -8530,7 +8548,7 @@ Possible values: pretty, space, tsv, csv, and json</p></td>
         <div class="row">
           <div class="col-md-9">
             <p class="small">
-            Copyright &copy; 2026 The Apache Software Foundation.  Last updated 2026-01-07 15:43:26 -0800 
+            Copyright &copy; 2026 The Apache Software Foundation.  Last updated 2026-11-13 11:16:57 UTC 
             </p>
             <p class="small">
             Apache Kudu, Kudu, Apache, the Apache feather logo, and the Apache Kudu
